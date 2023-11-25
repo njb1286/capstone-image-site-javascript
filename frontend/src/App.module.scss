@@ -1,0 +1,19 @@
+:root {
+  font-size: 10px;
+
+  --color-gold: #cea135;
+}
+
+.column-wrapper {
+  display: flex;
+  justify-content: center;
+  
+  .column {
+    width: 100rem;
+    height: 100vh;
+
+    display: grid;
+    grid-template-rows: 12rem 1fr;
+    grid-row-gap: 2rem;
+  }
+}

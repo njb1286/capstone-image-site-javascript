@@ -15,29 +15,6 @@
   }
 }
 
-.search-section {
-  display: flex;
-  column-gap: 1.5rem;
-
-  h4 {
-    margin-top: auto;
-    margin-bottom: auto;
-  }
-
-  .search-input {
-    &:focus {
-      box-shadow: none;
-    }
-  }
-
-  .search-btn {
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
-    width: 10rem;
-    height: 100%;
-  }
-}
-
 .navigation {
   display: flex;
   justify-content: space-around;

@@ -2,11 +2,11 @@ import { NavLink } from "react-router-dom";
 import classes from "./Card.module.scss";
 import { ImageItem } from "../../store/images-store";
 
-function Card({title, description, id: path}: ImageItem) {
+function Card({title, description, id, img}: Readonly<ImageItem>) {
   return (
-    <NavLink to={path} className={`card text-center ${classes.card}`}>
+    <NavLink to={id} className={`card text-center ${classes.card}`}>
       <h3 className="card-header">{title}</h3>
-      <img src="https://placehold.co/1000x1000" className={`card-img ${classes.image}`}></img>
+      <img src={img} className={`card-img ${classes.image}`}></img>
       <div className="card-body">
         <p className="card-text text-start">{description}</p>
       </div>

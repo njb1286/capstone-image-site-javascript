@@ -1,12 +1,12 @@
 import { Reducer, configureStore } from "@reduxjs/toolkit";
 
-export type ImageItem = {
+export type ImageItem = Readonly<{
   title: string;
   description: string;
   img: string;
   id: string;
   date: string;
-}
+}>;
 
 const images: ImageItem[] = [
   {

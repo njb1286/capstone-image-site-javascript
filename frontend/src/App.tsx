@@ -3,9 +3,10 @@ import Header from "./Components/Header";
 
 import classes from "./App.module.scss";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import Home from "./Components/Pages/Home";
+import Home from "./Components/Pages/HomePage";
 import { Provider } from "react-redux";
 import { imageStore } from "./store/images-store";
+import ContentPage from "./Components/Pages/ContentPage";
 
 function App() {
   return (
@@ -17,6 +18,8 @@ function App() {
 
             <Routes>
               <Route Component={Home} path="/" />
+
+              <Route element={<ContentPage />} path="/views/*" />
             </Routes>
           </div>
 

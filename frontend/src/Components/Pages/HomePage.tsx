@@ -1,5 +1,5 @@
 import { useSelector } from "react-redux";
-import classes from "./Home.module.scss";
+import classes from "./HomePage.module.scss";
 import { ImageState } from "../../store/images-store";
 import Card from "../Helpers/Card";
 

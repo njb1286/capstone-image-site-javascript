@@ -1,9 +1,6 @@
-import { NavLink } from "react-router-dom";
 import classes from "./Header.module.scss";
 import { FormEvent } from "react";
-import HeaderLink from "./Helpers/HeaderLink";
-
-// import { motion } from "framer-motion";
+import HeaderLink from "./HeaderLink";
 
 function Header() {
   const submitHandler = (event: FormEvent) => {

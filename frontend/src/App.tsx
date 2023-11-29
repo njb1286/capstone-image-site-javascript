@@ -3,10 +3,10 @@ import Header from "./Components/Header";
 
 import classes from "./App.module.scss";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import Home from "./Components/Pages/HomePage";
+import HomePage from "./Pages/HomePage";
 import { Provider } from "react-redux";
 import { imageStore } from "./store/images-store";
-import ContentPage from "./Components/Pages/ContentPage";
+import ContentPage from "./Pages/ContentPage";
 
 function App() {
   return (
@@ -17,7 +17,7 @@ function App() {
             <Header />
 
             <Routes>
-              <Route Component={Home} path="/" />
+              <Route Component={HomePage} path="/" />
 
               <Route element={<ContentPage />} path="/views/*" />
             </Routes>

@@ -1,7 +1,7 @@
 import { useSelector } from "react-redux";
 import classes from "./HomePage.module.scss";
-import { ImageState } from "../../store/images-store";
-import Card from "../Helpers/Card";
+import { ImageState } from "../store/images-store";
+import Card from "../Components/Card";
 
 function Home() {
   const datapackItems = useSelector((state: ImageState) => state.datapacks);

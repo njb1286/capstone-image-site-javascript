@@ -1,7 +1,7 @@
 import { useLocation, useSearchParams } from "react-router-dom";
 import classes from "./ContentPage.module.scss";
 import { useSelector } from "react-redux";
-import { ImageState } from "../../store/images-store";
+import { ImageState } from "../store/images-store";
 
 const viewsRegex = /.*?views\/(?<param>\w*)/g;
 

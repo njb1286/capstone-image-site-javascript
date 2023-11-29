@@ -1,6 +1,6 @@
 import { NavLink } from "react-router-dom";
 import classes from "./Card.module.scss";
-import { ImageItem } from "../../store/images-store";
+import { ImageItem } from "../store/images-store";
 
 function Card({title, description, id, img}: ImageItem) {
   return (

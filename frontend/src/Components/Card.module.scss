@@ -1,9 +1,9 @@
+@import "../helper-styles.scss";
+
 .card {
+  @include no-user-select();
+  
   margin: 2rem;
-  user-select: none;
-  -moz-user-select: none;
-  -webkit-user-select: none;
-  -webkit-user-drag: none;
   cursor: pointer;
   height: 35rem;
   text-decoration: none;

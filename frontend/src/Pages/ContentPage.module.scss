@@ -1,28 +1,37 @@
+@import "../helper-styles.scss";
+
 .item-wrapper {
   display: flex;
   justify-content: center;
 
   .item {
     width: 60%;
-    display: grid;
-    grid-template-rows: 1fr 5fr 5fr;
+    display: flex;
+    flex-direction: column;
+    row-gap: 2rem;
 
-    img {
-      width: 60%;
-      justify-self: center;
-      object-fit: cover;
-      object-position: center;
+    @include no-user-select();
+
+    .image-wrapper {
+
+      img {
+        width: 100%;
+        justify-self: center;
+        object-fit: cover;
+        object-position: center;
+        -webkit-user-drag: none;
+      }
     }
 
     .title {
       align-self: center;
       justify-self: center;
+      margin: 0;
     }
 
     .description {
-      padding-top: 2rem;
-      padding-left: 2rem;
-      padding-right: 2rem;
+      margin: 0;
+      font-size: 1.3rem;
     }
   }
 }

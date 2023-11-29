@@ -27,9 +27,11 @@ function ContentPage() {
   return (
     <div className={classes["item-wrapper"]}>
       <div className={classes.item}>
-        <h2 className={classes.title}>{title}</h2>
+        <h1 className={classes.title}>{title}</h1>
 
-        <img src={img} />
+        <div className={classes["image-wrapper"]}>
+          <img src={img} />
+        </div>
 
         <p className={classes.description}>{description}</p>
       </div>

@@ -1,4 +1,8 @@
+@import "../helper-styles.scss";
+
 .header-wrapper {
+  @include no-user-select();
+
   display: grid;
   grid-template-rows: 2fr 1fr;
 

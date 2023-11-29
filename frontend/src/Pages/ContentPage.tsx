@@ -25,15 +25,19 @@ function ContentPage() {
   } = imageData;
 
   return (
-    <div className={classes["item-wrapper"]}>
-      <div className={classes.item}>
-        <h1 className={classes.title}>{title}</h1>
+    <div className={`card-group ${classes.group}`}>
+      <div className="card">
+        <div className="card-body">
+          <h1 className="card-title text-center">{title}</h1>
 
-        <div className={classes["image-wrapper"]}>
-          <img src={img} />
+          <p className="card-text">{description}</p>
         </div>
+      </div>
 
-        <p className={classes.description}>{description}</p>
+      <div className="card">
+        <div className="card-body">
+          <img src={img} className="card-img" />
+        </div>
       </div>
     </div>
   );

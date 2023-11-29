@@ -1,37 +1,11 @@
 @import "../helper-styles.scss";
 
-.item-wrapper {
-  display: flex;
-  justify-content: center;
+.group {
+  @include no-user-select();
 
-  .item {
-    width: 60%;
-    display: flex;
-    flex-direction: column;
-    row-gap: 2rem;
+  align-self: start;
 
-    @include no-user-select();
-
-    .image-wrapper {
-
-      img {
-        width: 100%;
-        justify-self: center;
-        object-fit: cover;
-        object-position: center;
-        -webkit-user-drag: none;
-      }
-    }
-
-    .title {
-      align-self: center;
-      justify-self: center;
-      margin: 0;
-    }
-
-    .description {
-      margin: 0;
-      font-size: 1.3rem;
-    }
+  img {
+    -webkit-user-drag: none;
   }
 }

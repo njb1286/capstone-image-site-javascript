@@ -11,10 +11,6 @@ function SearchBar() {
     <div className={classes["search-section"]}>
       <form className="input-group" onSubmit={submitHandler}>
         <input type="text" className={`form-control ${classes["search-input"]}`} placeholder="Search..." />
-
-        <div className="input-group-append">
-          <button type="submit" className={`input-group-text btn btn-primary ${classes["search-btn"]}`} id="">Search</button>
-        </div>
       </form>
     </div>
   )

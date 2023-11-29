@@ -1,0 +1,28 @@
+.item-wrapper {
+  display: flex;
+  justify-content: center;
+
+  .item {
+    width: 60%;
+    display: grid;
+    grid-template-rows: 1fr 5fr 5fr;
+
+    img {
+      width: 60%;
+      justify-self: center;
+      object-fit: cover;
+      object-position: center;
+    }
+
+    .title {
+      align-self: center;
+      justify-self: center;
+    }
+
+    .description {
+      padding-top: 2rem;
+      padding-left: 2rem;
+      padding-right: 2rem;
+    }
+  }
+}

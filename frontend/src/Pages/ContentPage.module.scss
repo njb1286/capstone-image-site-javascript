@@ -8,4 +8,15 @@
   img {
     -webkit-user-drag: none;
   }
+
+  .info {
+    display: flex;    
+    flex-direction: column;
+    row-gap: 2rem;
+
+    p {
+      font-size: 1.3rem;
+      line-height: 2.3rem;
+    }
+  }
 }

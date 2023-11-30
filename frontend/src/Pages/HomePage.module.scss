@@ -1,6 +1,16 @@
+@import "../helper-styles.scss";
+
 .cards {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-columns: repeat(4, 1fr);
 
   overflow-y: auto;
+}
+
+@media (max-width: $media-width) {
+  .cards {
+    display: flex;
+    flex-direction: column;
+    row-gap: 15rem;
+  }
 }

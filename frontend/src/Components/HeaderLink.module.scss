@@ -3,20 +3,23 @@
   text-align: center;
 
   .link {
+    $font-size: 1.8rem;
+
     -webkit-user-drag: none;
     
     transition: .1s ease;
     text-decoration: none; 
     border-bottom: .1rem solid transparent;
     padding-bottom: .5rem;
-    font-size: 1.3rem;
+    font-size: $font-size;
 
     &.active {
+
       border-bottom-color: var(--color-gold);
       color: var(--color-gold);
       font-weight: bold;
       letter-spacing: .1rem;
-      font-size: 1.4rem;
+      font-size: calc($font-size + .1rem);
     }
   }
 }

@@ -1,4 +1,4 @@
-import { useLocation, useSearchParams } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import classes from "./ContentPage.module.scss";
 import { useSelector } from "react-redux";
 import { ImageState } from "../store/images-store";
@@ -14,7 +14,7 @@ function ContentPage() {
   const imageData = imagesData.find(item => item.id === id);
 
   if (!imageData) {
-    return <h2>Hmmm... we could not find that image...</h2>
+    return <h2>Hmmm... we couldn't find that image...</h2>
   }
 
   const {

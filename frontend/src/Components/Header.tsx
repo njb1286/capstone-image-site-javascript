@@ -10,7 +10,6 @@ function Header() {
     <div className={classes.navigation}>
       <HeaderLink path="/" title="Home" />
       <HeaderLink path="/about" title="About" />
-      <HeaderLink path="/how-to-install" title="How To Install" />
     </div>
   </div>;
 }

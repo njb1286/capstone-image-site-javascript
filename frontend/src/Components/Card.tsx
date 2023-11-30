@@ -8,7 +8,7 @@ function Card({title, description, id, img}: ImageItem) {
       <h3 className="card-header">{title}</h3>
       <img src={img} className={`card-img ${classes.image}`}></img>
       <div className="card-body">
-        <p className="card-text text-start">{description}</p>
+        <p className="card-text text-start">{description.substring(0, 200)}{description.length > 200 ? "..." : ""}</p>
       </div>
     </NavLink>
   );

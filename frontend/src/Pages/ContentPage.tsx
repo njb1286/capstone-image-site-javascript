@@ -26,14 +26,14 @@ function ContentPage() {
 
   return (
     <div className={`card-body ${classes.group}`}>
-      <div className="card-body row">
-        <div className={`col-md-6 ${classes.info}`}>
+      <div className={`card-body row ${classes.body}`}>
+        <div className={`col-md-6 ${classes.info} ${classes.col}`}>
           <h1 className="card-title text-center">{title}</h1>
 
           <p className="card-text">{description}</p>
         </div>
 
-        <div className="col-md-6">
+        <div className={`col-md-6 ${classes.col}`}>
           <img src={img} className="card-img" />
         </div>
       </div>

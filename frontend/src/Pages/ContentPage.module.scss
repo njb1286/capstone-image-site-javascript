@@ -19,4 +19,18 @@
       line-height: 2.3rem;
     }
   }
+
+  .body {
+    width: 90%;
+  }
+
+}
+
+@media (max-width: 768px) {
+  .group {
+    .col {
+      padding: 0;
+      justify-self: center;
+    }
+  }
 }

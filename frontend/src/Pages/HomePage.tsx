@@ -5,7 +5,13 @@ import Card from "../Components/Card";
 import SearchBar from "../Components/SearchBar";
 
 function Home() {
-  const datapackItems = useSelector((state: ImageState) => state.datapacks);
+  const searchValue = useSelector((state: ImageState) => state.searchValue);
+  
+  let datapackItems = useSelector((state: ImageState) => state.datapacks);
+
+  if (searchValue) {
+    datapackItems = datapackItems.filter(item => item.title.toLowerCase().includes(searchValue.toLowerCase()));
+  }
 
   return (
     <>

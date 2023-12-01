@@ -2,7 +2,7 @@
 
 .card {
   @include no-user-select();
-  
+
   margin: 2rem;
   cursor: pointer;
   height: 35rem;

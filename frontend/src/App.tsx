@@ -7,6 +7,7 @@ import HomePage from "./Pages/HomePage";
 import { Provider } from "react-redux";
 import { imageStore } from "./store/images-store";
 import ContentPage from "./Pages/ContentPage";
+import AboutPage from "./Pages/AboutPage";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
             <Routes>
               <Route Component={HomePage} path="/" />
 
+              <Route element={<AboutPage />} path="/about" />
               <Route element={<ContentPage />} path="/views/*" />
             </Routes>
           </div>

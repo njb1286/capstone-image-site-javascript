@@ -1,17 +1,19 @@
-import type { FormEvent } from "react";
+import { useDispatch } from "react-redux";
 import classes from "./SearchBar.module.scss";
+import { Dispatch } from "@reduxjs/toolkit";
+import { ImageActions } from "../store/images-store";
+import { KeyboardEvent } from "react";
 
 function SearchBar() {
-  const submitHandler = (event: FormEvent) => {
+  const dispatch = useDispatch<Dispatch<ImageActions>>();
+
+  const inputHandler = (event: KeyboardEvent<HTMLInputElement>) => {
     event.preventDefault();
-    console.log("Submit");
   }
 
   return (
     <div className={classes["search-section"]}>
-      <form className="input-group" onSubmit={submitHandler}>
-        <input type="text" className={`form-control ${classes["search-input"]}`} placeholder="Search..." />
-      </form>
+        <input onKeyUp={inputHandler} type="text" className={`form-control ${classes["search-input"]}`} placeholder="Search..." />
     </div>
   )
 }

@@ -90,25 +90,33 @@ const images: ImageItem[] = [
 
 const initialState = {
   datapacks: images,
+  searchValue: "",
 }
 
 
 export type ImageState = typeof initialState;
 
-export type ImageActions = {
-
+type Actions = {
+  SET_SEARCH_VALUE: string;
 }
 
-type Actions = {
-  [K in keyof ImageActions]: {
+export type ImageActions = {
+  [K in keyof Actions]: {
     type: K;
-    payload: ImageActions[K];
+    payload: Actions[K];
   }
-}[keyof ImageActions];
+}[keyof Actions];
 
-const datapacksReducer: Reducer<ImageState, Actions> = (state = initialState, action) => {
+const datapacksReducer: Reducer<ImageState, ImageActions> = (state = initialState, action) => {
   if (!state) {
     return initialState;
+  }
+
+  if (action.type === "SET_SEARCH_VALUE") {
+    return {
+      ...state,
+      searchValue: action.payload,
+    }
   }
 
   return state;

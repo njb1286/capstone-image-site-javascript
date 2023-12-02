@@ -8,6 +8,7 @@ import { Provider } from "react-redux";
 import { imageStore } from "./store/images-store";
 import ContentPage from "./Pages/ContentPage";
 import AboutPage from "./Pages/AboutPage";
+import UploadPage from "./Pages/UploadPage";
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
 
               <Route element={<AboutPage />} path="/about" />
               <Route element={<ContentPage />} path="/views/*" />
+              <Route element={<UploadPage />} path="/upload" />
             </Routes>
           </div>
 

@@ -11,8 +11,6 @@ function SearchBar() {
 
     const payload = event.target.value;
 
-    console.log("New value is", payload);
-
     dispatch({
       type: "SET_SEARCH_VALUE",
       payload,

@@ -2,6 +2,7 @@ import { useLocation } from "react-router-dom";
 import classes from "./ContentPage.module.scss";
 import { useSelector } from "react-redux";
 import { ImageState } from "../store/images-store";
+import { CardBody } from "react-bootstrap";
 
 const viewsRegex = /.*?views\/(?<param>\w*)/g;
 
@@ -25,8 +26,8 @@ function ContentPage() {
   } = imageData;
 
   return (
-    <div className={`card-body ${classes.group}`}>
-      <div className={`card-body row ${classes.body}`}>
+    <CardBody className={classes.group}>
+      <CardBody className={`row ${classes.body}`}>
         <div className={`col-md-6 ${classes.info} ${classes.col}`}>
           <h1 className="card-title text-center">{title}</h1>
 
@@ -36,8 +37,8 @@ function ContentPage() {
         <div className={`col-md-6 ${classes.col}`}>
           <img src={img} className="card-img" />
         </div>
-      </div>
-    </div>
+      </CardBody>
+    </CardBody>
   );
 }
 

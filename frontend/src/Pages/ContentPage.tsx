@@ -1,41 +1,38 @@
 import { useLocation } from "react-router-dom";
-import classes from "./ContentPage.module.scss";
 import { useSelector } from "react-redux";
-import { ImageState } from "../store/images-store";
 import { CardBody } from "react-bootstrap";
+import classes from "./ContentPage.module.scss";
+import { ImageState } from "../store/images-store";
 
-const viewsRegex = /.*?views\/(?<param>\w*)/g;
+const errorComponent = <h2>Hmmm... we couldn't find that image...</h2>;
 
 function ContentPage() {
   const imagesData = useSelector((state: ImageState) => state.datapacks);
   const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const id = searchParams.get("id");
 
-  const id = location.pathname.replace(viewsRegex, "$<param>");
+  if (!id) {
+    return errorComponent;
+  }
 
   const imageData = imagesData.find(item => item.id === id);
 
   if (!imageData) {
-    return <h2>Hmmm... we couldn't find that image...</h2>
+    return errorComponent;
   }
 
-  const {
-    title,
-    description,
-    date,
-    img,
-  } = imageData;
+  const { title, description, img } = imageData;
 
   return (
     <CardBody className={classes.group}>
       <CardBody className={`row ${classes.body}`}>
         <div className={`col-md-6 ${classes.info} ${classes.col}`}>
           <h1 className="card-title text-center">{title}</h1>
-
           <p className="card-text">{description}</p>
         </div>
-
         <div className={`col-md-6 ${classes.col}`}>
-          <img src={img} className="card-img" />
+          <img alt={title} src={img} className="card-img" />
         </div>
       </CardBody>
     </CardBody>

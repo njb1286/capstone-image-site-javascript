@@ -32,7 +32,6 @@ function UploadPage() {
 
   return (
     <div className={classes["upload-page"]}>
-      <h2>Upload an Image</h2>
       <Form onSubmit={submitHandler}>
         <FormGroup>
           <Form.Label>Title</Form.Label>

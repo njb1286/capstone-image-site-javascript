@@ -1,13 +1,16 @@
 import { ChangeEvent, FormEvent, useState } from "react";
 import classes from "./UploadPage.module.scss";
-import { FormControl, FormGroup } from "react-bootstrap";
+import { Button, Form, FormControl, FormGroup } from "react-bootstrap";
 import { backendUrl } from "../store/backend-url";
 
 function UploadPage() {
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
 
   const submitHandler = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    // Handle form submission here
   }
 
   const imageUploadHandler = (event: ChangeEvent<HTMLInputElement>) => {
@@ -19,7 +22,6 @@ function UploadPage() {
     setSelectedImage(file);
 
     const formData = new FormData();
-
     formData.append("image", file);
 
     fetch(`${backendUrl}/image-upload`, {
@@ -28,17 +30,40 @@ function UploadPage() {
     })
   }
 
-  return <form className={classes.form} onSubmit={submitHandler}>
-    <FormGroup>
-      <label htmlFor="image-title">Title</label>
-      <FormControl placeholder="Enter title..." id="image-title"></FormControl>
-    </FormGroup>
-
-    <FormGroup>
-      <label htmlFor="image-file-uploader">Image</label>
-      <FormControl type="file" id="image-file-uploader" accept=".png, .jpg, .jpeg" onChange={imageUploadHandler} />
-    </FormGroup>
-  </form>;
+  return (
+    <div className={classes["upload-page"]}>
+      <h2>Upload an Image</h2>
+      <Form onSubmit={submitHandler}>
+        <FormGroup>
+          <Form.Label>Title</Form.Label>
+          <FormControl
+            type="text"
+            value={title}
+            onChange={(event) => setTitle(event.target.value)}
+          />
+        </FormGroup>
+        <FormGroup>
+          <Form.Label>Image</Form.Label>
+          <FormControl
+            type="file"
+            accept="image/*"
+            onChange={imageUploadHandler}
+          />
+        </FormGroup>
+        <FormGroup>
+          <Form.Label>Description</Form.Label>
+          <FormControl
+            as="textarea"
+            value={description}
+            onChange={(event) => setDescription(event.target.value)}
+            style={{ resize: "vertical", minHeight: "10rem", maxHeight: "50rem" }}
+          />
+        </FormGroup>
+        <Button className={classes.submit} type="submit">Submit</Button>
+      </Form>
+    </div>
+  );
 }
+
 
 export default UploadPage;

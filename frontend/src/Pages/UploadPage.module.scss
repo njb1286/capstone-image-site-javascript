@@ -1,7 +1,26 @@
-.form {
-  font-size: 2rem;
+@import "../helper-styles.scss";
 
-  input {
-    font-size: 1em;
+.upload-page {
+  font-size: 3rem;  
+
+  input, textarea {
+    font-size: 2rem;
+  }
+
+  .submit {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: $media-width) {
+  .upload-page {
+    label {
+      font-size: 2rem;
+      margin-left: 1rem;
+    }
+
+    .submit {
+      width: 100%;
+    }
   }
 }

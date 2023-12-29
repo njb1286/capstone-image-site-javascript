@@ -18,9 +18,13 @@ function UploadPage() {
     const file = event.target.files[0];
     setSelectedImage(file);
 
+    const formData = new FormData();
+
+    formData.append("image", file);
+
     fetch(`${backendUrl}/image-upload`, {
       method: "POST",
-      body: JSON.stringify(file)
+      body: formData
     })
   }
 

@@ -1,21 +1,23 @@
 import express from "express";
+import multer from "multer";
+
+interface TextRequest extends express.Request {
+  body: string;
+}
 
 const app = express();
+const upload = multer({ dest: "uploads/" });
 
-app.use(express.json());
-
-app.get("/api", (_, res) => {
-  res.send("API");
-});
-
-app.get("/api/hello", (_, res) => {
-  res.send("Fishsticks2");
-});
-
-app.post("/api/image-upload", (req, res) => {
+app.post("/api/image-upload", upload.single("image"), (req, res) => {
   console.log("Recieved request:", req.body);
 
-  res.send("It worked!!!");
+  res.status(201).send("It worked!!!");
+});
+
+app.post("/api/sample", express.text(), (req: TextRequest, res) => {
+  console.log("Recieved request:", req.body);
+
+  res.status(201).send("It worked!!!");
 });
 
 app.listen(8080, () => {

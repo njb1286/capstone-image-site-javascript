@@ -30,7 +30,7 @@ const initialState = {
   title: "",
   description: "",
 
-  // Copy of defaultValidState instead of pointer
+  // Copy instead of pointer
   titleValidityState: initialFieldValidityState,
   descriptionValidityState: initialFieldValidityState,
   selectedImageValidityState: initialFieldValidityState,
@@ -62,19 +62,47 @@ function UploadPage() {
 
   const submitHandler = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    // Handle form submission here
+
+    const formIsValid = state.titleValidityState.valid && state.descriptionValidityState.valid && state.selectedImageValidityState.valid;
+
+    if (!formIsValid) {
+      alert("Form is invalid for some reason, you'd better fix that!");
+
+      return;
+    }
+
+    alert("Form is valid! 😊");
   };
 
   const imageUploadHandler = (event: ChangeEvent<HTMLInputElement>) => {
     event.preventDefault();
 
-    if (!event.target.files) return;
+    if (!event.target.files) {
+      dispatch({
+        type: "SET_IMAGE_VALIDITY_STATE",
+        payload: {
+          touched: true,
+          valid: false,
+        }
+      })
+
+      return;
+    };
 
     const file = event.target.files[0];
     dispatch({ type: "SET_SELECTED_IMAGE", payload: file });
 
     const formData = new FormData();
     formData.append("image", file);
+
+    dispatch({
+      type: "SET_IMAGE_VALIDITY_STATE",
+      payload: {
+        touched: true,
+        valid: true,
+      }
+    })
+
   };
 
   const titleChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {

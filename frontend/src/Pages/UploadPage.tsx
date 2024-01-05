@@ -63,6 +63,7 @@ function UploadPage() {
 
   const handleFormData = () => {
     const formData = new FormData();
+    
     formData.append("image", state.selectedImage!);
     formData.append("title", state.title);
     formData.append("description", state.description);

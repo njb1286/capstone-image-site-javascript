@@ -1,3 +1,5 @@
+@import "./helper-styles.scss";
+
 :root {
   font-size: 10px;
 
@@ -15,5 +17,13 @@
     display: flex;
     flex-direction: column;
     row-gap: 2rem;
+  }
+}
+
+@media (max-width: $media-width) {
+  .column-wrapper {
+    .column {
+      padding: 2rem;
+    }
   }
 }

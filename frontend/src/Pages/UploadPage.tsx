@@ -8,9 +8,9 @@ type Actions = {
   SET_TITLE: string;
   SET_DESCRIPTION: string;
 
-  SET_TITLE_VALIDITY_STATE: boolean;
-  SET_DESCRIPTION_VALIDITY_STATE: boolean;
-  SET_IMAGE_VALIDITY_STATE: boolean;
+  SET_TITLE_VALIDITY_STATE: typeof defaultValidityState;
+  SET_DESCRIPTION_VALIDITY_STATE: typeof defaultValidityState;
+  SET_IMAGE_VALIDITY_STATE: typeof defaultValidityState;
 }
 
 type Action = {
@@ -18,9 +18,12 @@ type Action = {
     type: K;
     payload: Actions[K];
   }
-}[keyof Actions] | {
-  type: "ATTEMPTED_SUBMIT"
-};
+}[keyof Actions];
+
+const defaultValidityState = {
+  isValid: false,
+  touched: false,
+}
 
 const initialState = {
   selectedImage: null as File | null,
@@ -28,9 +31,9 @@ const initialState = {
   description: "",
 
   // Copy instead of pointer
-  titleValidityState: false,
-  descriptionValidityState: false,
-  selectedImageValidityState: false,
+  titleValidityState: defaultValidityState,
+  descriptionValidityState: defaultValidityState,
+  selectedImageValidityState: defaultValidityState,
 
   attemptedSubmit: false,
 };
@@ -51,8 +54,6 @@ function reducer(state: State, action: Action): State {
       return { ...state, descriptionValidityState: action.payload };
     case "SET_IMAGE_VALIDITY_STATE":
       return { ...state, selectedImageValidityState: action.payload };
-    case "ATTEMPTED_SUBMIT":      
-      return { ...state, attemptedSubmit: true };
     default:
       return state;
   }
@@ -63,7 +64,7 @@ function UploadPage() {
 
   const handleFormData = () => {
     const formData = new FormData();
-    
+
     formData.append("image", state.selectedImage!);
     formData.append("title", state.title);
     formData.append("description", state.description);
@@ -73,8 +74,6 @@ function UploadPage() {
 
   const submitHandler = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
-    dispatch({ type: "ATTEMPTED_SUBMIT" });
 
     if (!state.titleValidityState) {
       return;
@@ -97,7 +96,10 @@ function UploadPage() {
     if (!event.target.files) {
       dispatch({
         type: "SET_IMAGE_VALIDITY_STATE",
-        payload: false
+        payload: {
+          touched: true,
+          isValid: false,
+        }
       })
 
       return;
@@ -111,7 +113,10 @@ function UploadPage() {
 
     dispatch({
       type: "SET_IMAGE_VALIDITY_STATE",
-      payload: true
+      payload: {
+        touched: true,
+        isValid: true,
+      }
     })
 
   };
@@ -120,7 +125,10 @@ function UploadPage() {
     dispatch({ type: "SET_TITLE", payload: event.target.value });
 
     dispatch({
-      type: "SET_TITLE_VALIDITY_STATE", payload: event.target.value.length > 0
+      type: "SET_TITLE_VALIDITY_STATE", payload: {
+        touched: true,
+        isValid: event.target.value.length > 0,
+      }
     })
   }
 
@@ -128,21 +136,23 @@ function UploadPage() {
     dispatch({ type: "SET_DESCRIPTION", payload: event.target.value });
 
     dispatch({
-      type: "SET_DESCRIPTION_VALIDITY_STATE", payload: event.target.value.length > 0
+      type: "SET_DESCRIPTION_VALIDITY_STATE", payload: {
+        touched: true,
+        isValid: event.target.value.length > 0
+      }
     });
   }
 
-  const getValidity = (condition: boolean) => {
-    if (!state.attemptedSubmit) return;    
+  // Returns false if valid
+  const getInvalidity = (validity: typeof defaultValidityState): boolean => {
+    if (!validity.touched) return false;
 
-    if (!condition) return true;
-
-    return false;
+    return !validity.isValid;
   }
 
-  const titleIsValid = getValidity(state.titleValidityState);
-  const imageIsValid = getValidity(state.selectedImageValidityState);
-  const descriptionIsValid = getValidity(state.descriptionValidityState);
+  const titleIsInvalid = getInvalidity(state.titleValidityState);
+  const imageIsInvalid = getInvalidity(state.selectedImageValidityState);
+  const descriptionIsInvalid = getInvalidity(state.descriptionValidityState);
 
   return (
     <div className={classes["upload-page"]}>
@@ -153,8 +163,10 @@ function UploadPage() {
             type="text"
             value={state.title}
             onChange={titleChangeHandler}
-            isInvalid={titleIsValid}   
+            isInvalid={titleIsInvalid}
+            required
           />
+          {titleIsInvalid && <p className="text text-danger">Title is required</p>}
         </FormGroup>
         <FormGroup>
           <Form.Label>Image</Form.Label>
@@ -162,8 +174,10 @@ function UploadPage() {
             type="file"
             accept="image/*"
             onChange={imageUploadHandler}
-            isInvalid={imageIsValid}
+            isInvalid={imageIsInvalid}
+            required
           />
+          {imageIsInvalid && <p className="text text-danger">Image is required</p>}
         </FormGroup>
         <FormGroup>
           <Form.Label>Description</Form.Label>
@@ -172,8 +186,10 @@ function UploadPage() {
             value={state.description}
             onChange={descriptionChangeHandler}
             style={{ resize: "vertical", minHeight: "10rem", maxHeight: "50rem" }}
-            isInvalid={descriptionIsValid}
+            isInvalid={descriptionIsInvalid}
+            required
           />
+          {descriptionIsInvalid && <p className="text text-danger">Description is required</p>}
         </FormGroup>
         <Button className={classes.submit} type="submit">
           Submit

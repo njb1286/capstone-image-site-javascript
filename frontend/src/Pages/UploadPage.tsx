@@ -11,6 +11,8 @@ type Actions = {
   SET_TITLE_VALIDITY_STATE: typeof defaultValidityState;
   SET_DESCRIPTION_VALIDITY_STATE: typeof defaultValidityState;
   SET_IMAGE_VALIDITY_STATE: typeof defaultValidityState;
+
+  SET_TOUCHED: boolean;
 }
 
 type Action = {
@@ -54,6 +56,22 @@ function reducer(state: State, action: Action): State {
       return { ...state, descriptionValidityState: action.payload };
     case "SET_IMAGE_VALIDITY_STATE":
       return { ...state, selectedImageValidityState: action.payload };
+      case "SET_TOUCHED":
+        return {
+          ...state,
+          titleValidityState: {
+            ...state.titleValidityState,
+            touched: action.payload,
+          },
+          descriptionValidityState: {
+            ...state.descriptionValidityState,
+            touched: action.payload,
+          },
+          selectedImageValidityState: {
+            ...state.selectedImageValidityState,
+            touched: action.payload,
+          },
+        }
     default:
       return state;
   }
@@ -75,15 +93,8 @@ function UploadPage() {
   const submitHandler = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (!state.titleValidityState) {
-      return;
-    }
-
-    if (!state.selectedImageValidityState) {
-      return;
-    }
-
-    if (!state.descriptionValidityState) {
+    if (!state.titleValidityState.isValid || !state.descriptionValidityState.isValid || !state.selectedImageValidityState.isValid) {
+      dispatch({ type: "SET_TOUCHED", payload: true });
       return;
     }
 
@@ -164,7 +175,7 @@ function UploadPage() {
             value={state.title}
             onChange={titleChangeHandler}
             isInvalid={titleIsInvalid}
-            required
+            isValid={!titleIsInvalid && state.titleValidityState.touched}
           />
           {titleIsInvalid && <p className="text text-danger">Title is required</p>}
         </FormGroup>
@@ -175,7 +186,7 @@ function UploadPage() {
             accept="image/*"
             onChange={imageUploadHandler}
             isInvalid={imageIsInvalid}
-            required
+            isValid={!imageIsInvalid && state.selectedImageValidityState.touched}
           />
           {imageIsInvalid && <p className="text text-danger">Image is required</p>}
         </FormGroup>
@@ -187,7 +198,7 @@ function UploadPage() {
             onChange={descriptionChangeHandler}
             style={{ resize: "vertical", minHeight: "10rem", maxHeight: "50rem" }}
             isInvalid={descriptionIsInvalid}
-            required
+            isValid={!descriptionIsInvalid && state.descriptionValidityState.touched}
           />
           {descriptionIsInvalid && <p className="text text-danger">Description is required</p>}
         </FormGroup>

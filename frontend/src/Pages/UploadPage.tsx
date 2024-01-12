@@ -104,46 +104,17 @@ function UploadPage() {
   const imageBlurHandler = (event: FocusEvent<HTMLInputElement>) => {
     event.preventDefault();
 
-    if (!event.target.files) {
-      dispatch({
-        type: "SET_IMAGE_VALIDITY_STATE",
-        payload: {
-          touched: true,
-          isValid: false,
-        }
-      })
-
-      return;
-    };
+    let isValid = !!event.target.files!.length;
+    
 
     dispatch({
-      type: "SET_IMAGE_VALIDITY_STATE",
-      payload: {
+      type: "SET_IMAGE_VALIDITY_STATE", payload: {
+        isValid,
         touched: true,
-        isValid: true,
       }
     })
 
   };
-
-  const titleBlurHandler = (event: FocusEvent<HTMLInputElement>) => {
-    dispatch({
-      type: "SET_TITLE_VALIDITY_STATE", payload: {
-        touched: true,
-        isValid: event.target.value.length > 0,
-      }
-    })
-  }
-
-  const descriptionBlurHandler = (event: FocusEvent<HTMLTextAreaElement>) => {
-    dispatch({
-      type: "SET_DESCRIPTION_VALIDITY_STATE", payload: {
-        touched: true,
-        isValid: event.target.value.length > 0
-      }
-    });
-  }
-
 
   const imageChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
     event.preventDefault();
@@ -155,11 +126,32 @@ function UploadPage() {
     dispatch({ type: "SET_SELECTED_IMAGE", payload: file });
 
     if (!state.selectedImageValidityState.isValid) {
-      dispatch({type: "SET_IMAGE_VALIDITY_STATE", payload: {
-        isValid: true,
-        touched: false,
-      }})
+      dispatch({
+        type: "SET_IMAGE_VALIDITY_STATE", payload: {
+          isValid: true,
+          touched: false,
+        }
+      })
     }
+  }
+
+  const imageFocusHandler = () => {
+    dispatch({
+      type: "SET_IMAGE_VALIDITY_STATE",
+      payload: {
+        touched: false,
+        isValid: true,
+      },
+    });
+  };
+
+  const titleBlurHandler = (event: FocusEvent<HTMLInputElement>) => {
+    dispatch({
+      type: "SET_TITLE_VALIDITY_STATE", payload: {
+        touched: true,
+        isValid: event.target.value.length > 0,
+      }
+    })
   }
 
   const titleChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
@@ -168,11 +160,32 @@ function UploadPage() {
     dispatch({ type: "SET_TITLE", payload: event.target.value });
 
     if (!state.titleValidityState.isValid) {
-      dispatch({type: "SET_TITLE_VALIDITY_STATE", payload: {
-        isValid: true,
-        touched: false,
-      }})
+      dispatch({
+        type: "SET_TITLE_VALIDITY_STATE", payload: {
+          isValid: true,
+          touched: false,
+        }
+      })
     }
+  }
+
+  const titleFocusHandler = () => {
+    dispatch({
+      type: "SET_TITLE_VALIDITY_STATE",
+      payload: {
+        touched: false,
+        isValid: true,
+      },
+    });
+  };
+
+  const descriptionBlurHandler = (event: FocusEvent<HTMLTextAreaElement>) => {
+    dispatch({
+      type: "SET_DESCRIPTION_VALIDITY_STATE", payload: {
+        touched: true,
+        isValid: event.target.value.length > 0
+      }
+    });
   }
 
   const descriptionChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
@@ -181,12 +194,24 @@ function UploadPage() {
     dispatch({ type: "SET_DESCRIPTION", payload: event.target.value });
 
     if (!state.descriptionValidityState.isValid) {
-      dispatch({type: "SET_DESCRIPTION_VALIDITY_STATE", payload: {
-        isValid: true,
-        touched: false,
-      }})
+      dispatch({
+        type: "SET_DESCRIPTION_VALIDITY_STATE", payload: {
+          isValid: true,
+          touched: false,
+        }
+      })
     }
   }
+
+  const descriptionFocusHandler = () => {
+    dispatch({
+      type: "SET_DESCRIPTION_VALIDITY_STATE",
+      payload: {
+        touched: false,
+        isValid: true,
+      },
+    });
+  };
 
   // Returns false if valid
   const getInvalidity = (validity: typeof defaultValidityState): boolean => {
@@ -211,6 +236,7 @@ function UploadPage() {
             isInvalid={titleIsInvalid}
             isValid={!titleIsInvalid && state.titleValidityState.touched}
             onChange={titleChangeHandler}
+            onFocus={titleFocusHandler}
           />
           {titleIsInvalid && <p className="text text-danger">Title is required</p>}
         </FormGroup>
@@ -223,6 +249,7 @@ function UploadPage() {
             isInvalid={imageIsInvalid}
             isValid={!imageIsInvalid && state.selectedImageValidityState.touched}
             onChange={imageChangeHandler}
+            onFocus={imageFocusHandler}
           />
           {imageIsInvalid && <p className="text text-danger">Image is required</p>}
         </FormGroup>
@@ -236,6 +263,7 @@ function UploadPage() {
             isInvalid={descriptionIsInvalid}
             isValid={!descriptionIsInvalid && state.descriptionValidityState.touched}
             onChange={descriptionChangeHandler}
+            onFocus={descriptionFocusHandler}
           />
           {descriptionIsInvalid && <p className="text text-danger">Description is required</p>}
         </FormGroup>

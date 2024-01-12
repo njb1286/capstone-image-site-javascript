@@ -1,4 +1,4 @@
-import { ChangeEvent, FormEvent, useReducer } from "react";
+import { ChangeEvent, FocusEvent, FormEvent, useReducer } from "react";
 import classes from "./UploadPage.module.scss";
 import { Button, Form, FormControl, FormGroup } from "react-bootstrap";
 import { backendUrl } from "../store/backend-url";
@@ -56,22 +56,22 @@ function reducer(state: State, action: Action): State {
       return { ...state, descriptionValidityState: action.payload };
     case "SET_IMAGE_VALIDITY_STATE":
       return { ...state, selectedImageValidityState: action.payload };
-      case "SET_TOUCHED":
-        return {
-          ...state,
-          titleValidityState: {
-            ...state.titleValidityState,
-            touched: action.payload,
-          },
-          descriptionValidityState: {
-            ...state.descriptionValidityState,
-            touched: action.payload,
-          },
-          selectedImageValidityState: {
-            ...state.selectedImageValidityState,
-            touched: action.payload,
-          },
-        }
+    case "SET_TOUCHED":
+      return {
+        ...state,
+        titleValidityState: {
+          ...state.titleValidityState,
+          touched: action.payload,
+        },
+        descriptionValidityState: {
+          ...state.descriptionValidityState,
+          touched: action.payload,
+        },
+        selectedImageValidityState: {
+          ...state.selectedImageValidityState,
+          touched: action.payload,
+        },
+      }
     default:
       return state;
   }
@@ -101,7 +101,7 @@ function UploadPage() {
     alert("Form is valid! 😊");
   };
 
-  const imageUploadHandler = (event: ChangeEvent<HTMLInputElement>) => {
+  const imageBlurHandler = (event: FocusEvent<HTMLInputElement>) => {
     event.preventDefault();
 
     if (!event.target.files) {
@@ -116,12 +116,6 @@ function UploadPage() {
       return;
     };
 
-    const file = event.target.files[0];
-    dispatch({ type: "SET_SELECTED_IMAGE", payload: file });
-
-    const formData = new FormData();
-    formData.append("image", file);
-
     dispatch({
       type: "SET_IMAGE_VALIDITY_STATE",
       payload: {
@@ -132,9 +126,7 @@ function UploadPage() {
 
   };
 
-  const titleChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
-    dispatch({ type: "SET_TITLE", payload: event.target.value });
-
+  const titleBlurHandler = (event: FocusEvent<HTMLInputElement>) => {
     dispatch({
       type: "SET_TITLE_VALIDITY_STATE", payload: {
         touched: true,
@@ -143,15 +135,57 @@ function UploadPage() {
     })
   }
 
-  const descriptionChangeHandler = (event: ChangeEvent<HTMLTextAreaElement>) => {
-    dispatch({ type: "SET_DESCRIPTION", payload: event.target.value });
-
+  const descriptionBlurHandler = (event: FocusEvent<HTMLTextAreaElement>) => {
     dispatch({
       type: "SET_DESCRIPTION_VALIDITY_STATE", payload: {
         touched: true,
         isValid: event.target.value.length > 0
       }
     });
+  }
+
+
+  const imageChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
+    event.preventDefault();
+
+    const file = event.target.files![0];
+    const formData = new FormData();
+    formData.append("image", file);
+
+    dispatch({ type: "SET_SELECTED_IMAGE", payload: file });
+
+    if (!state.selectedImageValidityState.isValid) {
+      dispatch({type: "SET_IMAGE_VALIDITY_STATE", payload: {
+        isValid: true,
+        touched: false,
+      }})
+    }
+  }
+
+  const titleChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
+    event.preventDefault();
+
+    dispatch({ type: "SET_TITLE", payload: event.target.value });
+
+    if (!state.titleValidityState.isValid) {
+      dispatch({type: "SET_TITLE_VALIDITY_STATE", payload: {
+        isValid: true,
+        touched: false,
+      }})
+    }
+  }
+
+  const descriptionChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
+    event.preventDefault();
+
+    dispatch({ type: "SET_DESCRIPTION", payload: event.target.value });
+
+    if (!state.descriptionValidityState.isValid) {
+      dispatch({type: "SET_DESCRIPTION_VALIDITY_STATE", payload: {
+        isValid: true,
+        touched: false,
+      }})
+    }
   }
 
   // Returns false if valid
@@ -173,9 +207,10 @@ function UploadPage() {
           <FormControl
             type="text"
             value={state.title}
-            onChange={titleChangeHandler}
+            onBlur={titleBlurHandler}
             isInvalid={titleIsInvalid}
             isValid={!titleIsInvalid && state.titleValidityState.touched}
+            onChange={titleChangeHandler}
           />
           {titleIsInvalid && <p className="text text-danger">Title is required</p>}
         </FormGroup>
@@ -184,9 +219,10 @@ function UploadPage() {
           <FormControl
             type="file"
             accept="image/*"
-            onChange={imageUploadHandler}
+            onBlur={imageBlurHandler}
             isInvalid={imageIsInvalid}
             isValid={!imageIsInvalid && state.selectedImageValidityState.touched}
+            onChange={imageChangeHandler}
           />
           {imageIsInvalid && <p className="text text-danger">Image is required</p>}
         </FormGroup>
@@ -195,10 +231,11 @@ function UploadPage() {
           <FormControl
             as="textarea"
             value={state.description}
-            onChange={descriptionChangeHandler}
+            onBlur={descriptionBlurHandler}
             style={{ resize: "vertical", minHeight: "10rem", maxHeight: "50rem" }}
             isInvalid={descriptionIsInvalid}
             isValid={!descriptionIsInvalid && state.descriptionValidityState.touched}
+            onChange={descriptionChangeHandler}
           />
           {descriptionIsInvalid && <p className="text text-danger">Description is required</p>}
         </FormGroup>

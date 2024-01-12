@@ -24,3 +24,15 @@
     }
   }
 }
+
+.error {
+  color: var(--bs-danger);
+  font-size: 2rem;
+  margin: 0;
+  translate: 0 -1rem;
+  visibility: hidden;
+
+  &.visible {
+    visibility: visible;
+  }
+}

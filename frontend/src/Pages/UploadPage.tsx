@@ -244,7 +244,7 @@ function UploadPage() {
             onChange={titleChangeHandler}
             onFocus={titleFocusHandler}
           />
-          {titleIsInvalid && <p className="text text-danger">Title is required</p>}
+          <Form.Label className={`${classes.error} ${titleIsInvalid ? classes.visible : ""}`}>Title is required</Form.Label>
         </FormGroup>
         <FormGroup>
           <Form.Label>Image</Form.Label>
@@ -257,7 +257,7 @@ function UploadPage() {
             onChange={imageChangeHandler}
             onFocus={imageFocusHandler}
           />
-          {imageIsInvalid && <p className="text text-danger">Image is required</p>}
+          <Form.Label className={`${classes.error} ${imageIsInvalid ? classes.visible : ""}`}>Image is required</Form.Label>
         </FormGroup>
         <FormGroup>
           <Form.Label>Description</Form.Label>
@@ -271,7 +271,7 @@ function UploadPage() {
             onChange={descriptionChangeHandler}
             onFocus={descriptionFocusHandler}
           />
-          {descriptionIsInvalid && <p className="text text-danger">Description is required</p>}
+          <Form.Label className={`${classes.error} ${descriptionIsInvalid ? classes.visible : ""}`}>Description is required</Form.Label>
         </FormGroup>
         <Button disabled={!getRawValidity(state.titleValidityState) || !getRawValidity(state.selectedImageValidityState) || !getRawValidity(state.descriptionValidityState)} className={classes.submit} type="submit">
           Submit

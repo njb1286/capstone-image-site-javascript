@@ -93,6 +93,7 @@ function UploadPage() {
   const submitHandler = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
+    // Note: this is just in case the user manually changes the button's disabled tag to false
     if (!state.titleValidityState.isValid || !state.descriptionValidityState.isValid || !state.selectedImageValidityState.isValid) {
       dispatch({ type: "SET_TOUCHED", payload: true });
       return;
@@ -105,7 +106,7 @@ function UploadPage() {
     event.preventDefault();
 
     let isValid = !!event.target.files!.length;
-    
+
 
     dispatch({
       type: "SET_IMAGE_VALIDITY_STATE", payload: {
@@ -213,11 +214,16 @@ function UploadPage() {
     });
   };
 
-  // Returns false if valid
+  // Returns false if valid. If fields are not touched, they are not invalid.
   const getInvalidity = (validity: typeof defaultValidityState): boolean => {
     if (!validity.touched) return false;
 
     return !validity.isValid;
+  }
+
+  // Returns true if valid. If fields are not touched, it returns invalid
+  const getRawValidity = (validity: typeof defaultValidityState): boolean => {
+    return validity.isValid && validity.touched;
   }
 
   const titleIsInvalid = getInvalidity(state.titleValidityState);
@@ -267,7 +273,7 @@ function UploadPage() {
           />
           {descriptionIsInvalid && <p className="text text-danger">Description is required</p>}
         </FormGroup>
-        <Button className={classes.submit} type="submit">
+        <Button disabled={!getRawValidity(state.titleValidityState) || !getRawValidity(state.selectedImageValidityState) || !getRawValidity(state.descriptionValidityState)} className={classes.submit} type="submit">
           Submit
         </Button>
       </Form>

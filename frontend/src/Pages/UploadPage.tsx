@@ -99,7 +99,10 @@ function UploadPage() {
       return;
     }
 
-    alert("Form is valid! 😊");
+    fetch(`${backendUrl}/form`, {
+      method: "POST",
+      body: handleFormData(),
+    });
   };
 
   const imageBlurHandler = (event: FocusEvent<HTMLInputElement>) => {
@@ -222,9 +225,7 @@ function UploadPage() {
   }
 
   // Returns true if valid. If fields are not touched, it returns invalid
-  const getRawValidity = (validity: typeof defaultValidityState): boolean => {
-    return validity.isValid && validity.touched;
-  }
+  const getRawValidity = (validity: typeof defaultValidityState) => validity.isValid && validity.touched;
 
   const titleIsInvalid = getInvalidity(state.titleValidityState);
   const imageIsInvalid = getInvalidity(state.selectedImageValidityState);
@@ -273,7 +274,16 @@ function UploadPage() {
           />
           <Form.Label className={`${classes.error} ${descriptionIsInvalid ? classes.visible : ""}`}>Description is required</Form.Label>
         </FormGroup>
-        <Button disabled={!getRawValidity(state.titleValidityState) || !getRawValidity(state.selectedImageValidityState) || !getRawValidity(state.descriptionValidityState)} className={classes.submit} type="submit">
+
+        <Button
+          disabled={
+            !getRawValidity(state.titleValidityState) ||
+            !getRawValidity(state.selectedImageValidityState) ||
+            !getRawValidity(state.descriptionValidityState)
+          }
+          className={classes.submit}
+          type="submit"
+        >
           Submit
         </Button>
       </Form>

@@ -3,10 +3,6 @@ import multer from "multer";
 
 import { Database } from "sqlite3";
 
-interface TextRequest extends express.Request {
-  body: string;
-}
-
 const db = new Database("database.sqlite");
 
 db.exec(`CREATE TABLE IF NOT EXISTS images (
@@ -20,18 +16,77 @@ const app = express();
 const upload = multer({ storage: multer.memoryStorage() });
 
 app.post("/api/form", upload.single("image"), (req, res) => {
-  console.log("Received title:", req.body.title);
-  console.log("Received description:", req.body.description);
-  console.log("Received file:", req.file?.buffer.toString("base64"));
+  const { title, description } = req.body;
+  const image = req.file?.buffer;
 
-  res.status(200).send("It worked!!!");
-})
+  const insertQuery = `INSERT INTO images (title, image, description) VALUES (?, ?, ?)`;
+  const values = [title, image, description];
 
-app.post("/api/sample", express.text(), (req: TextRequest, res) => {
-  console.log("Received request:", req.body);
+  db.run(insertQuery, values, function (err) {
+    if (err) {
+      console.error("Error inserting data:", err);
+      res.status(500).send("Error inserting data");
+      return;
+    }
 
-  res.status(201).send("It worked!!!");
+    console.log("Data inserted successfully");
+    res.status(200).send("Data inserted successfully");
+  });
 });
+
+interface Table {
+  id: number;
+  title: string;
+  description: string;
+  image: Blob;
+}
+
+app.get("/api/get-item", (req, res) => {
+  const selectQuery = `SELECT title, description, id FROM images where id = ?`;
+
+  if (!req.query.id) {
+    res.status(400).send("Missing required parameter: id");
+    return;
+  }
+
+  db.get(selectQuery, [req.query.id], (err, row) => {
+    if (err) {
+      res.status(500).send("Error getting data");
+      return;
+    }
+
+    if (!row) {
+      res.status(404).send("No data found");
+      return;
+    }
+
+    res.status(200).send(row);
+  });
+});
+
+app.get("/api/get-image", (req, res) => {
+  const selectQuery = `SELECT image FROM images where id = ?`;
+
+  if (!req.query.id) {
+    res.status(400).send("Missing required parameter: id");
+    return;
+  }
+
+  db.get(selectQuery, [req.query.id], (err, row: Table) => {
+    if (err) {
+      res.status(500).send("Error getting data");
+      return;
+    }
+
+    if (!row) {
+      res.status(404).send("No data found");
+      return;
+    }
+
+    res.contentType("image/png");
+    res.send(row.image);
+  });
+})
 
 app.listen(8080, () => {
   console.log("Listening on port 8080");

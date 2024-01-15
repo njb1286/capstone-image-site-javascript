@@ -3,8 +3,7 @@ import { Reducer, configureStore } from "@reduxjs/toolkit";
 export type ImageItem = {
   title: string;
   description: string;
-  image: string;
-  id: string;
+  id: number;
   date: string;
 };
 

@@ -3,7 +3,6 @@ import { ImageActions, ImageItem } from "./images-store";
 
 // Redux thunk action creator
 export function getImageItems() {
-
   return async function (dispatch: Dispatch<ImageActions>) {
     // Infers method as GET
     const response = await fetch("http://localhost:3000/api/get");

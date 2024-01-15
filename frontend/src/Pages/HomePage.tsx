@@ -1,22 +1,13 @@
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 
 import classes from "./HomePage.module.scss";
 
-import { ImageState, imageStore } from "../store/images-store";
-import { getImageItems } from "../store/images-actions";
+import { ImageState } from "../store/images-store";
 
 import Card from "../Components/Card";
 import SearchBar from "../Components/SearchBar";
 
 function Home() {
-  const dispatch = useDispatch<typeof imageStore.dispatch>();
-
-  useEffect(() => {
-
-    dispatch(getImageItems());
-  }, [dispatch]);
-
   const searchValue = useSelector((state: ImageState) => state.searchValue);
 
   const isLoadingState = useSelector((state: ImageState) => state.isLoadingImages);

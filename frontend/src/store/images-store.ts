@@ -27,6 +27,7 @@ type Actions = {
   SET_IMAGE_ITEMS: ImageItem[];
   SET_LOADING_IMAGES: boolean;
   ADD_IMAGE_ITEM: ImageItem;
+  DELETE_IMAGE_ITEM: number;
 }
 
 export type ImageActions = {
@@ -65,6 +66,12 @@ const imagesReducer: Reducer<ImageState, ImageActions> = (state = initialState, 
       return {
         ...state,
         imageItems: [...state.imageItems, action.payload],
+      }
+
+    case "DELETE_IMAGE_ITEM":
+      return {
+        ...state,
+        imageItems: state.imageItems.filter((image) => image.id !== action.payload),
       }
 
     default:

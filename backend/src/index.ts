@@ -95,6 +95,26 @@ app.get("/api/get-image", (req, res) => {
   });
 })
 
+app.get("/api/delete", (req, res) => {
+  const id = req.query.id;
+
+  if (!id) {
+    res.status(400).send("No id provided");
+    return;
+  }
+
+  const deleteQuery = `DELETE FROM images WHERE id = ?`;
+
+  db.run(deleteQuery, [id], (err) => {
+    if (err) {
+      res.status(500).send("Error deleting data");
+      return;
+    }
+
+    res.status(200).send("Data deleted successfully");
+  })
+});
+
 app.listen(8080, () => {
   console.log("Listening on port 8080");
 });

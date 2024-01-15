@@ -1,9 +1,10 @@
-import { useLocation } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import { CardBody } from "react-bootstrap";
 import classes from "./ContentPage.module.scss";
-import { ImageState } from "../store/images-store";
+import { ImageActions, ImageState } from "../store/images-store";
 import { backendUrl } from "../store/backend-url";
+import { Dispatch } from "@reduxjs/toolkit";
 
 const errorComponent = <h2>Hmmm... we couldn't find that image...</h2>;
 
@@ -13,6 +14,8 @@ function ContentPage() {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const id = searchParams.get("id");
+  const navigate = useNavigate();
+  const dispatch = useDispatch<Dispatch<ImageActions>>();
 
   if (imageIsLoading) {
     return <p>Loading...</p>;
@@ -28,6 +31,17 @@ function ContentPage() {
     return errorComponent;
   }
 
+  const handleDelete = async () => {
+    await fetch(`${backendUrl}/delete?id=${id}`);
+
+    dispatch({
+      type: "DELETE_IMAGE_ITEM",
+      payload: +id,
+    })
+
+    navigate("/");
+  }
+
   const { title, description } = imageData;
 
   return (
@@ -40,6 +54,8 @@ function ContentPage() {
         <div className={`col-md-6 ${classes.col}`}>
           <img alt={title} src={`${backendUrl}/get-image?id=${id}`} className="card-img" />
         </div>
+
+        <div onClick={handleDelete}>Delete</div>
       </CardBody>
     </CardBody>
   );

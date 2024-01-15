@@ -7,7 +7,7 @@ import { ImageState } from "../store/images-store";
 const errorComponent = <h2>Hmmm... we couldn't find that image...</h2>;
 
 function ContentPage() {
-  const imagesData = useSelector((state: ImageState) => state.datapacks);
+  const imagesData = useSelector((state: ImageState) => state.imageItems);
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const id = searchParams.get("id");
@@ -22,7 +22,7 @@ function ContentPage() {
     return errorComponent;
   }
 
-  const { title, description, img } = imageData;
+  const { title, description, image: img } = imageData;
 
   return (
     <CardBody className={classes.group}>

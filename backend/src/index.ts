@@ -9,7 +9,8 @@ db.exec(`CREATE TABLE IF NOT EXISTS images (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   title TEXT NOT NULL,
   image BLOB NOT NULL,
-  description TEXT NOT NULL
+  description TEXT NOT NULL,
+  date DATETIME DEFAULT CURRENT_TIMESTAMP
 );`);
 
 const app = express();
@@ -24,12 +25,10 @@ app.post("/api/form", upload.single("image"), (req, res) => {
 
   db.run(insertQuery, values, function (err) {
     if (err) {
-      console.error("Error inserting data:", err);
       res.status(500).send("Error inserting data");
       return;
     }
 
-    console.log("Data inserted successfully");
     res.status(200).send("Data inserted successfully");
   });
 });

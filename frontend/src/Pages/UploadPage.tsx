@@ -2,6 +2,8 @@ import { ChangeEvent, FocusEvent, FormEvent, useReducer } from "react";
 import classes from "./UploadPage.module.scss";
 import { Button, Form, FormControl, FormGroup } from "react-bootstrap";
 import { backendUrl } from "../store/backend-url";
+import { useNavigate } from "react-router";
+import { useUpdateImageItems } from "../hooks/useUpdateImageItems";
 
 type Actions = {
   SET_SELECTED_IMAGE: File | null;
@@ -13,6 +15,7 @@ type Actions = {
   SET_IMAGE_VALIDITY_STATE: typeof defaultValidityState;
 
   SET_TOUCHED: boolean;
+  SET_IS_SUBMITTING: boolean;
 }
 
 type Action = {
@@ -38,6 +41,7 @@ const initialState = {
   selectedImageValidityState: defaultValidityState,
 
   attemptedSubmit: false,
+  isSubmitting: false,
 };
 
 type State = typeof initialState;
@@ -72,6 +76,11 @@ function reducer(state: State, action: Action): State {
           touched: action.payload,
         },
       }
+    case "SET_IS_SUBMITTING":
+      return {
+        ...state,
+        isSubmitting: action.payload,
+      }
     default:
       return state;
   }
@@ -79,6 +88,8 @@ function reducer(state: State, action: Action): State {
 
 function UploadPage() {
   const [state, dispatch] = useReducer(reducer, initialState);
+  const navigate = useNavigate();
+  const updateImages = useUpdateImageItems();
 
   const handleFormData = () => {
     const formData = new FormData();
@@ -90,7 +101,7 @@ function UploadPage() {
     return formData;
   }
 
-  const submitHandler = (event: FormEvent<HTMLFormElement>) => {
+  const submitHandler = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     // Note: this is just in case the user manually changes the button's disabled tag to false
@@ -99,10 +110,15 @@ function UploadPage() {
       return;
     }
 
-    fetch(`${backendUrl}/form`, {
+    dispatch({ type: "SET_IS_SUBMITTING", payload: true });
+
+    await fetch(`${backendUrl}/form`, {
       method: "POST",
       body: handleFormData(),
     });
+
+    updateImages();
+    navigate("/");
   };
 
   const imageBlurHandler = (event: FocusEvent<HTMLInputElement>) => {
@@ -277,9 +293,9 @@ function UploadPage() {
 
         <Button
           disabled={
-            !getRawValidity(state.titleValidityState) ||
-            !getRawValidity(state.selectedImageValidityState) ||
-            !getRawValidity(state.descriptionValidityState)
+            (!getRawValidity(state.titleValidityState) ||
+              !getRawValidity(state.selectedImageValidityState) ||
+              !getRawValidity(state.descriptionValidityState)) || state.isSubmitting
           }
           className={classes.submit}
           type="submit"

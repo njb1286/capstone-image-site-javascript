@@ -4,20 +4,18 @@ import Header from "./Components/Header";
 import classes from "./App.module.scss";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import HomePage from "./Pages/HomePage";
-import { useDispatch } from "react-redux";
-import { imageStore } from "./store/images-store";
 import ContentPage from "./Pages/ContentPage";
 import AboutPage from "./Pages/AboutPage";
 import UploadPage from "./Pages/UploadPage";
-import { getImageItems } from "./store/images-actions";
 import { useEffect } from "react";
+import { useUpdateImageItems } from "./hooks/useUpdateImageItems";
 
 function App() {
-  const dispatch = useDispatch<typeof imageStore.dispatch>();
+  const updateImageItems = useUpdateImageItems();
 
   useEffect(() => {    
-    dispatch(getImageItems());
-  }, [dispatch]);
+    updateImageItems();
+  }, [updateImageItems]);
 
   return (
     <BrowserRouter>

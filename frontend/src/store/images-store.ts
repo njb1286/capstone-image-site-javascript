@@ -1,11 +1,18 @@
 import { Reducer, configureStore } from "@reduxjs/toolkit";
 
-export type ImageItem = {
-  title: string;
-  description: string;
-  id: number;
-  date: string;
-};
+export class ImageItem {
+  public title: string;
+  public description: string;
+  public id: number;
+  public date: string;
+
+  public constructor(title: string, description: string, id: number, date: string) {
+    this.title = title;
+    this.description = description;
+    this.id = id;
+    this.date = date;
+  }
+}
 
 const initialState = {
   imageItems: [] as ImageItem[],
@@ -19,6 +26,7 @@ type Actions = {
   SET_SEARCH_VALUE: string;
   SET_IMAGE_ITEMS: ImageItem[];
   SET_LOADING_IMAGES: boolean;
+  ADD_IMAGE_ITEM: ImageItem;
 }
 
 export type ImageActions = {
@@ -51,6 +59,12 @@ const imagesReducer: Reducer<ImageState, ImageActions> = (state = initialState, 
         ...state,
         isLoadingImages: action.payload,
 
+      }
+
+    case "ADD_IMAGE_ITEM":
+      return {
+        ...state,
+        imageItems: [...state.imageItems, action.payload],
       }
 
     default:

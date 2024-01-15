@@ -41,11 +41,24 @@ interface Table {
   image: Blob;
 }
 
-app.get("/api/get-item", (req, res) => {
-  const selectQuery = `SELECT title, description, id FROM images where id = ?`;
+app.get("/api/get", (req, res) => {
+  const selectQuery = `SELECT id, title, description FROM images where id = ?`;
 
   if (!req.query.id) {
-    res.status(400).send("Missing required parameter: id");
+    db.all("SELECT id, title, description FROM images", (err: unknown, row: Table) => {
+      if (err) {
+        res.status(500).send("Error getting data");
+        return;
+      }
+
+      if (!row) {
+        res.status(200).send("No data found");
+        return;
+      }
+
+      res.status(200).send(row);
+    })
+
     return;
   }
 
@@ -66,11 +79,6 @@ app.get("/api/get-item", (req, res) => {
 
 app.get("/api/get-image", (req, res) => {
   const selectQuery = `SELECT image FROM images where id = ?`;
-
-  if (!req.query.id) {
-    res.status(400).send("Missing required parameter: id");
-    return;
-  }
 
   db.get(selectQuery, [req.query.id], (err, row: Table) => {
     if (err) {

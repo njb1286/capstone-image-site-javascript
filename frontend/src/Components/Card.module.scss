@@ -17,6 +17,14 @@
   .image {
     object-fit: cover;
     -webkit-user-drag: none;
+    height: 100%;
+    object-position: center;
+  }
+
+  .body-content {
+    display: grid;
+    grid-template-rows: 2fr 1fr;
+    height: 100%;
   }
 }
 

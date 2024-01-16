@@ -1,12 +1,17 @@
-import { ChangeEvent, ComponentProps, Reducer, useReducer } from "react"
+import { ChangeEvent, Reducer, useReducer } from "react"
 import { ActionCreator } from "../types";
-import { FormControl } from "react-bootstrap";
+import { FormControl, FormControlProps } from "react-bootstrap";
 
 type Action<TFieldValue> = ActionCreator<{
   SET_TOUCHED: boolean;
   SET_IS_VALID: boolean;
   SET_VALUE: TFieldValue;
 }>;
+
+type ValidInputElements = {
+  input: HTMLInputElement;
+  textarea: HTMLTextAreaElement;
+}
 
 type State<TFieldValue> = ReturnType<typeof getInitialState<TFieldValue>>;
 
@@ -31,13 +36,10 @@ function formFieldReducer<TFieldValue>(state: State<TFieldValue>, action: Action
   }
 }
 
-// Exclude unnecessary props from the FormControl component
-type FieldInputProps = Omit<Omit<Omit<ComponentProps<"input">, "ref">, "value">, "size">;
-
 // Documentation for hovering over the useFormField hook
 
 /**
- * 
+ * @param InputElement The component to use for the form field
  * @param inputProps The props to pass to the FormControl component
  * @param initialState Initial state
  * @param selectChangeableValue A function that picks the value from the change event
@@ -49,19 +51,20 @@ type FieldInputProps = Omit<Omit<Omit<ComponentProps<"input">, "ref">, "value">,
  * - A boolean that updates with each keystroke to indicate whether the form field is valid after the keystroke.
  */
 
-export function useFormField<TFieldValue>(
-  inputProps: FieldInputProps,
+export function useFormField<TFieldValue, TElementName extends keyof ValidInputElements = "input">(
+  InputElement: typeof FormControl,
+  inputProps: FormControlProps & { as?: TElementName },
   initialState: {
     touched: boolean;
     isValid: boolean;
     value: TFieldValue;
   },
-  selectChangeableValue: (event: ChangeEvent<HTMLInputElement>) => TFieldValue,
+  selectChangeableValue: (event: ChangeEvent<ValidInputElements[TElementName]>) => TFieldValue,
   checkValidity: (value: TFieldValue) => boolean,
 ) {
   const [state, dispatch] = useReducer<Reducer<State<TFieldValue>, Action<TFieldValue>>>(formFieldReducer, initialState);
 
-  const changeHandler = (event: ChangeEvent<HTMLInputElement>) => {
+  const changeHandler = (event: ChangeEvent<ValidInputElements[TElementName]>) => {
     dispatch({
       type: "SET_VALUE",
       payload: selectChangeableValue(event),
@@ -94,13 +97,14 @@ export function useFormField<TFieldValue>(
     });
   }
 
-  const component = <FormControl
-    {...inputProps}
+  const component = <InputElement
     onBlur={blurHandler}
     onFocus={focusHandler}
     onChange={changeHandler}
     isValid={state.isValid && state.touched}
     isInvalid={!state.isValid && state.touched}
+    {...inputProps}
+    as={inputProps.as as keyof ValidInputElements}
   />;
 
   return [component, checkValidity(state.value), state.value, setTouched] as const;

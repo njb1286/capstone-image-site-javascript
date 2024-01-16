@@ -1,6 +1,6 @@
 import { FormEvent, useState } from "react";
 import classes from "./UploadPage.module.scss";
-import { Button, Form, FormGroup } from "react-bootstrap";
+import { Button, Form, FormControl, FormGroup } from "react-bootstrap";
 import { backendUrl } from "../store/backend-url";
 import { useNavigate } from "react-router";
 import { useUpdateImageItems } from "../hooks/useUpdateImageItems";
@@ -50,9 +50,9 @@ function UploadPage() {
     }
   }
 
-  const [titleComponent, titleValid, title, setTitleTouched] = useFormField({}, makeInitialState(""), event => event.target.value, value => value.length > 0);
-  const [descriptionComponent, descriptionValid, description, setDescriptionTouched] = useFormField({}, makeInitialState(""), event => event.target.value, value => value.length > 0);
-  const [imageComponent, imageValid, image, setImageTouched] = useFormField({ type: "file" }, makeInitialState(null as File | null), event => event.target.files![0], value => !!value);
+  const [titleComponent, titleValid, title, setTitleTouched] = useFormField(FormControl, {as: "input"}, makeInitialState(""), event => event.target.value, value => value.length > 0);
+  const [descriptionComponent, descriptionValid, description, setDescriptionTouched] = useFormField(FormControl, {as: "textarea"}, makeInitialState(""), event => event.target.value, value => value.length > 0);
+  const [imageComponent, imageValid, image, setImageTouched] = useFormField(FormControl, { type: "file" }, makeInitialState(null as File | null), event => (event.target as HTMLInputElement).files![0], value => !!value);
 
   const setTouchedEvents = [
     setTitleTouched,

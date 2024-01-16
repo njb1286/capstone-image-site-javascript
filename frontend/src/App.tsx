@@ -9,6 +9,7 @@ import AboutPage from "./Pages/AboutPage";
 import UploadPage from "./Pages/UploadPage";
 import { useEffect } from "react";
 import { useUpdateImageItems } from "./hooks/useUpdateImageItems";
+import UpdatePage from "./Pages/UpdatePage";
 
 function App() {
   const updateImageItems = useUpdateImageItems();
@@ -29,6 +30,7 @@ function App() {
             <Route element={<AboutPage />} path="/about" />
             <Route element={<ContentPage />} path="/views/*" />
             <Route element={<UploadPage />} path="/upload" />
+            <Route element={<UpdatePage />} path="/update" />
           </Routes>
         </div>
 

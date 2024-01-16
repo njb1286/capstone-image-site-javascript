@@ -6,7 +6,7 @@ import { ImageActions, ImageState } from "../store/images-store";
 import { backendUrl } from "../store/backend-url";
 import { Dispatch } from "@reduxjs/toolkit";
 
-const errorComponent = <h2>Hmmm... we couldn't find that image...</h2>;
+export const errorComponent = <h2>Hmmm... we couldn't find that image...</h2>;
 
 function ContentPage() {
   const imagesData = useSelector((state: ImageState) => state.imageItems);
@@ -46,6 +46,10 @@ function ContentPage() {
     handleReturnHome();
   }
 
+  const handleUpdate = () => {
+    navigate(`/update?id=${id}`);
+  }
+
   const { title, description } = imageData;
 
   return (
@@ -53,8 +57,7 @@ function ContentPage() {
 
       <CardBody className={`row ${classes.body}`}>
         <ButtonGroup className={classes.buttons}>
-          <button className="btn btn-lg btn-primary" onClick={handleReturnHome}>Back</button>
-          <button className="btn btn-lg btn-warning" onClick={() => navigate("/")}>Edit</button>
+          <button className="btn btn-lg btn-warning" onClick={handleUpdate}>Edit</button>
           <button className="btn btn-lg btn-danger" onClick={handleDelete}>Delete</button>
         </ButtonGroup>
         <div className={`col-md-5 ${classes.info} ${classes.col}`}>

@@ -53,7 +53,7 @@ function formFieldReducer<TFieldValue>(state: State<TFieldValue>, action: Action
 
 export function useFormField<TFieldValue, TElementName extends keyof ValidInputElements = "input">(
   InputElement: typeof FormControl,
-  inputProps: FormControlProps & { as?: TElementName },
+  inputProps: FormControlProps & { as?: TElementName } & { [key: string]: any },
   initialState: {
     touched: boolean;
     isValid: boolean;

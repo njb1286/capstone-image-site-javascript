@@ -86,7 +86,7 @@ export function useFormField<TFieldValue, TElementName extends keyof ValidInputE
 
     dispatch({
       type: "SET_IS_VALID",
-      payload: !!errorMessage,
+      payload: !errorMessage,
     });
 
     if (typeof errorMessage !== typeof state.errorMessage && errorMessage !== state.errorMessage) {
@@ -116,8 +116,8 @@ export function useFormField<TFieldValue, TElementName extends keyof ValidInputE
       onBlur={blurHandler}
       onFocus={focusHandler}
       onChange={changeHandler}
-      isValid={!state.isValid && state.touched}
-      isInvalid={!!state.isValid && state.touched}
+      isValid={state.isValid && state.touched}
+      isInvalid={!state.isValid && state.touched}
       {...inputProps}
 
       /*
@@ -140,9 +140,11 @@ export function useFormField<TFieldValue, TElementName extends keyof ValidInputE
       */
       as={inputProps.as as keyof ValidInputElements}
     />
-    <Form.Label className="text-danger">{state.errorMessage}</Form.Label>
+    <Form.Label style={{
+      visibility: state.touched && !state.isValid ? "visible" : "hidden",
+    }} className="text-danger">{state.errorMessage ?? "valid"}</Form.Label>
   </>;
-  
+
 
   return [component, !checkValidity(state.value), state.value, setTouched] as const;
 }

@@ -104,6 +104,25 @@ export function useFormField<TFieldValue, TElementName extends keyof ValidInputE
     isValid={state.isValid && state.touched}
     isInvalid={!state.isValid && state.touched}
     {...inputProps}
+
+    /*
+      With this cast, I kind of just gave up trying to satisfy the type checker.
+      I ground and ground and ground, but I couldn't get it to work. However, I
+      still managed to get the exact behavior I wanted, so ... yeah.
+      
+      My problem was that the as prop is a key of ValidInputElements, so it
+      should be a union of strings. However, the type checker seemed to think
+      it wasn't just a union of strings, but that is what it is.
+
+      The as prop on the FormControl Bootstrap component is a union of string
+      literals that represent the valid HTML elements that can be used to get
+      the type of the element. I used generics so that I wouldn't have a union
+      (e.g. HTMLInputElement | HTMLTextAreaElement) and instead just have the
+      type of the element that was passed in as the generic parameter:
+
+      T = HTMLInputElement, the type is HTMLInputElement
+      T = HTMLTextAreaElement, the type is HTMLTextAreaElement
+    */
     as={inputProps.as as keyof ValidInputElements}
   />;
 

@@ -2,6 +2,7 @@
 
 .group {
   @include no-user-select();
+  width: 100%;
 
   align-self: start;
 

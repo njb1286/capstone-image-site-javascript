@@ -2,13 +2,20 @@
 
 .card {
   @include no-user-select();
-
   margin: 2rem;
   cursor: pointer;
-  height: 35rem;
   text-decoration: none;
-
   transition: .1s ease;
+  display: grid;
+  grid-template-rows: 10rem 2fr 1fr;
+  
+  .header {
+    display: grid;
+
+    h2 {
+      align-self: center;
+    }
+  }
 
   &:hover {
     transform: scale(1.05);
@@ -21,15 +28,11 @@
     object-position: center;
   }
 
-  .body-content {
-    display: grid;
-    grid-template-rows: 2fr 1fr;
-    height: 100%;
+  p {
+    font-size: 1.5rem;
   }
-}
 
-@media (max-width: $media-width) {
-  .card {
+  @media (max-width: $media-width) {
     p {
       font-size: 1.5rem;
     }

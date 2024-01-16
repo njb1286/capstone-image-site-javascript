@@ -87,6 +87,13 @@ export function useFormField<TFieldValue>(
     });
   }
 
+  const setTouched = (touched: boolean) => {
+    dispatch({
+      type: "SET_TOUCHED",
+      payload: touched,
+    });
+  }
+
   const component = <FormControl
     {...inputProps}
     onBlur={blurHandler}
@@ -96,5 +103,5 @@ export function useFormField<TFieldValue>(
     isInvalid={!state.isValid && state.touched}
   />;
 
-  return [component, state.value, state.isValid && state.touched, checkValidity(state.value)] as const;
+  return [component, checkValidity(state.value), state.value, setTouched] as const;
 }

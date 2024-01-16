@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { CardBody } from "react-bootstrap";
+import { ButtonGroup, CardBody } from "react-bootstrap";
 import classes from "./ContentPage.module.scss";
 import { ImageActions, ImageState } from "../store/images-store";
 import { backendUrl } from "../store/backend-url";
@@ -31,6 +31,10 @@ function ContentPage() {
     return errorComponent;
   }
 
+  const handleReturnHome = () => {
+    navigate("/");
+  }
+
   const handleDelete = async () => {
     await fetch(`${backendUrl}/delete?id=${id}`);
 
@@ -39,23 +43,27 @@ function ContentPage() {
       payload: +id,
     })
 
-    navigate("/");
+    handleReturnHome();
   }
 
   const { title, description } = imageData;
 
   return (
     <CardBody className={classes.group}>
+
       <CardBody className={`row ${classes.body}`}>
-        <div className={`col-md-6 ${classes.info} ${classes.col}`}>
+        <ButtonGroup className={classes.buttons}>
+          <button className="btn btn-lg btn-primary" onClick={handleReturnHome}>Back</button>
+          <button className="btn btn-lg btn-warning" onClick={() => navigate("/")}>Edit</button>
+          <button className="btn btn-lg btn-danger" onClick={handleDelete}>Delete</button>
+        </ButtonGroup>
+        <div className={`col-md-5 ${classes.info} ${classes.col}`}>
           <h1 className="card-title text-center">{title}</h1>
           <p className="card-text">{description}</p>
         </div>
-        <div className={`col-md-6 ${classes.col}`}>
+        <div className={`col-md-7 ${classes.col}`}>
           <img alt={title} src={`${backendUrl}/get-image?id=${id}`} className="card-img" />
         </div>
-
-        <div onClick={handleDelete}>Delete</div>
       </CardBody>
     </CardBody>
   );

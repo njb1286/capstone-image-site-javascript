@@ -115,6 +115,29 @@ app.get("/api/delete", (req, res) => {
   })
 });
 
+app.post("/api/update", upload.single("image"), (req, res) => {
+
+  const { id, title, description } = req.body;
+  const image = req.file?.buffer;
+
+  if (!id) {
+    res.status(400).send("No id provided");
+    return;
+  }
+
+  const updateQuery = `UPDATE images SET title = ?, image = ?, description = ? WHERE id = ?`;
+  const values = [title, image, description, id];
+
+  db.run(updateQuery, values, (err) => {
+    if (err) {
+      res.status(500).send("Error updating data");
+      return;
+    }
+
+    res.status(200).send("Data updated successfully");
+  });
+});
+
 app.listen(8080, () => {
   console.log("Listening on port 8080");
 });

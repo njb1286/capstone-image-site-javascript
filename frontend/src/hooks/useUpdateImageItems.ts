@@ -2,7 +2,7 @@ import { useDispatch } from "react-redux";
 import { getImageItems } from "../store/images-actions";
 import { imageStore } from "../store/images-store";
 
-export function useUpdateImageItems() {
+export const useUpdateImageItems = () => {
   const dispatch = useDispatch<typeof imageStore.dispatch>();
   
   const updateImageItems = () => {

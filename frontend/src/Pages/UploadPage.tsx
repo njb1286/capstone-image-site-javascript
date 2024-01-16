@@ -4,6 +4,7 @@ import { Button, Form, FormControl, FormGroup } from "react-bootstrap";
 import { backendUrl } from "../store/backend-url";
 import { useNavigate } from "react-router";
 import { useUpdateImageItems } from "../hooks/useUpdateImageItems";
+import { useFormField } from "../hooks/useFormField";
 
 type Actions = {
   SET_SELECTED_IMAGE: File | null;
@@ -86,35 +87,41 @@ function reducer(state: State, action: Action): State {
   }
 }
 
-function UploadPage() {
+// TODO: make this component more reusable
+
+type UploadPageProps = {
+  onSubmit: (title: string, description: string, image: File) => void;
+}
+
+function UploadPage(props: Readonly<UploadPageProps>) {
   const [state, dispatch] = useReducer(reducer, initialState);
   const navigate = useNavigate();
   const updateImages = useUpdateImageItems();
-
-  const handleFormData = () => {
-    const formData = new FormData();
-
-    formData.append("image", state.selectedImage!);
-    formData.append("title", state.title);
-    formData.append("description", state.description);
-
-    return formData;
-  }
 
   const submitHandler = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     // Note: this is just in case the user manually changes the button's disabled tag to false
-    if (!state.titleValidityState.isValid || !state.descriptionValidityState.isValid || !state.selectedImageValidityState.isValid) {
+    if (
+      !state.titleValidityState.isValid ||
+      !state.descriptionValidityState.isValid ||
+      !state.selectedImageValidityState.isValid
+    ) {
       dispatch({ type: "SET_TOUCHED", payload: true });
       return;
     }
 
     dispatch({ type: "SET_IS_SUBMITTING", payload: true });
 
+    const formData = new FormData();
+
+    formData.append("image", state.selectedImage!);
+    formData.append("title", state.title);
+    formData.append("description", state.description);
+
     await fetch(`${backendUrl}/form`, {
       method: "POST",
-      body: handleFormData(),
+      body: formData,
     });
 
     updateImages();
@@ -290,7 +297,6 @@ function UploadPage() {
           />
           <Form.Label className={`${classes.error} ${descriptionIsInvalid ? classes.visible : ""}`}>Description is required</Form.Label>
         </FormGroup>
-
         <Button
           disabled={
             (!getRawValidity(state.titleValidityState) ||

@@ -1,4 +1,5 @@
 import { Reducer, configureStore } from "@reduxjs/toolkit";
+import { ActionCreator } from "../types";
 
 export class ImageItem {
   public title: string;
@@ -30,12 +31,7 @@ type Actions = {
   DELETE_IMAGE_ITEM: number;
 }
 
-export type ImageActions = {
-  [K in keyof Actions]: {
-    type: K;
-    payload: Actions[K];
-  }
-}[keyof Actions];
+export type ImageActions = ActionCreator<Actions>;
 
 const imagesReducer: Reducer<ImageState, ImageActions> = (state = initialState, action) => {
   if (!state) {

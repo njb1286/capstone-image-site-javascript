@@ -3,13 +3,14 @@ import { ActionCreator } from "../../types";
 
 export type ModalAction = ActionCreator<{
   SET_MODAL_VISIBLE: boolean;
-  SET_MODAL_DATA: Pick<ModalState, "title" | "content">;
+  SET_MODAL_DATA: Pick<ModalState, "title" | "content" | "renderButtons">;
 }>;
 
 const initialState = {
   visible: false,
   title: "",
   content: "",
+  renderButtons: (_onClose: () => void) => <></>
 }
 
 export type ModalState = typeof initialState;

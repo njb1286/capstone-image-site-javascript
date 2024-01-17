@@ -1,10 +1,11 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { ButtonGroup, CardBody } from "react-bootstrap";
+import { Button, ButtonGroup, CardBody } from "react-bootstrap";
 import classes from "./ContentPage.module.scss";
 import { ImageActions } from "../store/images/images-store";
 import { backendUrl } from "../store/backend-url";
 import { StoreState } from "../store/combined-stores";
+import { useModal } from "../hooks/useModal";
 
 export const errorComponent = <h2>Hmmm... we couldn't find that image...</h2>;
 
@@ -16,6 +17,19 @@ function ContentPage() {
   const id = searchParams.get("id");
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  const setDeleteModalIsVisible = useModal("Delete Image", "Are you sure you want to delete this image?", (closeHandler) => {
+    return (
+      <>
+        <Button className="btn btn-lg btn-warning" onClick={closeHandler}>Cancel</Button>
+        <Button className="btn btn-lg btn-danger" onClick={() => {
+          handleDeleteAction();
+          closeHandler();
+        }}>Delete</Button>
+      </>
+    );
+  
+  });
 
   if (imageIsLoading) {
     return <p>Loading...</p>;
@@ -35,7 +49,7 @@ function ContentPage() {
     navigate("/");
   }
 
-  const handleDelete = async () => {
+  const handleDeleteAction = async () => {
     await fetch(`${backendUrl}/delete?id=${id}`);
 
     dispatch<ImageActions>({
@@ -44,6 +58,10 @@ function ContentPage() {
     })
 
     handleReturnHome();
+  }
+
+  const handleDeleteBtnClick = () => {
+    setDeleteModalIsVisible(true);
   }
 
   const handleUpdate = () => {
@@ -58,7 +76,7 @@ function ContentPage() {
       <CardBody className={`row ${classes.body}`}>
         <ButtonGroup className={classes.buttons}>
           <button className="btn btn-lg btn-warning" onClick={handleUpdate}>Edit</button>
-          <button className="btn btn-lg btn-danger" onClick={handleDelete}>Delete</button>
+          <button className="btn btn-lg btn-danger" onClick={handleDeleteBtnClick}>Delete</button>
         </ButtonGroup>
         <div className={`col-md-5 ${classes.info} ${classes.col}`}>
           <h1 className="card-title text-center">{title}</h1>

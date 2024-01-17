@@ -13,7 +13,6 @@ import UpdatePage from "./Pages/UpdatePage";
 import { useSelector } from "react-redux";
 import { StoreState } from "./store/combined-stores";
 import OverlayModal from "./Components/OverlayModal";
-import { Button } from "react-bootstrap";
 
 function App() {
   const updateImageItems = useUpdateImageItems();
@@ -26,14 +25,7 @@ function App() {
 
   return (
     <BrowserRouter>
-      <OverlayModal {...modalState} renderButtons={(handleClose) => {
-        return (
-          <>
-            <Button className="btn btn-primary">Save</Button>
-            <Button className="btn btn-secondary" onClick={handleClose}>Close</Button>
-          </>
-        );
-      }} />
+      <OverlayModal {...modalState} />
 
       <div className={classes["column-wrapper"]}>
         <div className={classes.column}>

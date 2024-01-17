@@ -1,8 +1,8 @@
 import { Dispatch } from "@reduxjs/toolkit";
 import { useDispatch } from "react-redux";
-import { ModalAction } from "../store/modal/modal-store";
+import { ModalAction, ModalState } from "../store/modal/modal-store";
 
-export const useModal = (title: string, content: string) => {
+export const useModal = (title: string, content: string, renderButtons: ModalState["renderButtons"]) => {
   const dispatch = useDispatch<Dispatch<ModalAction>>();
 
   const setVisible = (payload: boolean) => {
@@ -10,7 +10,8 @@ export const useModal = (title: string, content: string) => {
       type: "SET_MODAL_DATA",
       payload: {
         title,
-        content
+        content,
+        renderButtons,
       }
     })
 
@@ -20,5 +21,5 @@ export const useModal = (title: string, content: string) => {
     });
   }
 
-  return [setVisible] as const;
+  return setVisible;
 }

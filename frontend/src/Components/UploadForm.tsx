@@ -143,7 +143,7 @@ function UploadForm(props: Readonly<UploadFormProps>) {
             Submit
           </Button>
 
-          {props.updating && <Button className={`${classes.btn} btn-warning`} type="button" onClick={() => navigate(`/views?id=${props.id!}`)}>Return</Button>}
+          {props.updating && <Button className={`${classes.btn} btn-danger`} type="button" onClick={() => navigate(`/views?id=${props.id!}`)}>Cancel</Button>}
         </ButtonGroup>
       </Form>
     </div>

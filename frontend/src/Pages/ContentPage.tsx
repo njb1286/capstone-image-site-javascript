@@ -27,7 +27,7 @@ function ContentPage() {
         }}>Delete</Button>
       </>
     );
-  
+
   });
 
   if (imageIsLoading) {
@@ -69,7 +69,7 @@ function ContentPage() {
 
   const { title, description } = imageData;
 
-  const splitDescription = <p>{description.split("\n").map((item, index) => <>{item} <br key={`${item}__${index}`} /></>)}</p>;
+  const splitDescription = description.split("\n").map((item, index) => <p key={`${item}__${index}`}>{item} <br /></p>);
 
   return (
     <CardBody className={classes.group}>
@@ -80,13 +80,11 @@ function ContentPage() {
           <button className="btn btn-lg btn-warning" onClick={handleUpdate}>Edit</button>
           <button className="btn btn-lg btn-danger" onClick={handleDeleteBtnClick}>Delete</button>
         </ButtonGroup>
-        <div className={`col-md-5 ${classes.info} ${classes.col}`}>
-          <h1 className="card-title text-center">{title}</h1>
-          {/* <p className="card-text">{description}</p> */}
-          {splitDescription}
-        </div>
-        <div className={`col-md-7 ${classes.col}`}>
+
+        <div className={`${classes.info} ${classes.col}`}>
           <img alt={title} src={`${backendUrl}/get-image?id=${id}`} className="card-img" />
+          <h1 className="card-title text-center">{title}</h1>
+          {splitDescription}
         </div>
       </CardBody>
     </CardBody>

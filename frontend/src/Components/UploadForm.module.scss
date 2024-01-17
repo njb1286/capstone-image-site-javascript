@@ -14,7 +14,9 @@
 }
 
 @media (max-width: $media-width) {
-  .upload-forms {
+  .upload-form {
+    padding: 2rem;
+
     label {
       font-size: 2rem;
     }

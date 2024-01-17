@@ -7,7 +7,7 @@
   text-decoration: none;
   transition: .1s ease;
   display: grid;
-  grid-template-rows: 10rem 2fr 1fr;
+  grid-template-rows: 1fr 2fr;
   
   .header {
     display: grid;
@@ -21,20 +21,18 @@
     transform: scale(1.05);
   }
 
-  .image {
-    object-fit: cover;
-    -webkit-user-drag: none;
-    height: 100%;
-    object-position: center;
-  }
+  .image-wrapper {
+    display: grid;
+    background-color: var(--bs-gray-400);
 
-  p {
-    font-size: 1.5rem;
-  }
-
-  @media (max-width: $media-width) {
-    p {
-      font-size: 1.5rem;
+    .image {
+      object-fit: cover;
+      -webkit-user-drag: none;
+      height: 95%;
+      width: 95%;
+      object-position: center;
+      align-self: center;
+      justify-self: center;
     }
   }
 }

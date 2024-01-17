@@ -2,20 +2,20 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { ButtonGroup, CardBody } from "react-bootstrap";
 import classes from "./ContentPage.module.scss";
-import { ImageActions, ImageState } from "../store/images/images-store";
+import { ImageActions } from "../store/images/images-store";
 import { backendUrl } from "../store/backend-url";
-import { Dispatch } from "@reduxjs/toolkit";
+import { StoreState } from "../store/combined-stores";
 
 export const errorComponent = <h2>Hmmm... we couldn't find that image...</h2>;
 
 function ContentPage() {
-  const imagesData = useSelector((state: ImageState) => state.imageItems);
-  const imageIsLoading = useSelector((state: ImageState) => state.isLoadingImages);
+  const imagesData = useSelector((state: StoreState) => state.images.imageItems);
+  const imageIsLoading = useSelector((state: StoreState) => state.images.isLoadingImages);
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const id = searchParams.get("id");
   const navigate = useNavigate();
-  const dispatch = useDispatch<Dispatch<ImageActions>>();
+  const dispatch = useDispatch();
 
   if (imageIsLoading) {
     return <p>Loading...</p>;
@@ -38,7 +38,7 @@ function ContentPage() {
   const handleDelete = async () => {
     await fetch(`${backendUrl}/delete?id=${id}`);
 
-    dispatch({
+    dispatch<ImageActions>({
       type: "DELETE_IMAGE_ITEM",
       payload: +id,
     })

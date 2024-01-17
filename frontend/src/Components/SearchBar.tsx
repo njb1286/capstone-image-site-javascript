@@ -1,17 +1,16 @@
 import { useDispatch } from "react-redux";
 import classes from "./SearchBar.module.scss";
-import { Dispatch } from "@reduxjs/toolkit";
 import { ImageActions } from "../store/images/images-store";
 
 function SearchBar() {
-  const dispatch = useDispatch<Dispatch<ImageActions>>();
+  const dispatch = useDispatch();
 
   const inputHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     event.preventDefault();
 
     const payload = event.target.value;
 
-    dispatch({
+    dispatch<ImageActions>({
       type: "SET_SEARCH_VALUE",
       payload,
     })

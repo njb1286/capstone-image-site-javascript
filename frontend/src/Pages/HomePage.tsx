@@ -2,16 +2,15 @@ import { useSelector } from "react-redux";
 
 import classes from "./HomePage.module.scss";
 
-import { ImageState } from "../store/images/images-store";
-
 import Card from "../Components/Card";
 import SearchBar from "../Components/SearchBar";
+import { StoreState } from "../store/combined-stores";
 
 function Home() {
-  const searchValue = useSelector((state: ImageState) => state.searchValue);
+  const searchValue = useSelector((state: StoreState) => state.images.searchValue);
 
-  const isLoadingState = useSelector((state: ImageState) => state.isLoadingImages);
-  let imageItems = useSelector((state: ImageState) => state.imageItems);
+  const isLoadingState = useSelector((state: StoreState) => state.images.isLoadingImages);
+  let imageItems = useSelector((state: StoreState) => state.images.imageItems);
 
   if (searchValue) {
     imageItems = imageItems.filter(item => item.title.toLowerCase().includes(searchValue.toLowerCase()));

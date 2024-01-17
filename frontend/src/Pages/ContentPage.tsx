@@ -1,10 +1,10 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { Button, ButtonGroup, CardBody } from "react-bootstrap";
-import classes from "./ContentPage.module.scss";
+import { useModal } from "../hooks/useModal";
 import { ImageActions, ImageState } from "../store/images-store";
 import { backendUrl } from "../store/backend-url";
-import { useModal } from "../hooks/useModal";
+import classes from "./ContentPage.module.scss";
 
 export const errorComponent = <h2>Hmmm... we couldn't find that image...</h2>;
 
@@ -69,6 +69,8 @@ function ContentPage() {
 
   const { title, description } = imageData;
 
+  const splitDescription = <p>{description.split("\n").map((item, index) => <>{item} <br key={`${item}__${index}`} /></>)}</p>;
+
   return (
     <CardBody className={classes.group}>
       {modalPortal}
@@ -80,7 +82,8 @@ function ContentPage() {
         </ButtonGroup>
         <div className={`col-md-5 ${classes.info} ${classes.col}`}>
           <h1 className="card-title text-center">{title}</h1>
-          <p className="card-text">{description}</p>
+          {/* <p className="card-text">{description}</p> */}
+          {splitDescription}
         </div>
         <div className={`col-md-7 ${classes.col}`}>
           <img alt={title} src={`${backendUrl}/get-image?id=${id}`} className="card-img" />

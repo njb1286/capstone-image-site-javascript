@@ -5,7 +5,7 @@ function AboutPage() {
   return (
     <Container>
       <Card.Body className={classes.content}>
-        <Card.Title className="text-center">About</Card.Title>
+        <Card.Title className={`text-center ${classes.title}`}>About</Card.Title>
 
         <Card.Text>
           Ea aliquip mollit fugiat eiusmod Lorem consequat est. Cillum ut sint et deserunt esse occaecat nulla laboris proident. Magna ipsum eu commodo tempor mollit nulla eu ullamco.

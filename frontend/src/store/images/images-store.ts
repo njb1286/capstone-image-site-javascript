@@ -84,8 +84,3 @@ export const imagesReducer: Reducer<ImageState, ImageActions> = (state = initial
       return state;
   }
 }
-
-export const imageStore = configureStore({
-  reducer: imagesReducer,
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware(),
-});

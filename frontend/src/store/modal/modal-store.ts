@@ -32,7 +32,3 @@ export const modalReducer: Reducer<ModalState, ModalAction> = (state = initialSt
       return state;
   }
 }
-
-export const modalStore = configureStore({
-  reducer: modalReducer,
-})

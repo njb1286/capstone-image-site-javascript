@@ -125,8 +125,8 @@ app.post("/api/update", upload.single("image"), (req, res) => {
     return;
   }
 
-  const updateQuery = `UPDATE images SET title = ?, image = ?, description = ? WHERE id = ?`;
-  const values = [title, image, description, id];
+  const updateQuery = `UPDATE images SET title = ?${image ? ", image = ?" : ""}, description = ? WHERE id = ?`;
+  const values = image ? [title, image, description, id] : [title, description, id];
 
   db.run(updateQuery, values, (err) => {
     if (err) {

@@ -67,7 +67,7 @@ export function useFormField<TFieldValue, TElementName extends keyof ValidInputE
   selectChangeableValue: (event: ChangeEvent<ValidInputElements[TElementName]>) => TFieldValue,
   checkValidity: (value: TFieldValue) => string | undefined,
 ) {
-  const [state, dispatch] = useReducer<Reducer<State<TFieldValue>, Action<TFieldValue>>>(formFieldReducer, initialState);
+  const [state, dispatch] = useReducer<Reducer<State<TFieldValue>, Action<TFieldValue>>>(formFieldReducer, initialState);  
 
   const changeHandler = (event: ChangeEvent<ValidInputElements[TElementName]>) => {
     dispatch({
@@ -111,6 +111,13 @@ export function useFormField<TFieldValue, TElementName extends keyof ValidInputE
     });
   }
 
+  const setValid = (isValid: boolean) => {
+    dispatch({
+      type: "SET_IS_VALID",
+      payload: isValid,
+    });
+  }
+
   const component = <>
     <InputElement
       onBlur={blurHandler}
@@ -118,6 +125,7 @@ export function useFormField<TFieldValue, TElementName extends keyof ValidInputE
       onChange={changeHandler}
       isValid={state.isValid && state.touched}
       isInvalid={!state.isValid && state.touched}
+      defaultValue={typeof state.value === "string" || typeof state.value === "number" ? state.value : undefined}
       {...inputProps}
 
       /*
@@ -146,5 +154,5 @@ export function useFormField<TFieldValue, TElementName extends keyof ValidInputE
   </>;
 
 
-  return [component, !checkValidity(state.value), state.value, setTouched] as const;
+  return [component, !checkValidity(state.value), state.value, setTouched, setValid] as const;
 }

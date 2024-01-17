@@ -7,6 +7,7 @@
   text-decoration: none;
   transition: .1s ease;
   display: grid;
+  height: 37rem;
   grid-template-rows: 1fr 2fr;
   
   .header {
@@ -35,4 +36,14 @@
       justify-self: center;
     }
   }
+}
+
+@media (max-width: $media-width) {
+  .card {
+    height: 37rem;
+  }
+    .image {
+      height: 100%;
+      width: 100%;
+    }
 }

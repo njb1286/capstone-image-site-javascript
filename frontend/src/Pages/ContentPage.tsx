@@ -2,7 +2,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { ButtonGroup, CardBody } from "react-bootstrap";
 import classes from "./ContentPage.module.scss";
-import { ImageActions, ImageState } from "../store/images-store";
+import { ImageActions, ImageState } from "../store/images/images-store";
 import { backendUrl } from "../store/backend-url";
 import { Dispatch } from "@reduxjs/toolkit";
 

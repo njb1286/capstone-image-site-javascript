@@ -1,7 +1,7 @@
 import { useDispatch } from "react-redux";
 import classes from "./SearchBar.module.scss";
 import { Dispatch } from "@reduxjs/toolkit";
-import { ImageActions } from "../store/images-store";
+import { ImageActions } from "../store/images/images-store";
 
 function SearchBar() {
   const dispatch = useDispatch<Dispatch<ImageActions>>();

@@ -14,12 +14,13 @@ import UpdatePage from "./Pages/UpdatePage";
 function App() {
   const updateImageItems = useUpdateImageItems();
 
-  useEffect(() => {    
+  useEffect(() => {
     updateImageItems();
   }, [updateImageItems]);
 
   return (
     <BrowserRouter>
+
       <div className={classes["column-wrapper"]}>
         <div className={classes.column}>
           <Header />

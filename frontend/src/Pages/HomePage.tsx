@@ -2,7 +2,7 @@ import { useSelector } from "react-redux";
 
 import classes from "./HomePage.module.scss";
 
-import { ImageState } from "../store/images-store";
+import { ImageState } from "../store/images/images-store";
 
 import Card from "../Components/Card";
 import SearchBar from "../Components/SearchBar";

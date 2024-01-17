@@ -1,5 +1,5 @@
 import { Reducer, configureStore } from "@reduxjs/toolkit";
-import { ActionCreator } from "../types";
+import { ActionCreator } from "../../types";
 
 export class ImageItem {
   public title: string;
@@ -19,6 +19,8 @@ const initialState = {
   imageItems: [] as ImageItem[],
   searchValue: "",
   isLoadingImages: true,
+
+  modalIsVisible: false,
 }
 
 export type ImageState = typeof initialState;
@@ -29,11 +31,13 @@ type Actions = {
   SET_LOADING_IMAGES: boolean;
   ADD_IMAGE_ITEM: ImageItem;
   DELETE_IMAGE_ITEM: number;
+
+  SET_MODAL_VISIBLE: boolean;
 }
 
 export type ImageActions = ActionCreator<Actions>;
 
-const imagesReducer: Reducer<ImageState, ImageActions> = (state = initialState, action) => {
+export const imagesReducer: Reducer<ImageState, ImageActions> = (state = initialState, action) => {
   if (!state) {
     return initialState;
   }
@@ -68,6 +72,12 @@ const imagesReducer: Reducer<ImageState, ImageActions> = (state = initialState, 
       return {
         ...state,
         imageItems: state.imageItems.filter((image) => image.id !== action.payload),
+      }
+
+    case "SET_MODAL_VISIBLE":
+      return {
+        ...state,
+        modalIsVisible: action.payload,
       }
 
     default:

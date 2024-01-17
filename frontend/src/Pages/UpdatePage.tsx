@@ -1,5 +1,5 @@
 import { useSelector } from "react-redux";
-import { ImageState } from "../store/images-store";
+import { ImageState } from "../store/images/images-store";
 import { errorComponent } from "./ContentPage";
 import UploadForm, { UploadFormSubmitEvent } from "../Components/UploadForm";
 import { backendUrl } from "../store/backend-url";

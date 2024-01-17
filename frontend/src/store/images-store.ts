@@ -1,5 +1,5 @@
-import { Reducer } from "@reduxjs/toolkit";
-import { ActionCreator } from "../../types";
+import { Reducer, configureStore } from "@reduxjs/toolkit";
+import { ActionCreator } from "../types";
 
 export class ImageItem {
   constructor(
@@ -32,7 +32,7 @@ type Actions = {
 
 export type ImageActions = ActionCreator<Actions>;
 
-export const imagesReducer: Reducer<ImageState, ImageActions> = (state = initialState, action) => {
+const imagesReducer: Reducer<ImageState, ImageActions> = (state = initialState, action) => {
   if (!state) {
     return initialState;
   }
@@ -79,3 +79,7 @@ export const imagesReducer: Reducer<ImageState, ImageActions> = (state = initial
       return state;
   }
 }
+
+export const imageStore = configureStore({
+  reducer: imagesReducer,
+})

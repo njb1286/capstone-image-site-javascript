@@ -4,13 +4,13 @@ import classes from "./HomePage.module.scss";
 
 import Card from "../Components/Card";
 import SearchBar from "../Components/SearchBar";
-import { StoreState } from "../store/combined-stores";
+import { ImageState } from "../store/images-store";
 
 function Home() {
-  const searchValue = useSelector((state: StoreState) => state.images.searchValue);
+  const searchValue = useSelector((state: ImageState) => state.searchValue);
 
-  const isLoadingState = useSelector((state: StoreState) => state.images.isLoadingImages);
-  let imageItems = useSelector((state: StoreState) => state.images.imageItems);
+  const isLoadingState = useSelector((state: ImageState) => state.isLoadingImages);
+  let imageItems = useSelector((state: ImageState) => state.imageItems);
 
   if (searchValue) {
     imageItems = imageItems.filter(item => item.title.toLowerCase().includes(searchValue.toLowerCase()));

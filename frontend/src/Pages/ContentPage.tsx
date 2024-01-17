@@ -2,23 +2,22 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { Button, ButtonGroup, CardBody } from "react-bootstrap";
 import classes from "./ContentPage.module.scss";
-import { ImageActions } from "../store/images/images-store";
+import { ImageActions, ImageState } from "../store/images-store";
 import { backendUrl } from "../store/backend-url";
-import { StoreState } from "../store/combined-stores";
 import { useModal } from "../hooks/useModal";
 
 export const errorComponent = <h2>Hmmm... we couldn't find that image...</h2>;
 
 function ContentPage() {
-  const imagesData = useSelector((state: StoreState) => state.images.imageItems);
-  const imageIsLoading = useSelector((state: StoreState) => state.images.isLoadingImages);
+  const imagesData = useSelector((state: ImageState) => state.imageItems);
+  const imageIsLoading = useSelector((state: ImageState) => state.isLoadingImages);
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const id = searchParams.get("id");
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const setDeleteModalIsVisible = useModal("Delete Image", "Are you sure you want to delete this image?", (closeHandler) => {
+  const [modalPortal, setDeleteModalIsVisible] = useModal("Delete Image", "Are you sure you want to delete this image?", (closeHandler) => {
     return (
       <>
         <Button className="btn btn-lg btn-warning" onClick={closeHandler}>Cancel</Button>
@@ -72,6 +71,7 @@ function ContentPage() {
 
   return (
     <CardBody className={classes.group}>
+      {modalPortal}
 
       <CardBody className={`row ${classes.body}`}>
         <ButtonGroup className={classes.buttons}>

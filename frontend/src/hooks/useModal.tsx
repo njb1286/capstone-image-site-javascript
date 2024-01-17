@@ -1,25 +1,23 @@
-import { Dispatch } from "@reduxjs/toolkit";
-import { useDispatch } from "react-redux";
-import { ModalAction, ModalState } from "../store/modal/modal-store";
+import { useState } from "react";
+import OverlayModal from "../Components/OverlayModal";
+import { createPortal } from "react-dom";
 
-export const useModal = (title: string, content: string, renderButtons: ModalState["renderButtons"]) => {
-  const dispatch = useDispatch<Dispatch<ModalAction>>();
+export const useModal = (title: string, content: string, renderButtons: (_closeHandler: () => void) => JSX.Element) => {
+  const [visible, setVisible] = useState(false);
 
-  const setVisible = (payload: boolean) => {
-    dispatch({
-      type: "SET_MODAL_DATA",
-      payload: {
-        title,
-        content,
-        renderButtons,
-      }
-    })
-
-    dispatch({
-      type: "SET_MODAL_VISIBLE",
-      payload,
-    });
+  const closeHandler = () => {
+    setVisible(false);
   }
 
-  return setVisible;
+  const component = <OverlayModal
+    title={title}
+    content={content}
+    visible={visible}
+    renderedButtons={renderButtons(closeHandler)}
+  />
+
+  const portal = createPortal(component, document.getElementById("modal")!);
+
+
+  return [portal, setVisible] as const;
 }

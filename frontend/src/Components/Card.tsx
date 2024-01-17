@@ -1,6 +1,6 @@
 import { NavLink } from "react-router-dom";
 import classes from "./Card.module.scss";
-import { ImageItem } from "../store/images/images-store";
+import { ImageItem } from "../store/images-store";
 import { backendUrl } from "../store/backend-url";
 
 function Card({ title, description, id }: Readonly<ImageItem>) {

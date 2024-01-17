@@ -10,14 +10,9 @@ import UploadPage from "./Pages/UploadPage";
 import { useEffect } from "react";
 import { useUpdateImageItems } from "./hooks/useUpdateImageItems";
 import UpdatePage from "./Pages/UpdatePage";
-import { useSelector } from "react-redux";
-import { StoreState } from "./store/combined-stores";
-import OverlayModal from "./Components/OverlayModal";
 
 function App() {
   const updateImageItems = useUpdateImageItems();
-
-  const modalState = useSelector((state: StoreState) => state.modal);
 
   useEffect(() => {
     updateImageItems();
@@ -25,7 +20,6 @@ function App() {
 
   return (
     <BrowserRouter>
-      <OverlayModal {...modalState} />
 
       <div className={classes["column-wrapper"]}>
         <div className={classes.column}>

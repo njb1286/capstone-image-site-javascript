@@ -1,9 +1,9 @@
 import { useDispatch } from "react-redux";
-import { getImageItems } from "../store/images/images-actions";
-import { store } from "../store/combined-stores";
+import { getImageItems } from "../store/images-actions";
+import { imageStore } from "../store/images-store";
 
 export const useUpdateImageItems = () => {
-  const dispatch = useDispatch<typeof store.dispatch>();
+  const dispatch = useDispatch<typeof imageStore.dispatch>();
   
   const updateImageItems = () => {
     dispatch(getImageItems());

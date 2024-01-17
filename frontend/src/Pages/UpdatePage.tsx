@@ -4,13 +4,13 @@ import UploadForm, { UploadFormSubmitEvent } from "../Components/UploadForm";
 import { backendUrl } from "../store/backend-url";
 import { useNavigate } from "react-router";
 import { useUpdateImageItems } from "../hooks/useUpdateImageItems";
-import { StoreState } from "../store/combined-stores";
+import { ImageState } from "../store/images-store";
 
 function UpdatePage() {
   const navigate = useNavigate();
   const updateImagesState = useUpdateImageItems();
   const searchParams = new URLSearchParams(location.search);
-  const selector = useSelector((state: StoreState) => state.images.imageItems);
+  const selector = useSelector((state: ImageState) => state.imageItems);
 
   const id = searchParams.get("id");
 

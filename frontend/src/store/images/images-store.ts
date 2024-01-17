@@ -1,18 +1,13 @@
-import { Reducer, configureStore } from "@reduxjs/toolkit";
+import { Reducer } from "@reduxjs/toolkit";
 import { ActionCreator } from "../../types";
 
 export class ImageItem {
-  public title: string;
-  public description: string;
-  public id: number;
-  public date: string;
-
-  public constructor(title: string, description: string, id: number, date: string) {
-    this.title = title;
-    this.description = description;
-    this.id = id;
-    this.date = date;
-  }
+  constructor(
+    readonly title: string,
+    readonly description: string,
+    readonly id: number,
+    readonly date: string
+  ) { }
 }
 
 const initialState = {

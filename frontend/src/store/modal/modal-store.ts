@@ -1,7 +1,7 @@
-import { Reducer, configureStore } from "@reduxjs/toolkit";
+import { Reducer } from "@reduxjs/toolkit";
 import { ActionCreator } from "../../types";
 
-type ModalAction = ActionCreator<{
+export type ModalAction = ActionCreator<{
   SET_MODAL_VISIBLE: boolean;
   SET_MODAL_DATA: Pick<ModalState, "title" | "content">;
 }>;

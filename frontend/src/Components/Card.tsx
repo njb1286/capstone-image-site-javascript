@@ -13,6 +13,9 @@ function Card({ title, id, category }: Readonly<ImageItem>) {
       
       <div className={classes["image-wrapper"]}>
         {/* <img alt={title} src={`${backendUrl}/get-image?id=${id}`} className={`card-img ${classes.image}`} /> */}
+
+        {/* TODO: Replace the background image with an image tag, and style it with position absolute, and an overflow hidden to get the same effect */}
+        {/* Then, set the loading tag to "lazy" */}
         <div style={{
           backgroundImage: `url(${backendUrl}/get-image?id=${id})`,
         }} className={`card-img ${classes.image}`}></div>

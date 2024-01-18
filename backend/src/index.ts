@@ -40,13 +40,14 @@ interface Table {
   description: string;
   image: Blob;
   category: string;
+  date: string;
 }
 
 app.get("/api/get", (req, res) => {
-  const selectQuery = `SELECT id, title, description, category FROM images where id = ?`;
+  const selectQuery = `SELECT id, title, description, category, date FROM images where id = ?`;
 
   if (!req.query.id) {
-    db.all("SELECT id, title, description, category FROM images", (err: unknown, row: Table) => {
+    db.all("SELECT id, title, description, category, date FROM images", (err: unknown, row: Table) => {
       if (err) {
         res.status(500).send("Error getting data");
         return;

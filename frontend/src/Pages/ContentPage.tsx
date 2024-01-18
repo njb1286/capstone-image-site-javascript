@@ -69,7 +69,9 @@ function ContentPage() {
 
   const { title, description } = imageData;
 
-  const splitDescription = description.split("\n").map((item, index) => <p key={`${item}__${index}`}>{item} <br /></p>);
+  const splitDescription = description.split("\n").map((item, index) => <p key={`${item}__${index}`}>{item} <br /></p>);  
+  
+  const uploadDate = new Date(imageData.date).toLocaleDateString();
 
   return (
     <CardBody className={classes.group}>
@@ -85,6 +87,8 @@ function ContentPage() {
           <img alt={title} src={`${backendUrl}/get-image?id=${id}`} className="card-img" />
           <h1 className="card-title text-center">{title}</h1>
           {splitDescription}
+
+          <p className="text-center">Uploaded on: {uploadDate}</p>
         </div>
       </CardBody>
     </CardBody>

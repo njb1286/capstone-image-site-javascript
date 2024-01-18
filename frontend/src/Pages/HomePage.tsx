@@ -24,6 +24,10 @@ function Home() {
     })
   }
 
+  if (!imageItems.length) {
+    return <p className={classes["no-images"]}>No images found. Go to the Upload page to start uploading</p>
+  }
+
   return (
     <>
       <SearchBar />

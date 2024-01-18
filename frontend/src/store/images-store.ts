@@ -1,12 +1,16 @@
 import { Reducer, configureStore } from "@reduxjs/toolkit";
 import { ActionCreator } from "../types";
 
+export const categories = ["Nature", "Animals", "Food", "Travel", "Sports", "Architecture", "People", "Technology", "Other"] as const;
+export type Category = typeof categories[number];
+
 export class ImageItem {
   constructor(
     readonly title: string,
     readonly description: string,
     readonly id: number,
-    readonly date: string
+    readonly date: string,
+    readonly category: Category,
   ) { }
 }
 

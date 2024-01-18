@@ -1,5 +1,9 @@
 @import "../helper-styles.scss";
 
+.form-items {
+  margin-bottom: 5rem;
+}
+
 .upload-form {
   font-size: 3rem;  
 
@@ -25,4 +29,14 @@
       width: 100%;
     }
   }
+}
+
+.categories {
+  font-size: 2rem;
+  width: 25%;
+}
+
+
+.category-item {
+  font-size: 2rem;
 }

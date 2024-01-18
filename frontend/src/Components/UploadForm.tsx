@@ -1,8 +1,9 @@
 import { FormEvent, useEffect, useState } from "react";
 import classes from "./UploadForm.module.scss";
-import { Button, ButtonGroup, Form, FormControl, FormGroup } from "react-bootstrap";
+import { Button, ButtonGroup, Dropdown, Form, FormControl, FormGroup } from "react-bootstrap";
 import { useFormField } from "../hooks/useFormField";
 import { useNavigate } from "react-router";
+import { Category, categories } from "../store/images-store";
 
 export type UploadFormSubmitEvent = (title: string, description: string, image: File | null) => void;
 
@@ -12,10 +13,13 @@ type UploadFormProps = {
   updating?: boolean;
   id?: number
   onSubmit: UploadFormSubmitEvent;
+  category?: Category;
 }
 
 function UploadForm(props: Readonly<UploadFormProps>) {
   const [submitting, setSubmitting] = useState(false);
+  const [category, setCategory] = useState<Category>(props.category ?? "Other");
+
   const navigate = useNavigate();
 
   const submitHandler = (event: FormEvent<HTMLFormElement>) => {
@@ -109,25 +113,48 @@ function UploadForm(props: Readonly<UploadFormProps>) {
       setValidEvents.forEach(setValid => setValid(true));
       setTouchedEvents.forEach(setTouched => setTouched(true));
     }
-  }, [])
+  }, []);
+
+  const selectCategory = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    event.preventDefault();
+    const element = event.target as HTMLButtonElement;
+    setCategory(element.textContent as Category);
+  }
 
   return (
     <div className={classes["upload-form"]}>
       <Form onSubmit={submitHandler}>
-        <FormGroup>
-          <Form.Label>Title</Form.Label>
-          {titleComponent}
-        </FormGroup>
+        <div className={classes["form-items"]}>
+          <FormGroup>
+            <Form.Label>Title</Form.Label>
+            {titleComponent}
+          </FormGroup>
 
-        <FormGroup>
-          <Form.Label>Image</Form.Label>
-          {imageComponent}
-        </FormGroup>
+          <FormGroup>
+            <Form.Label>Image</Form.Label>
+            {imageComponent}
+          </FormGroup>
 
-        <FormGroup>
-          <Form.Label>Description</Form.Label>
-          {descriptionComponent}
-        </FormGroup>
+          <FormGroup>
+            <Form.Label>Description</Form.Label>
+            {descriptionComponent}
+          </FormGroup>
+
+          <FormGroup>
+            <Form.Label>Category</Form.Label>
+            <Dropdown>
+              <Dropdown.Toggle className={classes.categories}>
+                {category}
+              </Dropdown.Toggle>
+
+              <Dropdown.Menu>
+                {categories.map(categoryItem => {
+                  return <Dropdown.Item className={classes["category-item"]} as={"button"} onClick={selectCategory} key={`category_${categoryItem}`}>{categoryItem}</Dropdown.Item>
+                })}
+              </Dropdown.Menu>
+            </Dropdown>
+          </FormGroup>
+        </div>
 
         <ButtonGroup>
           <Button

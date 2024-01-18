@@ -10,18 +10,19 @@ db.exec(`CREATE TABLE IF NOT EXISTS images (
   title TEXT NOT NULL,
   image BLOB NOT NULL,
   description TEXT NOT NULL,
-  date DATETIME DEFAULT CURRENT_TIMESTAMP
+  date DATETIME DEFAULT CURRENT_TIMESTAMP,
+  category TEXT NOT NULL
 );`);
 
 const app = express();
 const upload = multer({ storage: multer.memoryStorage() });
 
 app.post("/api/form", upload.single("image"), (req, res) => {
-  const { title, description } = req.body;
+  const { title, description, category } = req.body;
   const image = req.file?.buffer;
 
-  const insertQuery = `INSERT INTO images (title, image, description) VALUES (?, ?, ?)`;
-  const values = [title, image, description];
+  const insertQuery = `INSERT INTO images (title, image, description, category) VALUES (?, ?, ?, ?)`;
+  const values = [title, image, description, category];
 
   db.run(insertQuery, values, function (err) {
     if (err) {
@@ -38,13 +39,14 @@ interface Table {
   title: string;
   description: string;
   image: Blob;
+  category: string;
 }
 
 app.get("/api/get", (req, res) => {
-  const selectQuery = `SELECT id, title, description FROM images where id = ?`;
+  const selectQuery = `SELECT id, title, description, category FROM images where id = ?`;
 
   if (!req.query.id) {
-    db.all("SELECT id, title, description FROM images", (err: unknown, row: Table) => {
+    db.all("SELECT id, title, description, category FROM images", (err: unknown, row: Table) => {
       if (err) {
         res.status(500).send("Error getting data");
         return;
@@ -117,7 +119,7 @@ app.get("/api/delete", (req, res) => {
 
 app.post("/api/update", upload.single("image"), (req, res) => {
 
-  const { id, title, description } = req.body;
+  const { id, title, description, category } = req.body;
   const image = req.file?.buffer;
 
   if (!id) {
@@ -125,8 +127,8 @@ app.post("/api/update", upload.single("image"), (req, res) => {
     return;
   }
 
-  const updateQuery = `UPDATE images SET title = ?${image ? ", image = ?" : ""}, description = ? WHERE id = ?`;
-  const values = image ? [title, image, description, id] : [title, description, id];
+  const updateQuery = `UPDATE images SET title = ?${image ? ", image = ?" : ""}, description = ?, category = ? WHERE id = ?`;
+  const values = image ? [title, image, description, category, id] : [title, description, category, id];
 
   db.run(updateQuery, values, (err) => {
     if (err) {

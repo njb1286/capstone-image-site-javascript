@@ -23,17 +23,56 @@
   }
 
   .image-wrapper {
-    display: grid;
-    background-color: var(--bs-gray-400);
+    position: relative;
 
     .image {
       -webkit-user-drag: none;
       height: 100%;
       width: 100%;
-      align-self: center;
-      justify-self: center;
-      background-position: center;
+      object-position: center;
+      object-fit: cover;
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      z-index: 1;
+      opacity: 0;
+      transition: opacity .2s ease-in-out;
+
+      &.loaded {
+        opacity: 1;
+      }
+    }
+
+    .loading-img {
+      position: absolute;
+      inset: 0;
       background-size: cover;
+      background-position: center;
+      filter: blur(5px); 
+
+      @keyframes loading-image {
+        0% {
+          background-color: rgba(255, 255, 255, 0);
+        }
+        
+        50% {
+          background-color: rgba(255, 255, 255, 0.15);
+        }
+        
+        100% {
+          background-color: rgba(255, 255, 255, 0);
+        }
+      }
+
+
+      &::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+
+        animation: loading-image 2s infinite;
+      }
     }
   }
 

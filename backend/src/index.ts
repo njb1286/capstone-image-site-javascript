@@ -12,6 +12,7 @@ db.exec(`CREATE TABLE IF NOT EXISTS images (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   title TEXT NOT NULL,
   image BLOB NOT NULL,
+  smallImage BLOB NOT NULL,
   description TEXT NOT NULL,
   date DATETIME DEFAULT CURRENT_TIMESTAMP,
   category TEXT NOT NULL
@@ -19,6 +20,13 @@ db.exec(`CREATE TABLE IF NOT EXISTS images (
 
 const app = express();
 const upload = multer({ storage: multer.memoryStorage() });
+
+const compressSmallImage = async (image: Buffer) => {
+  return await sharp(image)
+    .resize(16)
+    .jpeg({ quality: 40 })
+    .toBuffer();
+}
 
 const compressImage = async (image: Buffer) => {
   return await sharp(image)
@@ -29,13 +37,15 @@ const compressImage = async (image: Buffer) => {
 app.post("/api/form", upload.single("image"), async (req, res) => {
   const { title, description, category } = req.body;
   let image = req.file?.buffer;
+  let smallImage: Buffer | null = null;
 
   if (image) {
+    smallImage = await compressSmallImage(image);
     image = await compressImage(image);
   }
 
-  const insertQuery = `INSERT INTO images (title, image, description, category) VALUES (?, ?, ?, ?)`;
-  const values = [title, image, description, category];
+  const insertQuery = `INSERT INTO images (title, image, smallImage, description, category) VALUES (?, ?, ?, ?, ?)`;
+  const values = [title, image, smallImage, description, category];
 
   db.run(insertQuery, values, function (err) {
     if (err) {
@@ -52,6 +62,7 @@ interface Table {
   title: string;
   description: string;
   image: Blob;
+  smallImage: Blob;
   category: string;
   date: string;
 }
@@ -93,6 +104,11 @@ app.get("/api/get", (req, res) => {
 });
 
 app.get("/api/get-image", (req, res) => {
+  if (!req.query.id) {
+    res.status(400).send("No id provided");
+    return;
+  }
+
   const selectQuery = `SELECT image FROM images where id = ?`;
 
   db.get(selectQuery, [req.query.id], (err, row: Table) => {
@@ -108,6 +124,30 @@ app.get("/api/get-image", (req, res) => {
 
     res.contentType("image/png");
     res.send(row.image);
+  });
+})
+
+app.get("/api/get-small-image", (req, res) => {
+  if (!req.query.id) {
+    res.status(400).send("No id provided");
+    return;
+  }
+
+  const selectQuery = `SELECT smallImage FROM images where id = ?`;
+
+  db.get(selectQuery, [req.query.id], (err, row: Table) => {
+    if (err) {
+      res.status(500).send("Error getting data");
+      return;
+    }
+
+    if (!row) {
+      res.status(404).send("No data found");
+      return;
+    }
+
+    res.contentType("image/png");
+    res.send(row.smallImage);
   });
 })
 
@@ -135,9 +175,11 @@ app.post("/api/update", upload.single("image"), async (req, res) => {
 
   const { id, title, description, category } = req.body;
   let image = req.file?.buffer;
+  let smallImage: Buffer | null = null;
 
   if (image) {
     image = await compressImage(image);
+    smallImage = await compressSmallImage(image);
   }
 
   if (!id) {
@@ -145,8 +187,14 @@ app.post("/api/update", upload.single("image"), async (req, res) => {
     return;
   }
 
-  const updateQuery = `UPDATE images SET title = ?${image ? ", image = ?" : ""}, description = ?, category = ? WHERE id = ?`;
-  const values = image ? [title, image, description, category, id] : [title, description, category, id];
+  const updateQuery = `UPDATE images SET title = ?, description = ?, category = ?${image ? ", image = ?, smallImage = ?" : ""} WHERE id = ?`;
+  const values = [title, description, category];
+
+  if (image) {
+    values.push(image, smallImage);
+  }
+
+  values.push(id);
 
   db.run(updateQuery, values, (err) => {
     if (err) {

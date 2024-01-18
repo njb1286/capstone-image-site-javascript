@@ -7,11 +7,12 @@ type OverlayModalProps = {
   title: string;
   content: string;
   renderedButtons: JSX.Element;
+  onClose: () => void;
 }
 
 const OverlayModal = (props: OverlayModalProps) => {
   return (
-    <Modal show={props.visible}>
+    <Modal show={props.visible} onHide={props.onClose}>
       <Modal.Header closeButton>
         <Modal.Title className={classes.title}>{props.title}</Modal.Title>
       </Modal.Header>

@@ -14,6 +14,7 @@ export const useModal = (title: string, content: string, renderButtons: (_closeH
     content={content}
     visible={visible}
     renderedButtons={renderButtons(closeHandler)}
+    onClose={closeHandler}
   />
 
   const portal = createPortal(component, document.getElementById("modal")!);

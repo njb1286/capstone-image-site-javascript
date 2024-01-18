@@ -24,7 +24,7 @@ function UpdatePage() {
     return errorComponent;
   }
 
-  const submitHandler: UploadFormSubmitEvent = async (title, description, image) => {
+  const submitHandler: UploadFormSubmitEvent = async (title, description, image, category) => {
 
     const formData = new FormData();
 
@@ -32,6 +32,7 @@ function UpdatePage() {
     formData.append("title", title);
     formData.append("description", description);
     formData.append("id", id);
+    formData.append("category", category);
 
     await fetch(`${backendUrl}/update?id=${id}`, {
       method: "POST",
@@ -45,7 +46,14 @@ function UpdatePage() {
   }
 
   return (
-    <UploadForm id={+id} onSubmit={submitHandler} updating={true} title={imageData.title} description={imageData.description} />
+    <UploadForm
+      id={+id}
+      onSubmit={submitHandler}
+      updating={true}
+      title={imageData.title}
+      description={imageData.description}
+      category={imageData.category}
+    />
   )
 }
 

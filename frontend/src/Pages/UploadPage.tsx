@@ -7,12 +7,13 @@ function UploadPage() {
   const navigate = useNavigate();
   const updateImagesState = useUpdateImageItems();
 
-  const submitHandler: UploadFormSubmitEvent = async (title, description, image) => {
+  const submitHandler: UploadFormSubmitEvent = async (title, description, image, category) => {
     const formData = new FormData();
 
     formData.append("image", image!);
     formData.append("title", title);
     formData.append("description", description);
+    formData.append("category", category);
 
     await fetch(`${backendUrl}/form`, {
       method: "POST",

@@ -5,7 +5,7 @@ import { useFormField } from "../hooks/useFormField";
 import { useNavigate } from "react-router";
 import { Category, categories } from "../store/images-store";
 
-export type UploadFormSubmitEvent = (title: string, description: string, image: File | null) => void;
+export type UploadFormSubmitEvent = (title: string, description: string, image: File | null, category: Category) => void;
 
 type UploadFormProps = {
   title?: string;
@@ -37,7 +37,7 @@ function UploadForm(props: Readonly<UploadFormProps>) {
 
     setSubmitting(true);
 
-    props.onSubmit(title, description, image);
+    props.onSubmit(title, description, image, category);
   };
 
   function makeInitialState<T>(value: T): {

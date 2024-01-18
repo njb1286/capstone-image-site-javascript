@@ -1,9 +1,10 @@
 import { FormEvent, useEffect, useState } from "react";
 import classes from "./UploadForm.module.scss";
-import { Button, ButtonGroup, Dropdown, Form, FormControl, FormGroup } from "react-bootstrap";
+import { Button, ButtonGroup, Form, FormControl, FormGroup } from "react-bootstrap";
 import { useFormField } from "../hooks/useFormField";
 import { useNavigate } from "react-router";
 import { Category, categories } from "../store/images-store";
+import CategoriesDropdown from "./CategoriesDropdown";
 
 export type UploadFormSubmitEvent = (title: string, description: string, image: File | null, category: Category) => void;
 
@@ -115,12 +116,6 @@ function UploadForm(props: Readonly<UploadFormProps>) {
     }
   }, []);
 
-  const selectCategory = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    event.preventDefault();
-    const element = event.target as HTMLButtonElement;
-    setCategory(element.textContent as Category);
-  }
-
   return (
     <div className={classes["upload-form"]}>
       <Form onSubmit={submitHandler}>
@@ -142,17 +137,7 @@ function UploadForm(props: Readonly<UploadFormProps>) {
 
           <FormGroup>
             <Form.Label>Category</Form.Label>
-            <Dropdown>
-              <Dropdown.Toggle className={classes.categories}>
-                {category}
-              </Dropdown.Toggle>
-
-              <Dropdown.Menu>
-                {categories.map(categoryItem => {
-                  return <Dropdown.Item className={classes["category-item"]} as={"button"} onClick={selectCategory} key={`category_${categoryItem}`}>{categoryItem}</Dropdown.Item>
-                })}
-              </Dropdown.Menu>
-            </Dropdown>
+            <CategoriesDropdown onSelect={setCategory} categories={categories} default={category} />
           </FormGroup>
         </div>
 

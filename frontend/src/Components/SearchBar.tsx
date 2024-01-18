@@ -1,9 +1,13 @@
 import { useDispatch } from "react-redux";
 import classes from "./SearchBar.module.scss";
-import { ImageActions } from "../store/images-store";
+import { ImageActions, categories } from "../store/images-store";
+import { InputGroup } from "react-bootstrap";
+import CategoriesDropdown from "./CategoriesDropdown";
 
 function SearchBar() {
   const dispatch = useDispatch();
+
+  const searchBarCategories = [...categories, "All"] as const;
 
   const inputHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     event.preventDefault();
@@ -17,9 +21,10 @@ function SearchBar() {
   }
 
   return (
-    <div className={classes["search-section"]}>
-        <input onChange={inputHandler} type="text" className={`form-control ${classes["search-input"]}`} placeholder="Search..." />
-    </div>
+    <InputGroup>
+      <input onChange={inputHandler} type="text" className={`form-control ${classes["search-input"]}`} placeholder="Search..." />
+      <CategoriesDropdown categories={searchBarCategories} default="All" />
+    </InputGroup>
   )
 }
 

@@ -5,7 +5,7 @@ import { InputGroup } from "react-bootstrap";
 import CategoriesDropdown from "./CategoriesDropdown";
 import { Dispatch } from "@reduxjs/toolkit";
 
-const searchBarCategories = [...categories, "All"] as const;
+const searchBarCategories = ["All", ...categories] as const;
 export type SearchBarCategory = typeof searchBarCategories[number];
 
 function SearchBar() {
@@ -23,7 +23,7 @@ function SearchBar() {
     })
   }
 
-  const selectHandler = (category: SearchBarCategory) => {
+  const selectHandler = (category: SearchBarCategory) => {    
     dispatch({
       type: "SET_SELECTED_CATEGORY",
       payload: category,

@@ -9,12 +9,19 @@ import { ImageState } from "../store/images-store";
 function Home() {
   const searchValue = useSelector((state: ImageState) => state.searchValue);
   const isLoadingState = useSelector((state: ImageState) => state.isLoadingImages);
+  const selectedCategory = useSelector((state: ImageState) => state.selectedCategory);
 
   const imageItems = useSelector((state: ImageState) => state.imageItems);
   let imageItemsCopy = Array.from(imageItems);
 
-  if (searchValue) {
-    imageItemsCopy = Array.from(imageItems).filter(item => item.title.toLowerCase().includes(searchValue.toLowerCase()));
+  if (searchValue || selectedCategory !== "All") {
+    imageItemsCopy = Array.from(imageItems).filter(item => {
+      if (selectedCategory !== "All" && selectedCategory !== item.category) {
+        return false;
+      }
+
+      return item.title.toLowerCase().includes(searchValue.toLowerCase());
+    });
   }
 
   let content: JSX.Element | JSX.Element[] = <p>Loading...</p>;

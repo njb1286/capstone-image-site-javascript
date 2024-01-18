@@ -7,8 +7,8 @@
   text-decoration: none;
   transition: .1s ease;
   display: grid;
-  height: 37rem;
-  grid-template-rows: 1fr 2fr;
+  height: 60rem;
+  grid-template-rows: 1fr 5fr 5rem;
   
   .header {
     display: grid;
@@ -34,6 +34,16 @@
       object-position: center;
       align-self: center;
       justify-self: center;
+    }
+  }
+
+  .footer {
+    display: grid;
+    align-items: center;
+
+    .category {
+      font-size: 1.5rem;
+      font-weight: 500;
     }
   }
 }

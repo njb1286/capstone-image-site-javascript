@@ -69,8 +69,8 @@ function ContentPage() {
 
   const { title, description } = imageData;
 
-  const splitDescription = description.split("\n").map((item, index) => <p key={`${item}__${index}`}>{item} <br /></p>);  
-  
+  const splitDescription = description.split("\n").map((item, index) => <p key={`${item}__${index}`}>{item} <br /></p>);
+
   const uploadDate = new Date(imageData.date).toLocaleDateString();
 
   return (
@@ -86,12 +86,23 @@ function ContentPage() {
         <div className={`${classes.info} ${classes.col}`}>
           <img alt={title} src={`${backendUrl}/get-image?id=${id}`} className="card-img" />
           <h1 className="card-title text-center">{title}</h1>
-          {splitDescription}
 
-          <p className="text-center">Uploaded on: {uploadDate}</p>
+          <div className="container">
+            <div className="row my-4">
+              <div className="col-md-6">
+                <p>Uploaded: {uploadDate}</p>
+              </div>
+              <div className="col-md-6">
+                <p>Category: {imageData.category}</p>
+              </div>
+            </div>
+          </div>
+
+          {splitDescription}
         </div>
+
       </CardBody>
-    </CardBody>
+    </CardBody >
   );
 }
 

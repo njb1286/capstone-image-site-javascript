@@ -24,7 +24,7 @@ function CategoriesDropdown<T extends readonly string[], U extends T[number]>(pr
   }
 
   return (
-    <Dropdown>
+    <Dropdown className={classes.dropdown}>
       <Dropdown.Toggle className={classes.categories}>
         {props.title && `${props.title}: `}{category}
       </Dropdown.Toggle>

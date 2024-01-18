@@ -1,9 +1,12 @@
 import express from "express";
 import multer from "multer";
+import sharp from "sharp";
 
 import { Database } from "sqlite3";
 
 const db = new Database("database.sqlite");
+
+// TODO if desired: make a tiny version of the image to display before the full size image is loaded
 
 db.exec(`CREATE TABLE IF NOT EXISTS images (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -17,9 +20,19 @@ db.exec(`CREATE TABLE IF NOT EXISTS images (
 const app = express();
 const upload = multer({ storage: multer.memoryStorage() });
 
-app.post("/api/form", upload.single("image"), (req, res) => {
+const compressImage = async (image: Buffer) => {
+  return await sharp(image)
+    .jpeg({ quality: 60 })
+    .toBuffer();
+}
+
+app.post("/api/form", upload.single("image"), async (req, res) => {
   const { title, description, category } = req.body;
-  const image = req.file?.buffer;
+  let image = req.file?.buffer;
+
+  if (image) {
+    image = await compressImage(image);
+  }
 
   const insertQuery = `INSERT INTO images (title, image, description, category) VALUES (?, ?, ?, ?)`;
   const values = [title, image, description, category];
@@ -118,10 +131,14 @@ app.get("/api/delete", (req, res) => {
   })
 });
 
-app.post("/api/update", upload.single("image"), (req, res) => {
+app.post("/api/update", upload.single("image"), async (req, res) => {
 
   const { id, title, description, category } = req.body;
-  const image = req.file?.buffer;
+  let image = req.file?.buffer;
+
+  if (image) {
+    image = await compressImage(image);
+  }
 
   if (!id) {
     res.status(400).send("No id provided");

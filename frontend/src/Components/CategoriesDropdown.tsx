@@ -6,7 +6,7 @@ import { useState } from "react";
 type CategoriesDropdownProps<T extends readonly string[], U extends T[number]> = {
   categories: T;
   default: U;
-  onSelect?: (category: U) => void;
+  onSelect?: (category: T[number]) => void;
 }
 
 function CategoriesDropdown<T extends readonly string[], U extends T[number]>(props: Readonly<CategoriesDropdownProps<T, U>>) {
@@ -19,7 +19,7 @@ function CategoriesDropdown<T extends readonly string[], U extends T[number]>(pr
 
     setCategory(element.textContent as T[number]);
 
-    props.onSelect?.(element.textContent as U);
+    props.onSelect?.(element.textContent as T[number]);
   }
 
   return (

@@ -10,31 +10,30 @@ function Home() {
   const searchValue = useSelector((state: ImageState) => state.searchValue);
   const isLoadingState = useSelector((state: ImageState) => state.isLoadingImages);
 
-  let imageItems = useSelector((state: ImageState) => state.imageItems);
-
-  if (!imageItems.length) {
-    return <p className={classes["no-images"]}>No images found. Go to the Upload page to start uploading</p>
-  }
+  const imageItems = useSelector((state: ImageState) => state.imageItems);
+  let imageItemsCopy = Array.from(imageItems);
 
   if (searchValue) {
-    imageItems = imageItems.filter(item => item.title.toLowerCase().includes(searchValue.toLowerCase()));
+    imageItemsCopy = Array.from(imageItems).filter(item => item.title.toLowerCase().includes(searchValue.toLowerCase()));
   }
 
   let content: JSX.Element | JSX.Element[] = <p>Loading...</p>;
 
   if (!isLoadingState) {
-    content = imageItems.map(item => {
-      return <Card {...item} key={item.id} />
-    })
+    content = (
+      <div className={classes.cards}>{imageItemsCopy.map(item => {
+        return <Card {...item} key={item.id} />
+      })}</div>
+    )
   }
+
+  const noImagesFoundMsg = <p className={classes["no-images"]}>No images found</p>;
 
   return (
     <>
       <SearchBar />
 
-      <div className={classes.cards}>
-        {content}
-      </div>
+      {!imageItemsCopy.length ? noImagesFoundMsg : content}
     </>
   )
 }

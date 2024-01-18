@@ -1,5 +1,6 @@
 import { Reducer, configureStore } from "@reduxjs/toolkit";
 import { ActionCreator } from "../types";
+import { SearchBarCategory } from "../Components/SearchBar";
 
 export const categories = ["Nature", "Animals", "Food", "Travel", "Sports", "Architecture", "People", "Technology", "Other"] as const;
 export type Category = typeof categories[number];
@@ -20,6 +21,7 @@ const initialState = {
   isLoadingImages: true,
 
   modalIsVisible: false,
+  selectedCategory: "All" satisfies SearchBarCategory as SearchBarCategory
 }
 
 export type ImageState = typeof initialState;
@@ -32,6 +34,8 @@ type Actions = {
   DELETE_IMAGE_ITEM: number;
 
   SET_MODAL_VISIBLE: boolean;
+
+  SET_SELECTED_CATEGORY: SearchBarCategory;
 }
 
 export type ImageActions = ActionCreator<Actions>;
@@ -77,6 +81,12 @@ const imagesReducer: Reducer<ImageState, ImageActions> = (state = initialState, 
       return {
         ...state,
         modalIsVisible: action.payload,
+      }
+
+    case "SET_SELECTED_CATEGORY":
+      return {
+        ...state,
+        selectedCategory: action.payload,
       }
 
     default:

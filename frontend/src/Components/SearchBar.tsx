@@ -3,27 +3,37 @@ import classes from "./SearchBar.module.scss";
 import { ImageActions, categories } from "../store/images-store";
 import { InputGroup } from "react-bootstrap";
 import CategoriesDropdown from "./CategoriesDropdown";
+import { Dispatch } from "@reduxjs/toolkit";
+
+const searchBarCategories = [...categories, "All"] as const;
+export type SearchBarCategory = typeof searchBarCategories[number];
 
 function SearchBar() {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<Dispatch<ImageActions>>();
 
-  const searchBarCategories = [...categories, "All"] as const;
 
   const inputHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     event.preventDefault();
 
     const payload = event.target.value;
 
-    dispatch<ImageActions>({
+    dispatch({
       type: "SET_SEARCH_VALUE",
       payload,
+    })
+  }
+
+  const selectHandler = (category: SearchBarCategory) => {
+    dispatch({
+      type: "SET_SELECTED_CATEGORY",
+      payload: category,
     })
   }
 
   return (
     <InputGroup className={classes["search-section"]}>
       <input onChange={inputHandler} type="text" className={`form-control ${classes["search-input"]}`} placeholder="Search..." />
-      <CategoriesDropdown categories={searchBarCategories} default="All" />
+      <CategoriesDropdown onSelect={selectHandler} categories={searchBarCategories} default="All" />
     </InputGroup>
   )
 }

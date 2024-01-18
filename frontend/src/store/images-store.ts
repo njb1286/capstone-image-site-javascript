@@ -2,7 +2,7 @@ import { Reducer, configureStore } from "@reduxjs/toolkit";
 import { ActionCreator } from "../types";
 import { SearchBarCategory } from "../Components/SearchBar";
 
-export const categories = ["Nature", "Animals", "Food", "Travel", "Sports", "Architecture", "People", "Technology", "Other"] as const;
+export const categories = ["Animals", "Architecture", "Food", "Nature", "Other", "People", "Sports", "Technology", "Travel"] as const;
 export type Category = typeof categories[number];
 
 export class ImageItem {

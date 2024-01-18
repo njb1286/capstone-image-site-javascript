@@ -8,9 +8,13 @@ import { ImageState } from "../store/images-store";
 
 function Home() {
   const searchValue = useSelector((state: ImageState) => state.searchValue);
-
   const isLoadingState = useSelector((state: ImageState) => state.isLoadingImages);
+
   let imageItems = useSelector((state: ImageState) => state.imageItems);
+
+  if (!imageItems.length) {
+    return <p className={classes["no-images"]}>No images found. Go to the Upload page to start uploading</p>
+  }
 
   if (searchValue) {
     imageItems = imageItems.filter(item => item.title.toLowerCase().includes(searchValue.toLowerCase()));
@@ -22,10 +26,6 @@ function Home() {
     content = imageItems.map(item => {
       return <Card {...item} key={item.id} />
     })
-  }
-
-  if (!imageItems.length) {
-    return <p className={classes["no-images"]}>No images found. Go to the Upload page to start uploading</p>
   }
 
   return (

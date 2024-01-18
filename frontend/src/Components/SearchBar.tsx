@@ -21,7 +21,7 @@ function SearchBar() {
   }
 
   return (
-    <InputGroup>
+    <InputGroup className={classes["search-section"]}>
       <input onChange={inputHandler} type="text" className={`form-control ${classes["search-input"]}`} placeholder="Search..." />
       <CategoriesDropdown categories={searchBarCategories} default="All" />
     </InputGroup>

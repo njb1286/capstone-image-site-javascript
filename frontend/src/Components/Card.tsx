@@ -2,7 +2,7 @@ import { NavLink } from "react-router-dom";
 import classes from "./Card.module.scss";
 import { ImageItem } from "../store/images-store";
 import { backendUrl } from "../store/backend-url";
-import { CardFooter, CardHeader, CardText, Image } from "react-bootstrap";
+import { CardFooter, CardHeader, CardText } from "react-bootstrap";
 
 function Card({ title, id, category }: Readonly<ImageItem>) {
   return (
@@ -12,7 +12,10 @@ function Card({ title, id, category }: Readonly<ImageItem>) {
       </CardHeader>
       
       <div className={classes["image-wrapper"]}>
-        <Image alt={title} src={`${backendUrl}/get-image?id=${id}`} className={`card-img ${classes.image}`} />
+        {/* <img alt={title} src={`${backendUrl}/get-image?id=${id}`} className={`card-img ${classes.image}`} /> */}
+        <div style={{
+          backgroundImage: `url(${backendUrl}/get-image?id=${id})`,
+        }} className={`card-img ${classes.image}`}></div>
       </div>
 
       <CardFooter className={classes.footer}>

@@ -31,10 +31,12 @@ function SearchBar() {
   }
 
   return (
-    <InputGroup className={classes["search-section"]}>
+    <div className={classes["search-bar-wrapper"]}>
+      <InputGroup className={classes["search-section"]}>
       <input onChange={inputHandler} type="text" className={`form-control ${classes["search-input"]}`} placeholder="Search..." />
       <CategoriesDropdown title="Filter" onSelect={selectHandler} categories={searchBarCategories} default="All" />
     </InputGroup>
+    </div>
   )
 }
 

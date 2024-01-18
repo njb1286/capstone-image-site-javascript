@@ -27,13 +27,13 @@
     background-color: var(--bs-gray-400);
 
     .image {
-      object-fit: cover;
       -webkit-user-drag: none;
       height: 95%;
       width: 95%;
-      object-position: center;
       align-self: center;
       justify-self: center;
+      background-position: center;
+      background-size: cover;
     }
   }
 

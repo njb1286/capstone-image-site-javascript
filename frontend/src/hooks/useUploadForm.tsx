@@ -4,9 +4,9 @@ import { Button, ButtonGroup, Form, FormControl, FormGroup } from "react-bootstr
 import { useFormField } from "../hooks/useFormField";
 import { useNavigate } from "react-router";
 import { Category, categories } from "../store/images-store";
-import CategoriesDropdown from "./CategoriesDropdown";
+import CategoriesDropdown from "../Components/CategoriesDropdown";
 
-export type UploadFormSubmitEvent = (title: string, description: string, image: File | null, category: Category) => void;
+export type UploadFormSubmitEvent = (title: string, description: string, image: File | null, category: Category) => Promise<void>;
 
 type UploadFormProps = {
   title?: string;
@@ -17,9 +17,11 @@ type UploadFormProps = {
   category?: Category;
 }
 
-function UploadForm(props: Readonly<UploadFormProps>) {
+// Do not mistake this for a component, it was converted from a component to a hook
+export function useUploadForm(props: Readonly<UploadFormProps>) {
   const [submitting, setSubmitting] = useState(false);
   const [category, setCategory] = useState<Category>(props.category ?? "Other");
+  const [isError, setIsError] = useState(false);
 
   const navigate = useNavigate();
 
@@ -116,7 +118,14 @@ function UploadForm(props: Readonly<UploadFormProps>) {
     }
   }, []);
 
-  return (
+  const errorHandler = () => {
+    setIsError(true); 
+    setSubmitting(false); 
+  }
+
+  const errorMessage = <p className={`text-danger`}>An error occurred!</p>
+
+  const component = (
     <div className={classes["upload-form"]}>
       <Form onSubmit={submitHandler}>
         <div className={classes["form-items"]}>
@@ -158,8 +167,10 @@ function UploadForm(props: Readonly<UploadFormProps>) {
           {props.updating && <Button className={`${classes.btn} btn-danger`} type="button" onClick={() => navigate(`/views?id=${props.id!}`)}>Cancel</Button>}
         </ButtonGroup>
       </Form>
+
+      {isError && errorMessage}
     </div>
   )
-}
 
-export default UploadForm;
+  return [component, errorHandler] as const;
+}

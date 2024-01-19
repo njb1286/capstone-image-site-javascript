@@ -76,7 +76,7 @@ function ContentPage() {
         </ButtonGroup>
 
         <div className={`${classes.info} ${classes.col}`}>
-          <img alt={title} src={`${backendUrl}/get-image?id=${id}`} className="card-img" />
+          <img alt={title} src={`${backendUrl}/get-image?id=${id}`} className={`card-img ${classes.img}`} />
           <h1 className="card-title text-center">{title}</h1>
 
           <div className="container">

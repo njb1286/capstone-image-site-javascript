@@ -57,7 +57,7 @@ export function useUploadForm(props: Readonly<UploadFormProps>) {
     }
   }
 
-  const [titleComponent, titleValid, title, setTitleTouched, setTitleValid] = useFormField(
+  const [titleComponent, titleValid, title, setTitleTouched, setTitleValid, setTitleValue] = useFormField(
     FormControl,
     { as: "input" },
     makeInitialState(props.title ?? ""),
@@ -75,6 +75,7 @@ export function useUploadForm(props: Readonly<UploadFormProps>) {
     description,
     setDescriptionTouched,
     setDescriptionValid,
+    setDescriptionValue,
   ] = useFormField(
     FormControl,
     { as: "textarea", style: { height: "300px" } },
@@ -121,6 +122,12 @@ export function useUploadForm(props: Readonly<UploadFormProps>) {
   const errorHandler = () => {
     setIsError(true); 
     setSubmitting(false); 
+  }
+
+  const setValues = (title: string, description: string, category: Category) => {
+    setTitleValue(title);
+    setDescriptionValue(description);
+    setCategory(category);
   }
 
   const errorMessage = <p className={`text-danger`}>An error occurred!</p>
@@ -172,5 +179,5 @@ export function useUploadForm(props: Readonly<UploadFormProps>) {
     </div>
   )
 
-  return [component, errorHandler] as const;
+  return [component, errorHandler, setValues] as const;
 }

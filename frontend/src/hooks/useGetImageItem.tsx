@@ -11,7 +11,7 @@ type ReturnType = ActionCreator<{
   IMAGE_ITEM: ImageItem;
 }>;
 
-export const useGetImageItem = (id: string | null): ReturnType => {
+export function useGetImageItem<T extends (string | number) | null>(id: T): ReturnType {
   const [isError, setIsError] = useState(false);
   const [imageItemState, setImageItemState] = useState<ImageItem | null>(null);
   const hasRun = useRef(false);

@@ -21,7 +21,7 @@
     }
 
 
-    img {
+    .img {
       -webkit-user-drag: none;
       float: right;
       width: 50%;
@@ -46,7 +46,7 @@
         order: 1;
       }
 
-      img {
+      .img {
         width: 100%;
         float: none;
         order: 2;

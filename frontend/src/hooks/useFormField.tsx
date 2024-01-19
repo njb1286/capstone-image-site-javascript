@@ -48,12 +48,8 @@ function formFieldReducer<TFieldValue>(state: State<TFieldValue>, action: Action
  * @param initialState Initial state
  * @param selectChangeableValue A function that picks the value from the change event
  * @param checkValidity Checks the validity of the value. Return undefined if valid, otherwise return an error message
- * @returns {[JSX.Element, TFieldValue, boolean, boolean]} An array containing the following elements:
- * - A JSX.Element that represents the form field.
- * - The value of the form field.
- * - A boolean that indicates whether the form field is currently valid.
- * - A boolean that updates with each keystroke to indicate whether the form field is valid after the keystroke.
- */
+ * @returns A tuple containing the component, a boolean indicating whether the field is valid, the value, a function to set the touched state, a function to set the valid state, and a function to set the value
+*/
 
 export function useFormField<TFieldValue, TElementName extends keyof ValidInputElements = "input">(
   InputElement: typeof FormControl,
@@ -67,7 +63,7 @@ export function useFormField<TFieldValue, TElementName extends keyof ValidInputE
   selectChangeableValue: (event: ChangeEvent<ValidInputElements[TElementName]>) => TFieldValue,
   checkValidity: (value: TFieldValue) => string | undefined,
 ) {
-  const [state, dispatch] = useReducer<Reducer<State<TFieldValue>, Action<TFieldValue>>>(formFieldReducer, initialState);  
+  const [state, dispatch] = useReducer<Reducer<State<TFieldValue>, Action<TFieldValue>>>(formFieldReducer, initialState);
 
   const changeHandler = (event: ChangeEvent<ValidInputElements[TElementName]>) => {
     dispatch({
@@ -118,6 +114,13 @@ export function useFormField<TFieldValue, TElementName extends keyof ValidInputE
     });
   }
 
+  const setValue = (value: TFieldValue) => {
+    dispatch({
+      type: "SET_VALUE",
+      payload: value,
+    });
+  }
+
   const component = <>
     <InputElement
       onBlur={blurHandler}
@@ -154,5 +157,5 @@ export function useFormField<TFieldValue, TElementName extends keyof ValidInputE
   </>;
 
 
-  return [component, !checkValidity(state.value), state.value, setTouched, setValid] as const;
+  return [component, !checkValidity(state.value), state.value, setTouched, setValid, setValue] as const;
 }

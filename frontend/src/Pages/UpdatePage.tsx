@@ -1,28 +1,41 @@
-import { useSelector } from "react-redux";
-import { errorComponent } from "./ContentPage";
 import { backendUrl } from "../store/backend-url";
 import { useNavigate } from "react-router";
 import { useUpdateImageItems } from "../hooks/useUpdateImageItems";
 import { Category, ImageState } from "../store/images-store";
 import { useUploadForm } from "../hooks/useUploadForm";
+import { useGetImageItem } from "../hooks/useGetImageItem";
+import { useEffect } from "react";
+import { useSelector } from "react-redux";
 
 function UpdatePage() {
   const navigate = useNavigate();
   const updateImagesState = useUpdateImageItems();
   const searchParams = new URLSearchParams(location.search);
-  const selector = useSelector((state: ImageState) => state.imageItems);
 
   const id = searchParams.get("id");
 
-  if (!id) {
-    return errorComponent;
+  const imageItem = useSelector((state: ImageState) => id ? state.imageItems.find(item => item.id === +id) : undefined);
+
+  const getImageItem = useGetImageItem(id);
+  const [uploadForm, errorHandler, setFormFields] = useUploadForm({
+    id: +id!,
+    onSubmit: submitHandler,
+    updating: true,
+    title: getImageItem.type === "IMAGE_ITEM" ? getImageItem.payload.title : "",
+    description: getImageItem.type === "IMAGE_ITEM" ? getImageItem.payload.description : "",
+    category: getImageItem.type === "IMAGE_ITEM" ? getImageItem.payload.category : "Other",
+  });
+
+  useEffect(() => {
+    if (!imageItem) return;
+
+    setFormFields(imageItem.title, imageItem.description, imageItem.category);
+  }, [imageItem]);
+
+  if (getImageItem.type === "COMPONENT") {
+    return getImageItem.payload;
   }
 
-  const imageData = selector.find(item => item.id === +id);
-
-  if (!imageData) {
-    return errorComponent;
-  }
 
   async function submitHandler(title: string, description: string, image: File | null, category: Category) {
 
@@ -48,15 +61,6 @@ function UpdatePage() {
     updateImagesState();
     navigate(`/views?id=${id}`);
   }
-
-  const [uploadForm, errorHandler] = useUploadForm({
-    id: +id,
-    onSubmit: submitHandler,
-    updating: true,
-    title: imageData.title,
-    description: imageData.description,
-    category: imageData.category,
-  });
 
   return uploadForm;
 }

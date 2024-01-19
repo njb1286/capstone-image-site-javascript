@@ -1,15 +1,15 @@
-import "bootstrap/dist/css/bootstrap.min.css";
-import Header from "./Components/Header";
-
-import classes from "./App.module.scss";
+import { Suspense, lazy, useEffect } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import HomePage from "./Pages/HomePage";
-import ContentPage from "./Pages/ContentPage";
-import AboutPage from "./Pages/AboutPage";
-import UploadPage from "./Pages/UploadPage";
-import { useEffect } from "react";
+import "bootstrap/dist/css/bootstrap.min.css";
+import classes from "./App.module.scss";
+import Header from "./Components/Header";
 import { useUpdateImageItems } from "./hooks/useUpdateImageItems";
-import UpdatePage from "./Pages/UpdatePage";
+
+const AboutPage = lazy(() => import("./Pages/AboutPage"));
+const ContentPage = lazy(() => import("./Pages/ContentPage"));
+const UploadPage = lazy(() => import("./Pages/UploadPage"));
+const UpdatePage = lazy(() => import("./Pages/UpdatePage"));
+const HomePage = lazy(() => import("./Pages/HomePage"));
 
 function App() {
   const updateImageItems = useUpdateImageItems();
@@ -26,12 +26,12 @@ function App() {
           <Header />
 
           <Routes>
-            <Route Component={HomePage} path="/" />
+            <Route element={<Suspense><HomePage /></Suspense>} path="/" />
 
-            <Route element={<AboutPage />} path="/about" />
-            <Route element={<ContentPage />} path="/views/*" />
-            <Route element={<UploadPage />} path="/upload" />
-            <Route element={<UpdatePage />} path="/update" />
+            <Route element={<Suspense><AboutPage /></Suspense>} path="/about" />
+            <Route element={<Suspense><ContentPage /></Suspense>} path="/views/*" />
+            <Route element={<Suspense><UploadPage /></Suspense>} path="/upload" />
+            <Route element={<Suspense><UpdatePage /></Suspense>} path="/update" />
           </Routes>
         </div>
 

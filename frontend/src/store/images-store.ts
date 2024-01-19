@@ -15,6 +15,17 @@ export class ImageItem {
   ) { }
 }
 
+/* 
+  The reason for this instead of an array is because I need
+  to be able to access the image items by their id, and
+  the id isn't necessarily the index of the array.
+ */
+export type ImageItems = {
+  [key: number]: ImageItem;
+}
+
+export const getImageItems = (imageItems: ImageItems) => Object.entries(imageItems);
+
 const initialState = {
   imageItems: [] as ImageItem[],
   searchValue: "",

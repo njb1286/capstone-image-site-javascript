@@ -15,17 +15,6 @@ export class ImageItem {
   ) { }
 }
 
-/* 
-  The reason for this instead of an array is because I need
-  to be able to access the image items by their id, and
-  the id isn't necessarily the index of the array.
- */
-export type ImageItems = {
-  [key: number]: ImageItem;
-}
-
-export const getImageItems = (imageItems: ImageItems) => Object.entries(imageItems);
-
 const initialState = {
   imageItems: [] as ImageItem[],
   searchValue: "",
@@ -63,23 +52,24 @@ const imagesReducer: Reducer<ImageState, ImageActions> = (state = initialState, 
         searchValue: action.payload,
       }
 
-    case "SET_IMAGE_ITEMS":
+    case "SET_IMAGE_ITEMS": {
+      const imageItems = [...action.payload].sort((a, b) => a.id - b.id);
       return {
         ...state,
-        imageItems: action.payload,
+        imageItems,
       }
+    }
 
     case "SET_LOADING_IMAGES":
       return {
         ...state,
         isLoadingImages: action.payload,
-
       }
 
     case "ADD_IMAGE_ITEM":
       return {
         ...state,
-        imageItems: [...state.imageItems, action.payload],
+        imageItems: [...state.imageItems, action.payload].sort((a, b) => a.id - b.id),
       }
 
     case "DELETE_IMAGE_ITEM":

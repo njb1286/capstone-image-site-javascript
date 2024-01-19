@@ -1,6 +1,7 @@
 import { Dispatch } from "@reduxjs/toolkit";
 import { ImageActions, ImageItem } from "./images-store";
 import { backendUrl } from "./backend-url";
+import ErrorPage from "../Components/ErrorPage";
 
 // Redux thunk action creator
 export function getImageItems() {
@@ -13,11 +14,6 @@ export function getImageItems() {
       type: "SET_IMAGE_ITEMS",
       payload: data,
     });
-
-    dispatch({
-      type: "SET_LOADING_IMAGES",
-      payload: false,
-    })
   }
 
 }

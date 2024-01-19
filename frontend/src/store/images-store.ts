@@ -18,7 +18,6 @@ export class ImageItem {
 const initialState = {
   imageItems: [] as ImageItem[],
   searchValue: "",
-  isLoadingImages: true,
 
   modalIsVisible: false,
   selectedCategory: "All" satisfies SearchBarCategory as SearchBarCategory
@@ -29,7 +28,6 @@ export type ImageState = typeof initialState;
 type Actions = {
   SET_SEARCH_VALUE: string;
   SET_IMAGE_ITEMS: ImageItem[];
-  SET_LOADING_IMAGES: boolean;
   ADD_IMAGE_ITEM: ImageItem;
   DELETE_IMAGE_ITEM: number;
 
@@ -43,15 +41,27 @@ export type ImageActions = ActionCreator<Actions>;
 const imagesReducer: Reducer<ImageState, ImageActions> = (state = initialState, action) => {
   const insertImageItem = (item: ImageItem) => {
     const imageItemsCopy = [...state.imageItems];
-    
+
+    let insertionIndex = -1;
+
     for (let i = 0; i < imageItemsCopy.length; i++) {
-      if (item.id < imageItemsCopy[i].id) {
-        imageItemsCopy.splice(i, 0, item);
-        return imageItemsCopy;
+      if (item.id < imageItemsCopy[i].id && insertionIndex === -1) {
+        insertionIndex = i;
+        continue;
+      }
+
+      if (insertionIndex !== -1 && imageItemsCopy[i].id === item.id) {
+        return null;
       }
     }
 
-    return null;
+    if (insertionIndex !== -1) {
+      imageItemsCopy.splice(insertionIndex, 0, item);
+      return imageItemsCopy;
+    }
+
+    imageItemsCopy.push(item);
+    return imageItemsCopy;
   }
 
   switch (action.type) {
@@ -69,14 +79,9 @@ const imagesReducer: Reducer<ImageState, ImageActions> = (state = initialState, 
       }
     }
 
-    case "SET_LOADING_IMAGES":
-      return {
-        ...state,
-        isLoadingImages: action.payload,
-      }
-
     case "ADD_IMAGE_ITEM": {
       const newImageItems = insertImageItem(action.payload);
+
       if (!newImageItems) return state;
 
       return {

@@ -5,10 +5,11 @@ import classes from "./HomePage.module.scss";
 import Card from "../Components/Card";
 import SearchBar from "../Components/SearchBar";
 import { ImageState } from "../store/images-store";
+import LoadingPage from "../Components/LoadingPage";
 
 function Home() {
   const searchValue = useSelector((state: ImageState) => state.searchValue);
-  const isLoadingState = useSelector((state: ImageState) => state.isLoadingImages);
+  const isLoadingState = useSelector((state: ImageState) => state.imageItems).length;
   const selectedCategory = useSelector((state: ImageState) => state.selectedCategory);
 
   const imageItems = useSelector((state: ImageState) => state.imageItems);
@@ -24,15 +25,9 @@ function Home() {
     });
   }
 
-  let content: JSX.Element | JSX.Element[] = <p>Loading...</p>;
-
-  if (!isLoadingState) {
-    content = (
-      <div className={classes.cards}>{imageItemsCopy.map(item => {
-        return <Card {...item} key={item.id} />
-      })}</div>
-    )
-  }
+  const content = <div className={classes.cards}>{imageItemsCopy.map(item => {
+    return <Card {...item} key={item.id} />
+  })}</div>;
 
   const noImagesFoundMsg = <p className={classes["no-images"]}>No images found</p>;
 

@@ -21,6 +21,8 @@ function App() {
   //   updateImageItems();
   // }, [updateImageItems]);
 
+  const loadingPage = <LoadingPage />;
+
   return (
     <BrowserRouter>
 
@@ -29,12 +31,12 @@ function App() {
           <Header />
 
           <Routes>
-            <Route element={<Suspense><HomePage /></Suspense>} path="/" />
+            <Route element={<Suspense fallback={loadingPage}><HomePage /></Suspense>} path="/" />
 
-            <Route element={<Suspense fallback={<LoadingPage />}><AboutPage /></Suspense>} path="/about" />
-            <Route element={<Suspense fallback={<LoadingPage />}><ContentPage /></Suspense>} path="/views/*" />
-            <Route element={<Suspense fallback={<LoadingPage />}><UploadPage /></Suspense>} path="/upload" />
-            <Route element={<Suspense fallback={<LoadingPage />}><UpdatePage /></Suspense>} path="/update" />
+            <Route element={<Suspense fallback={loadingPage}><AboutPage /></Suspense>} path="/about" />
+            <Route element={<Suspense fallback={loadingPage}><ContentPage /></Suspense>} path="/views/*" />
+            <Route element={<Suspense fallback={loadingPage}><UploadPage /></Suspense>} path="/upload" />
+            <Route element={<Suspense fallback={loadingPage}><UpdatePage /></Suspense>} path="/update" />
           </Routes>
         </div>
 

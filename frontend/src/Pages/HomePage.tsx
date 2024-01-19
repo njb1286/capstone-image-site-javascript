@@ -1,43 +1,43 @@
 import { useSelector } from "react-redux";
+import { useMemo } from "react";
 
 import classes from "./HomePage.module.scss";
 
 import Card from "../Components/Card";
 import SearchBar from "../Components/SearchBar";
+import ErrorPage from "../Components/ErrorPage";
 import { ImageState } from "../store/images-store";
-import LoadingPage from "../Components/LoadingPage";
 
-function Home() {
+function HomePage() {
   const searchValue = useSelector((state: ImageState) => state.searchValue);
-  const isLoadingState = useSelector((state: ImageState) => state.imageItems).length;
   const selectedCategory = useSelector((state: ImageState) => state.selectedCategory);
-
   const imageItems = useSelector((state: ImageState) => state.imageItems);
-  let imageItemsCopy = Array.from(imageItems);
 
-  if (searchValue || selectedCategory !== "All") {
-    imageItemsCopy = Array.from(imageItems).filter(item => {
-      if (selectedCategory !== "All" && selectedCategory !== item.category) {
-        return false;
-      }
+  const filteredImageItems = useMemo(() => {
+    return imageItems.filter(item => {
+      const matchesCategory = selectedCategory === "All" || item.category === selectedCategory;
+      const matchesSearch = !searchValue || item.title.toLowerCase().includes(searchValue.toLowerCase());
 
-      return item.title.toLowerCase().includes(searchValue.toLowerCase());
+      return matchesCategory && matchesSearch;
     });
-  }
+  }, [selectedCategory, searchValue, imageItems]);
 
-  const content = <div className={classes.cards}>{imageItemsCopy.map(item => {
-    return <Card {...item} key={item.id} />
-  })}</div>;
-
-  const noImagesFoundMsg = <p className={classes["no-images"]}>No images found</p>;
+  const content = !filteredImageItems.length ? (
+    <ErrorPage message="No images found" />
+  ) : (
+    <div className={classes.cards}>
+      {filteredImageItems.map(item => {
+        return <Card {...item} key={item.id} />;
+      })}
+    </div>
+  );
 
   return (
     <>
       <SearchBar />
-
-      {!imageItemsCopy.length ? noImagesFoundMsg : content}
+      {content}
     </>
-  )
+  );
 }
 
-export default Home;
+export default HomePage;

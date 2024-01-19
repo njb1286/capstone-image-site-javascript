@@ -6,4 +6,9 @@
 
 .category-item {
   font-size: 2rem;
+
+  &.active {
+    background-color: var(--bs-primary);
+    color: var(--bs-light);
+  }
 }

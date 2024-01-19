@@ -31,7 +31,7 @@ function CategoriesDropdown<T extends readonly string[], U extends T[number]>(pr
 
       <Dropdown.Menu>
         {props.categories.map(categoryItem => {
-          return <Dropdown.Item className={classes["category-item"]} as={"button"} onClick={selectCategory} key={`category_${categoryItem}`}>{categoryItem}</Dropdown.Item>
+          return <Dropdown.Item className={`${classes["category-item"]} ${category.toLowerCase() === categoryItem.toLowerCase() ? classes.active : ""}`} as={"button"} onClick={selectCategory} key={`category_${categoryItem}`}>{categoryItem}</Dropdown.Item>
         })}
       </Dropdown.Menu>
     </Dropdown>

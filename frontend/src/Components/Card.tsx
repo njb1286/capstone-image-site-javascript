@@ -12,15 +12,25 @@ function Card({ title, id, category }: Readonly<ImageItem>) {
   const imageLoadHandler = useCallback(() => {
     setImageLoaded(true);
   }, [setImageLoaded]);
-  useEffect(() => {
-    const image = document.createElement("img");
-    image.src = `${backendUrl}/get-image?id=${id}`;
-    image.onload = imageLoadHandler;
 
-    return () => {
-      image.onload = null;
+  const smallImageUrl = `${backendUrl}/get-small-image?id=${id}`;
+  const imageUrl = `${backendUrl}/get-image?id=${id}`;
+
+  useEffect(() => {
+    const smallImage = new Image();
+    smallImage.src = smallImageUrl;
+    smallImage.onload = () => {
+      setImageLoaded(true);
+    };
+  }, [id, backendUrl]);
+
+  useEffect(() => {
+    if (imageLoaded) {
+      const image = new Image();
+      image.src = imageUrl;
+      image.onload = imageLoadHandler;
     }
-  }, [id, backendUrl, imageLoadHandler]);
+  }, [id, backendUrl, imageLoadHandler, imageLoaded]);
 
   return (
     <NavLink to={`/views?id=${id}`} className={`card text-center ${classes.card}`}>
@@ -33,11 +43,11 @@ function Card({ title, id, category }: Readonly<ImageItem>) {
         <img
           loading="lazy"
           alt={title}
-          src={`${backendUrl}/get-image?id=${id}`}
+          src={imageUrl}
           className={`card-img ${classes.image} ${imageLoaded ? classes.loaded : ""}`}
         />
         <div className={classes["loading-img"]} style={{
-          backgroundImage: `url(${backendUrl}/get-small-image?id=${id})`,
+          backgroundImage: `url(${smallImageUrl})`,
         }} />
       </div>
 

@@ -103,6 +103,24 @@ app.get("/api/get", (req, res) => {
   });
 });
 
+app.get("/api/last", (_, res) => {
+  const selectQuery = `SELECT id, title, description, category, date FROM images ORDER BY id DESC LIMIT 1`;
+
+  db.get(selectQuery, (err, row) => {
+    if (err) {
+      res.status(500).send("Error getting data");
+      return;
+    }
+
+    if (!row) {
+      res.status(404).send("No data found");
+      return;
+    }
+
+    res.status(200).send(row);
+  });
+})
+
 app.get("/api/get-slice", (req, res) => {
   const limitParam = req.query.limit;
   const offsetParam = req.query.offset;

@@ -7,11 +7,11 @@ export type Category = typeof categories[number];
 
 export class ImageItem {
   constructor(
-    readonly title: string,
-    readonly description: string,
-    readonly id: number,
-    readonly date: string,
-    readonly category: Category,
+    public title: string,
+    public description: string,
+    public readonly id: number,
+    public readonly date: string,
+    public category: Category,
   ) { }
 }
 
@@ -25,10 +25,15 @@ const initialState = {
 
 export type ImageState = typeof initialState;
 
+type Optional<T extends object> = {
+  [K in keyof T]?: T[K];
+}
+
 type Actions = {
   SET_SEARCH_VALUE: string;
   SET_IMAGE_ITEMS: ImageItem[];
   ADD_IMAGE_ITEM: ImageItem;
+  UPDATE_IMAGE_ITEM: Optional<Omit<ImageItem, "date">> & { id: number };
   DELETE_IMAGE_ITEM: number;
 
   SET_MODAL_VISIBLE: boolean;
@@ -39,6 +44,13 @@ type Actions = {
 export type ImageActions = ActionCreator<Actions>;
 
 const imagesReducer: Reducer<ImageState, ImageActions> = (state = initialState, action) => {
+
+  /* 
+    Iterate over the array, and place the item in the correct position instead of
+    creating a new array with the added item, then sorting it.
+
+    I need to keep this array sorted so I can maintain item order
+  */
   const insertImageItem = (item: ImageItem) => {
     const imageItemsCopy = [...state.imageItems];
 
@@ -87,6 +99,22 @@ const imagesReducer: Reducer<ImageState, ImageActions> = (state = initialState, 
       return {
         ...state,
         imageItems: newImageItems,
+      }
+    }
+
+    case "UPDATE_IMAGE_ITEM": {
+      return {
+        ...state,
+        imageItems: state.imageItems.map(item => {
+          if (item.id === action.payload.id) {
+            return {
+              ...item,
+              ...action.payload,
+            }
+          }
+
+          return item;
+        })
       }
     }
 

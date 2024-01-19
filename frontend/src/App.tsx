@@ -17,9 +17,9 @@ const HomePage = lazyLoader("./Pages/HomePage");
 function App() {
   const updateImageItems = useUpdateImageItems();
 
-  useEffect(() => {
-    updateImageItems();
-  }, [updateImageItems]);
+  // useEffect(() => {
+  //   updateImageItems();
+  // }, [updateImageItems]);
 
   return (
     <BrowserRouter>

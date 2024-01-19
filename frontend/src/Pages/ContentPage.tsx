@@ -1,23 +1,21 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { Button, ButtonGroup, CardBody } from "react-bootstrap";
 import { useModal } from "../hooks/useModal";
-import { ImageActions, ImageState, imageStore } from "../store/images-store";
+import { ImageActions, imageStore } from "../store/images-store";
 import { backendUrl } from "../store/backend-url";
 import classes from "./ContentPage.module.scss";
-import LoadingPage from "../Components/LoadingPage";
-import { addImageItem } from "../store/images-actions";
+import { useGetImageItem } from "../hooks/useGetImageItem";
 
 export const errorComponent = <h2>Hmmm... we couldn't find that image...</h2>;
 
 function ContentPage() {
-  const imagesData = useSelector((state: ImageState) => state.imageItems);
-
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
-  const id = searchParams.get("id");
+  const id = searchParams.get("id")!;
   const navigate = useNavigate();
   const dispatch = useDispatch<typeof imageStore.dispatch>();
+  const getImageItem = useGetImageItem(id);
 
   const [modalPortal, setDeleteModalIsVisible] = useModal("Delete Image", "Are you sure you want to delete this image?", (closeHandler) => {
     return (
@@ -32,15 +30,8 @@ function ContentPage() {
 
   });
 
-  if (!id) {
-    return errorComponent;
-  }
-
-  const imageData = imagesData.find(item => item.id === +id);
-
-  if (!imageData) {
-    dispatch(addImageItem(+id));
-    return <LoadingPage />;
+  if (getImageItem.type === "COMPONENT") {
+    return getImageItem.payload;
   }
 
   const handleReturnHome = () => {
@@ -65,6 +56,8 @@ function ContentPage() {
   const handleUpdate = () => {
     navigate(`/update?id=${id}`);
   }
+
+  const imageData = getImageItem.payload;
 
   const { title, description } = imageData;
 

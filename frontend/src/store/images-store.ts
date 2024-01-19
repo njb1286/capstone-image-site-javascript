@@ -41,8 +41,17 @@ type Actions = {
 export type ImageActions = ActionCreator<Actions>;
 
 const imagesReducer: Reducer<ImageState, ImageActions> = (state = initialState, action) => {
-  if (!state) {
-    return initialState;
+  const insertImageItem = (item: ImageItem) => {
+    const imageItemsCopy = [...state.imageItems];
+    
+    for (let i = 0; i < imageItemsCopy.length; i++) {
+      if (item.id < imageItemsCopy[i].id) {
+        imageItemsCopy.splice(i, 0, item);
+        return imageItemsCopy;
+      }
+    }
+
+    return null;
   }
 
   switch (action.type) {
@@ -66,11 +75,15 @@ const imagesReducer: Reducer<ImageState, ImageActions> = (state = initialState, 
         isLoadingImages: action.payload,
       }
 
-    case "ADD_IMAGE_ITEM":
+    case "ADD_IMAGE_ITEM": {
+      const newImageItems = insertImageItem(action.payload);
+      if (!newImageItems) return state;
+
       return {
         ...state,
-        imageItems: [...state.imageItems, action.payload].sort((a, b) => a.id - b.id),
+        imageItems: newImageItems,
       }
+    }
 
     case "DELETE_IMAGE_ITEM":
       return {

@@ -68,7 +68,7 @@ interface Table {
 }
 
 app.get("/api/get", (req, res) => {
-  const selectQuery = `SELECT id, title, description, category, date FROM images where id = ?`;
+  const selectQuery = `SELECT id, title, description, category, date FROM images WHERE id = ?`;
 
   if (!req.query.id) {
     db.all("SELECT id, title, description, category, date FROM images", (err: unknown, row: Table) => {
@@ -100,6 +100,57 @@ app.get("/api/get", (req, res) => {
     }
 
     res.status(200).send(row);
+  });
+});
+
+app.get("/api/get-slice", (req, res) => {
+  const limitParam = req.query.limit;
+  const offsetParam = req.query.offset;
+
+  if (!limitParam) {
+    res.status(400).send("No limit provided");
+    return;
+  }
+
+  if (isNaN(+limitParam)) {
+    res.status(400).send("Limit must be a number");
+    return;
+  }
+
+  const query = `SELECT id, title, description, category, date FROM images ${offsetParam ? "WHERE id < ?" : ""} ORDER BY id ASC LIMIT ?`;
+  const values = [limitParam];
+  if (offsetParam) {
+    if (isNaN(+offsetParam)) {
+      res.status(400).send("Offset must be a number");
+      return;
+    }
+    values.push(offsetParam);
+  };
+
+  db.get<{ count: number }>("SELECT COUNT(*) AS count FROM images", (err, itemCountRow) => {
+    if (err) {
+      res.status(500).send("Error getting data");
+      return;
+    }
+
+    if (!itemCountRow) {
+      res.status(404).send("No data found");
+      return;
+    }
+
+    db.all(query, values, (err, sliceRows) => {
+      if (err) {
+        res.status(500).send("Error getting data");
+        return;
+      }
+
+      if (!sliceRows) {
+        res.status(404).send("No data found");
+        return;
+      }
+
+      res.status(200).send({ data: sliceRows, totalItemsCount: itemCountRow.count });
+    });
   });
 });
 

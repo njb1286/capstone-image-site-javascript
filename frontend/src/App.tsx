@@ -1,15 +1,18 @@
-import { Suspense, lazy, useEffect } from "react";
+import React, { Suspense, useEffect } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import classes from "./App.module.scss";
 import Header from "./Components/Header";
 import { useUpdateImageItems } from "./hooks/useUpdateImageItems";
+import LoadingPage from "./Components/LoadingPage";
 
-const AboutPage = lazy(() => import("./Pages/AboutPage"));
-const ContentPage = lazy(() => import("./Pages/ContentPage"));
-const UploadPage = lazy(() => import("./Pages/UploadPage"));
-const UpdatePage = lazy(() => import("./Pages/UpdatePage"));
-const HomePage = lazy(() => import("./Pages/HomePage"));
+const lazyLoader = (path: string) => React.lazy(() => import(path));
+
+const AboutPage = lazyLoader("./Pages/AboutPage");
+const ContentPage = lazyLoader("./Pages/ContentPage");
+const UploadPage = lazyLoader("./Pages/UploadPage");
+const UpdatePage = lazyLoader("./Pages/UpdatePage");
+const HomePage = lazyLoader("./Pages/HomePage");
 
 function App() {
   const updateImageItems = useUpdateImageItems();
@@ -28,10 +31,10 @@ function App() {
           <Routes>
             <Route element={<Suspense><HomePage /></Suspense>} path="/" />
 
-            <Route element={<Suspense><AboutPage /></Suspense>} path="/about" />
-            <Route element={<Suspense><ContentPage /></Suspense>} path="/views/*" />
-            <Route element={<Suspense><UploadPage /></Suspense>} path="/upload" />
-            <Route element={<Suspense><UpdatePage /></Suspense>} path="/update" />
+            <Route element={<Suspense fallback={<LoadingPage />}><AboutPage /></Suspense>} path="/about" />
+            <Route element={<Suspense fallback={<LoadingPage />}><ContentPage /></Suspense>} path="/views/*" />
+            <Route element={<Suspense fallback={<LoadingPage />}><UploadPage /></Suspense>} path="/upload" />
+            <Route element={<Suspense fallback={<LoadingPage />}><UpdatePage /></Suspense>} path="/update" />
           </Routes>
         </div>
 

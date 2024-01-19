@@ -1,5 +1,5 @@
 import { Reducer, configureStore } from "@reduxjs/toolkit";
-import { ActionCreator } from "../types";
+import { ActionCreator, ActionCreatorNoPayload } from "../types";
 import { SearchBarCategory } from "../Components/SearchBar";
 
 export const categories = ["Animals", "Architecture", "Food", "Nature", "Other", "People", "Sports", "Technology", "Travel"] as const;
@@ -20,7 +20,8 @@ const initialState = {
   searchValue: "",
 
   modalIsVisible: false,
-  selectedCategory: "All" satisfies SearchBarCategory as SearchBarCategory
+  selectedCategory: "All" satisfies SearchBarCategory as SearchBarCategory,
+  hasMoreItems: true,
 }
 
 export type ImageState = typeof initialState;
@@ -29,19 +30,20 @@ type Optional<T extends object> = {
   [K in keyof T]?: T[K];
 }
 
-type Actions = {
+export type ImageActions = ActionCreator<{
   SET_SEARCH_VALUE: string;
   SET_IMAGE_ITEMS: ImageItem[];
   ADD_IMAGE_ITEM: ImageItem;
+  ADD_IMAGE_ITEMS: ImageItem[];
   UPDATE_IMAGE_ITEM: Optional<Omit<ImageItem, "date">> & { id: number };
   DELETE_IMAGE_ITEM: number;
 
   SET_MODAL_VISIBLE: boolean;
 
   SET_SELECTED_CATEGORY: SearchBarCategory;
-}
-
-export type ImageActions = ActionCreator<Actions>;
+}> | ActionCreatorNoPayload<[
+  "HAS_NO_MORE_ITEMS"
+]>;
 
 const imagesReducer: Reducer<ImageState, ImageActions> = (state = initialState, action) => {
 
@@ -76,6 +78,38 @@ const imagesReducer: Reducer<ImageState, ImageActions> = (state = initialState, 
     return imageItemsCopy;
   }
 
+  const insertImageItems = (items: ImageItem[]) => {
+    const imageItemsCopy = [...state.imageItems];
+
+    for (const item of items) {
+      let insertionIndex = -1;
+      let hasCopy = false;
+
+      for (let i = 0; i < imageItemsCopy.length; i++) {
+        if (hasCopy) break;
+
+        if (item.id === imageItemsCopy[i].id) {
+          hasCopy = true;
+          break;
+        };
+
+        if (insertionIndex !== -1) continue;
+
+        if (item.id < imageItemsCopy[i].id) {
+          insertionIndex = i;
+        }
+      }
+
+      if (hasCopy) continue;
+
+      if (insertionIndex === -1) imageItemsCopy.push(item);
+
+      imageItemsCopy.splice(insertionIndex, 0, item);
+    }
+
+    return imageItemsCopy;
+  }
+
   switch (action.type) {
     case "SET_SEARCH_VALUE":
       return {
@@ -99,6 +133,14 @@ const imagesReducer: Reducer<ImageState, ImageActions> = (state = initialState, 
       return {
         ...state,
         imageItems: newImageItems,
+      }
+    }
+
+    case "ADD_IMAGE_ITEMS": {
+      const newImageItems = insertImageItems(action.payload);
+      return {
+        ...state,
+        imageItems: newImageItems
       }
     }
 
@@ -134,6 +176,12 @@ const imagesReducer: Reducer<ImageState, ImageActions> = (state = initialState, 
       return {
         ...state,
         selectedCategory: action.payload,
+      }
+
+    case "HAS_NO_MORE_ITEMS":
+      return {
+        ...state,
+        hasMoreItems: false,
       }
 
     default:

@@ -4,3 +4,7 @@ export type ActionCreator<T extends Record<string, any>> = {
     payload: T[K];
   }
 }[keyof T];
+
+export type ActionCreatorNoPayload<T extends string[]> = {
+  type: T[number];
+};

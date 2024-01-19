@@ -9,7 +9,7 @@
   display: grid;
   height: 60rem;
   grid-template-rows: 1fr 5fr 5rem;
-  
+
   .header {
     display: grid;
 
@@ -48,17 +48,17 @@
       inset: 0;
       background-size: cover;
       background-position: center;
-      filter: blur(5px); 
+      filter: blur(5px);
 
       @keyframes loading-image {
         0% {
           background-color: rgba(255, 255, 255, 0);
         }
-        
+
         50% {
           background-color: rgba(255, 255, 255, 0.15);
         }
-        
+
         100% {
           background-color: rgba(255, 255, 255, 0);
         }
@@ -89,10 +89,11 @@
 
 @media (max-width: $media-width) {
   .card {
-    height: 37rem;
+    height: 60rem;
   }
-    .image {
-      height: 100%;
-      width: 100%;
-    }
+
+  .image {
+    height: 100%;
+    width: 100%;
+  }
 }

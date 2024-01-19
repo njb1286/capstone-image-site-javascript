@@ -167,7 +167,7 @@ app.get("/api/get-slice", (req, res) => {
         return;
       }
 
-      res.status(200).send({ data: sliceRows, totalItemsCount: itemCountRow.count });
+      res.status(200).send({ data: sliceRows, hasMore: itemCountRow.count > +limitParam });
     });
   });
 });

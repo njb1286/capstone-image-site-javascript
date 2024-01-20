@@ -30,4 +30,13 @@
     padding-left: 1rem;
     padding-right: 1rem;
   }
+
+  .search-section {
+    flex-direction: column;
+    width: 100%;
+
+    .search-input, button {
+      width: 100%;
+    }
+  }
 }

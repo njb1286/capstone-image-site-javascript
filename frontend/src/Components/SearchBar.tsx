@@ -3,7 +3,7 @@ import classes from "./SearchBar.module.scss";
 import { categories, imageStore } from "../store/images-store";
 import { InputGroup, Spinner } from "react-bootstrap";
 import CategoriesDropdown from "./CategoriesDropdown";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { getByTitle } from "../store/images-actions";
 
 const searchBarCategories = ["All", ...categories] as const;

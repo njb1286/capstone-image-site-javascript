@@ -67,12 +67,12 @@ const LazyImage = ({ id, wrapperClassName, imageClassName, title }: LazyImagePro
         className={classes["loading-img"]}
       />
 
-      {shouldRenderImage && <img
+      <img
         alt={title}
         src={imageUrl}
         loading="lazy"
-        className={`${imageClassName} ${classes.image} ${imageLoaded ? classes.loaded : ""}`}
-      />}
+        className={`${imageClassName} ${classes.image} ${shouldRenderImage ? classes.visible : ""} ${imageLoaded && shouldRenderImage ? classes.loaded : ""}`}
+      />
     </div>
   )
 }

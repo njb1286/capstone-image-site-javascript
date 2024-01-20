@@ -17,10 +17,19 @@ function HomePage() {
   const hasMore = useSelector((state: ImageState) => state.hasMoreItems);
   const imageItems = useSelector((state: ImageState) => state.imageItems);
   const dispatch = useDispatch<typeof imageStore.dispatch>();
+  const [loadingImages, setLoadingImages] = useState(false);
+
+  useEffect(() => {
+    if (loadingImages) {
+      console.log("Loading images...");
+      return;
+    }
+
+    console.log("Done!");
+    
+  }, [loadingImages]);
 
   const cardsRef = useRef<HTMLDivElement>(null);
-
-  const [cardsInViewHeight, setCardsInViewHeight] = useState<number | null>(null);
 
   const cardsPerRow = useRef(3);
   const cardsOverflowCount = useRef(6);
@@ -45,14 +54,18 @@ function HomePage() {
 
   const initialRender = (cardsInHeight: number) => {
     cardsRendered.current = cardsInHeight + cardsOverflowCount.current;
-    
+
     dispatch(getImageSlice(0, cardsRendered.current));
   }
 
   const renderNextCards = () => {
-    console.log("Offset", cardsRendered.current + 1, "Count", cardsOverflowCount.current);
+    setLoadingImages(true);
+
+    const doneLoadingImages = () => {
+      setLoadingImages(false);
+    }
     
-    dispatch(getImageSlice(cardsRendered.current + 1, cardsOverflowCount.current));
+    dispatch(getImageSlice(cardsRendered.current + 1, cardsOverflowCount.current, doneLoadingImages));
 
     cardsRendered.current += cardsOverflowCount.current;
   }
@@ -66,13 +79,9 @@ function HomePage() {
       initialRender(cardCount);
 
       updateCardData();
-      setCardsInViewHeight(cardCount + cardsOverflowCount.current);
 
       window.addEventListener("resize", () => {
         updateCardData();
-
-        const cardsCount = getCardsInView(cardsRef.current!)
-        setCardsInViewHeight(cardsCount + cardsOverflowCount.current);
       })
     }
   }, []);

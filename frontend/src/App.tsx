@@ -59,8 +59,7 @@ function App() {
   }
 
   if (state === "valid") {
-    component = <BrowserRouter>
-
+    component = (
       <div className={classes["column-wrapper"]}>
         <div className={classes.column}>
           <Header />
@@ -76,14 +75,17 @@ function App() {
         </div>
 
       </div>
-
-    </BrowserRouter>
+    )
   }
 
+  const returnedComponent = state !== "valid" ? <Routes>
+    <Route path="/*" element={component} />
+  </Routes> : component;
+
   return (
-    <>
-      {component}
-    </>
+    <BrowserRouter>
+      {returnedComponent}
+    </BrowserRouter>
   )
 }
 

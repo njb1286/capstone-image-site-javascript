@@ -68,13 +68,18 @@ interface Table {
 }
 
 app.get("/api/get", (req, res) => {
-  const selectQuery = `SELECT id, title, description, category, date FROM images WHERE id = ?`;
+  const selectQuery = `SELECT id, title, description, category, date FROM images WHERE id = ? ORDER BY id ASC`;
 
-  if (!req.query.id) {
+  if (!req.query.id) {    
+    const loadedItems = req.get("loadedItems");
+    const splitLoadedItems = loadedItems ? loadedItems.split(",") : null;
+
+    const excludeQuery = loadedItems ? ` id NOT IN (${splitLoadedItems!.map(() => "?").join(",")})` : null;  
+
     let query = `SELECT id, title, description, category, date FROM images`
     const categoryParam = req.query.category;
     const titleParam = req.query.title;
-    
+
     const values = [] as string[];
 
     if (categoryParam) {
@@ -84,15 +89,24 @@ app.get("/api/get", (req, res) => {
 
     if (titleParam) {
       if (categoryParam) query += " AND";
+      if (!query.includes("WHERE")) query += " WHERE";
 
-      query += ` WHERE LOWER(title) LIKE ?`;
+      query += ` LOWER(title) LIKE ?`;
 
       values.push(`%${titleParam as string}%`);
     }
 
+    if (excludeQuery) {
+      if (categoryParam || titleParam) query += " AND";
+      if (!query.includes("WHERE")) query += " WHERE";
+      query += excludeQuery;
+      values.push(...splitLoadedItems!);
+    }    
+
     db.all(query, values, (err: unknown, row: Table) => {
       if (err) {
         res.status(500).send("Error getting data");
+        
         return;
       }
 
@@ -105,9 +119,12 @@ app.get("/api/get", (req, res) => {
     })
 
     return;
-  }
+  }  
 
-  db.get(selectQuery, [req.query.id], (err, row) => {
+  const values = [req.query.id];
+  
+
+  db.get(selectQuery, values, (err, row) => {
     if (err) {
       res.status(500).send("Error getting data");
       return;
@@ -123,7 +140,7 @@ app.get("/api/get", (req, res) => {
 });
 
 app.get("/api/last", (_, res) => {
-  const selectQuery = `SELECT id, title, description, category, date FROM images ORDER BY id DESC LIMIT 1`;
+  const selectQuery = `SELECT id, title, description, category, date FROM images ORDER BY id ASC LIMIT 1`;
 
   db.get(selectQuery, (err, row) => {
     if (err) {
@@ -143,6 +160,11 @@ app.get("/api/last", (_, res) => {
 app.get("/api/get-slice", (req, res) => {
   const limitParam = req.query.limit;
   const offsetParam = req.query.offset;
+  const loadedItems = req.get("loadedItems");
+
+  const splitLoadedItems = loadedItems ? loadedItems.split(",") : null;
+
+  const excludeQuery = loadedItems ? `id NOT IN (${splitLoadedItems!.map(() => "?").join(",")})` : null;
 
   if (!limitParam) {
     res.status(400).send("No limit provided");
@@ -163,11 +185,7 @@ app.get("/api/get-slice", (req, res) => {
     res.status(400).send("Offset must be a number");
     return;
   }
-
-  const query = `SELECT id, title, description, category, date FROM images ORDER BY id ASC LIMIT ? OFFSET ?`;
-
-  const values = [limitParam, offsetParam];
-
+  
   db.get<{ count: number }>("SELECT COUNT(*) AS count FROM images", (err, itemCountRow) => {
     if (err) {
       res.status(500).send("Error getting data");
@@ -179,6 +197,13 @@ app.get("/api/get-slice", (req, res) => {
       return;
     }
 
+    const query = `SELECT id, title, description, category, date FROM images ${excludeQuery ? "WHERE " + excludeQuery : ""} ORDER BY id ASC LIMIT ? OFFSET ?`;
+    
+    const values = [+limitParam, offsetParam];
+    if (loadedItems) {
+      values.unshift(...splitLoadedItems!);
+    }
+
     db.all(query, values, (err, sliceRows) => {
       if (err) {
         res.status(500).send("Error getting data");
@@ -188,9 +213,9 @@ app.get("/api/get-slice", (req, res) => {
       if (!sliceRows) {
         res.status(404).send("No data found");
         return;
-      }      
+      }
 
-      res.status(200).send({ data: sliceRows, hasMore: (+offsetParam + +limitParam < itemCountRow.count)});
+      res.status(200).send({ data: sliceRows, hasMore: (+offsetParam + +limitParam <= itemCountRow.count)});
     });
   });
 });

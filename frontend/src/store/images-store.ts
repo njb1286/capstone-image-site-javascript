@@ -124,7 +124,8 @@ const imagesReducer: Reducer<ImageState, ImageActions> = (state = initialState, 
       }
 
     case "SET_IMAGE_ITEMS": {
-      const imageItems = [...action.payload].sort((a, b) => a.id - b.id);
+      const imageItems = [...action.payload].sort((a, b) => a.id - b.id);      
+
       return {
         ...state,
         imageItems,

@@ -26,6 +26,7 @@ function HomePage() {
   const cardsPerRow = useRef(3);
   const cardsOverflowCount = useRef(6);
   const cardsRendered = useRef(0);
+  const loadedImages = useRef(imageItems.map(item => item.id));
 
   function getCardsInView(element: HTMLElement) {
     const result = Math.max(Math.ceil(element.clientHeight / cardHeight * cardsPerRow.current), cardsPerRow.current);
@@ -47,19 +48,21 @@ function HomePage() {
   const initialRender = (cardsInHeight: number) => {
     cardsRendered.current = cardsInHeight + cardsOverflowCount.current;
 
-    if (imageItems.length >= cardsRendered.current) return;    
-
-    dispatch(getImageSlice(imageItems.length, cardsRendered.current));
+    dispatch(getImageSlice(0, cardsRendered.current, undefined, imageItems.map(item => item.id)));
   }
 
   const renderNextCards = () => {    
     const doneLoading = () => {
       setLoadingImages(false);
     }
+    
+    dispatch(getImageSlice(cardsRendered.current, cardsOverflowCount.current, doneLoading, loadedImages.current));    
 
-    dispatch(getImageSlice(cardsRendered.current + 1, cardsOverflowCount.current, doneLoading));
+    cardsRendered.current += cardsOverflowCount.current;    
+  }
 
-    cardsRendered.current += cardsOverflowCount.current;
+  const resizeHandler = () => {
+    updateCardData();
   }
 
   useEffect(() => {
@@ -68,8 +71,10 @@ function HomePage() {
     if (selectedCategory === "All") return;
 
     if (loadedCategories.includes(selectedCategory)) return;
+    
+    const loadedItems = imageItems.filter(item => item.category === selectedCategory).map(item => item.id);
 
-    dispatch(getCategoryItems(selectedCategory));
+    dispatch(getCategoryItems(selectedCategory, loadedItems));
   }, [selectedCategory]);
 
   useEffect(() => {
@@ -84,16 +89,20 @@ function HomePage() {
 
       updateCardData();
 
-      window.addEventListener("resize", () => {
-        updateCardData();
-      });
+      window.addEventListener("resize", resizeHandler);
+    }
+
+    return () => {
+      window.removeEventListener("resize", resizeHandler);
     }
   }, []);
 
   const scrollHandler = (event: React.UIEvent<HTMLDivElement, UIEvent>) => {
     const element = event.target as HTMLDivElement;
 
-    if (Math.abs(element.scrollHeight - element.scrollTop - element.clientHeight) < 50 && !loadingImages) {
+    const condition = element.scrollHeight - element.scrollTop - element.clientHeight;
+    
+    if (Math.abs(condition) < 25 && !loadingImages) {
       setLoadingImages(true);
       renderNextCards();
     }
@@ -124,7 +133,6 @@ function HomePage() {
       <SearchBar />
       <div onScroll={scrollHandler} className={classes.cards} ref={cardsRef}>
         {content}
-
       </div>
     </>
   );

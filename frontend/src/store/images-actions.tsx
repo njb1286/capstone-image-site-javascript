@@ -17,18 +17,23 @@ export const getImageItems = () => {
 
 }
 
-export const getImageSlice = (offset: number, count: number, doneLoading?: () => void) => {
+export const getImageSlice = (offset: number, count: number, doneLoading?: () => void, loadedItems?: number[]) => {
   return async function (dispatch: Dispatch<ImageActions>) {
-    const url = `${backendUrl}/get-slice?limit=${count}&offset=${offset}`;
+    const url = `${backendUrl}/get-slice?limit=${count}&offset=${offset}`;    
 
-    const response = await fetch(url);
-    const responseData = await response.json() as { data: ImageItem[], hasMore: boolean };
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        loadedItems: loadedItems ? loadedItems.join(",") : ""
+      }
+    });
+    const responseData = await response.json() as { data: ImageItem[], hasMore: boolean };        
 
     dispatch({
       type: "ADD_IMAGE_ITEMS",
       payload: responseData.data,
-    });        
-    
+    });
+
     doneLoading?.();
 
     if (!responseData.hasMore) {
@@ -39,12 +44,17 @@ export const getImageSlice = (offset: number, count: number, doneLoading?: () =>
   }
 }
 
-export const getCategoryItems = (category: Category) => {
+export const getCategoryItems = (category: Category, loadedItems?: number[]) => {
   return async function (dispatch: Dispatch<ImageActions>) {
     const url = `${backendUrl}/get?category=${category.toLowerCase()}`;
 
-    const response = await fetch(url);
-    const responseData = await response.json() as ImageItem[];    
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        loadedItems: loadedItems ? loadedItems.join(",") : ""
+      }
+    });
+    const responseData = await response.json() as ImageItem[];
 
     dispatch({
       type: "ADD_IMAGE_ITEMS",
@@ -59,7 +69,7 @@ export const getByTitle = (title: string) => {
     url.searchParams.set("title", title.toLowerCase());
 
     const response = await fetch(url);
-    const responseData = await response.json() as ImageItem[];    
+    const responseData = await response.json() as ImageItem[];
 
     dispatch({
       type: "ADD_IMAGE_ITEMS",

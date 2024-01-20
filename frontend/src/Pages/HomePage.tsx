@@ -46,17 +46,17 @@ function HomePage() {
   const initialRender = (cardsInHeight: number) => {
     cardsRendered.current = cardsInHeight + cardsOverflowCount.current;
 
-    if (imageItems.length >= cardsRendered.current) return;
+    if (imageItems.length >= cardsRendered.current) return;    
 
     dispatch(getImageSlice(imageItems.length, cardsRendered.current));
   }
 
-  const renderNextCards = () => {
+  const renderNextCards = () => {    
     const doneLoading = () => {
       setLoadingImages(false);
     }
 
-    dispatch(getImageSlice(cardsRendered.current + 1, cardsOverflowCount.current, doneLoading));
+    dispatch(getImageSlice(cardsRendered.current + 1, cardsOverflowCount.current, doneLoading, selectedCategory !== "All" ? selectedCategory : undefined));
 
     cardsRendered.current += cardsOverflowCount.current;
   }
@@ -73,10 +73,6 @@ function HomePage() {
 
       updateCardData();
 
-      if (cardsRef.current.scrollHeight <= cardsRef.current.clientHeight) {
-        renderNextCards();
-      }
-
       window.addEventListener("resize", () => {
         updateCardData();
       });
@@ -86,7 +82,7 @@ function HomePage() {
   const scrollHandler = (event: React.UIEvent<HTMLDivElement, UIEvent>) => {
     const element = event.target as HTMLDivElement;
 
-    if (Math.abs(element.scrollHeight - element.scrollTop - element.clientHeight) < 25 && !loadingImages) {
+    if (Math.abs(element.scrollHeight - element.scrollTop - element.clientHeight) < 50 && !loadingImages) {
       setLoadingImages(true);
       renderNextCards();
     }

@@ -1,8 +1,14 @@
 import { Spinner } from 'react-bootstrap';
 
-const LoadingPage = () => {
+type LoadingPageProps = {
+  className?: string;
+  fullScreen?: boolean;
+}
+const LoadingPage = ({ className, fullScreen }: LoadingPageProps) => {
+  const fullScreenProp = fullScreen ?? true;
+
   return (
-    <div className="d-flex justify-content-center align-items-center vh-100">
+    <div className={`d-flex justify-content-center align-items-center ${fullScreenProp ? "vh-100" : ""} ${className}`}>
       <Spinner animation="border" variant="primary" />
     </div>
   );

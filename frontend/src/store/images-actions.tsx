@@ -17,7 +17,7 @@ export const getImageItems = () => {
 
 }
 
-export const getImageSlice = (offset: number, count: number, doneLoadingImages?: () => void) => {
+export const getImageSlice = (offset: number, count: number, doneLoading?: () => void) => {
   return async function (dispatch: Dispatch<ImageActions>) {
     const response = await fetch(`${backendUrl}/get-slice?limit=${count}&offset=${offset}`);
     const responseData = await response.json() as { data: ImageItem[], hasMore: boolean };
@@ -27,7 +27,7 @@ export const getImageSlice = (offset: number, count: number, doneLoadingImages?:
       payload: responseData.data,
     });    
 
-    doneLoadingImages?.();
+    doneLoading?.();
 
     if (!responseData.hasMore) {
       dispatch({

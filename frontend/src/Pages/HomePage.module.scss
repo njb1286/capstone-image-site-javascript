@@ -18,3 +18,9 @@
 .no-images {
   font-size: 3rem;
 }
+
+.loading-images {
+  grid-column: 1/-1;
+  width: 100%;
+  height: 30rem;
+}

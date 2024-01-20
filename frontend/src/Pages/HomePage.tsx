@@ -8,6 +8,7 @@ import SearchBar from "../Components/SearchBar";
 import ErrorPage from "../Components/ErrorPage";
 import { ImageState, imageStore } from "../store/images-store";
 import { getImageSlice } from "../store/images-actions";
+import LoadingPage from "../Components/LoadingPage";
 
 const cardHeight = 600;
 
@@ -18,16 +19,6 @@ function HomePage() {
   const imageItems = useSelector((state: ImageState) => state.imageItems);
   const dispatch = useDispatch<typeof imageStore.dispatch>();
   const [loadingImages, setLoadingImages] = useState(false);
-
-  useEffect(() => {
-    if (loadingImages) {
-      console.log("Loading images...");
-      return;
-    }
-
-    console.log("Done!");
-    
-  }, [loadingImages]);
 
   const cardsRef = useRef<HTMLDivElement>(null);
 
@@ -55,24 +46,26 @@ function HomePage() {
   const initialRender = (cardsInHeight: number) => {
     cardsRendered.current = cardsInHeight + cardsOverflowCount.current;
 
-    dispatch(getImageSlice(0, cardsRendered.current));
+    if (imageItems.length >= cardsRendered.current) return;
+
+    dispatch(getImageSlice(imageItems.length, cardsRendered.current));
   }
 
   const renderNextCards = () => {
-    setLoadingImages(true);
-
-    const doneLoadingImages = () => {
+    const doneLoading = () => {
       setLoadingImages(false);
     }
-    
-    dispatch(getImageSlice(cardsRendered.current + 1, cardsOverflowCount.current, doneLoadingImages));
+
+    dispatch(getImageSlice(cardsRendered.current + 1, cardsOverflowCount.current, doneLoading));
 
     cardsRendered.current += cardsOverflowCount.current;
   }
 
   useEffect(() => {
+    if (!hasMore) return;
+
     updateCardData();
-    
+
     if (cardsRef.current) {
       const cardCount = getCardsInView(cardsRef.current);
 
@@ -82,9 +75,18 @@ function HomePage() {
 
       window.addEventListener("resize", () => {
         updateCardData();
-      })
+      });
     }
   }, []);
+
+  const scrollHandler = (event: React.UIEvent<HTMLDivElement, UIEvent>) => {
+    const element = event.target as HTMLDivElement;
+
+    if (Math.abs(element.scrollHeight - element.scrollTop - element.clientHeight) < 25 && !loadingImages) {
+      setLoadingImages(true);
+      renderNextCards();
+    }
+  }
 
   const filteredImageItems = useMemo(() => {
     return imageItems.filter(item => {
@@ -105,10 +107,11 @@ function HomePage() {
 
   return (
     <>
-      {hasMore && <button onClick={renderNextCards}>Load more images</button>}
+      {/* {hasMore && <button onClick={renderNextCards}>Load more images</button>} */}
       <SearchBar />
-      <div className={classes.cards} ref={cardsRef}>
+      <div onScroll={scrollHandler} className={classes.cards} ref={cardsRef}>
         {content}
+        {hasMore && <LoadingPage fullScreen={false} className={classes["loading-images"]} />}
       </div>
     </>
   );

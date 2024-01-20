@@ -1,4 +1,4 @@
-import React, { FormEvent, useRef, useState } from 'react';
+import React, { ChangeEvent, FormEvent, useRef, useState } from 'react';
 
 import classes from "./LoginPage.module.scss";
 
@@ -17,9 +17,9 @@ type Data = {
 
 const LoginPage: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const passwordElmt = useRef<HTMLInputElement>(null);
   const [isError, setIsError] = useState(false);
   const dispatch = useDispatch<Dispatch<ImageActions>>();
+  const [password, setPassword] = useState("");
 
   const submitHandler = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -30,7 +30,7 @@ const LoginPage: React.FC = () => {
     const response = await fetch(`${backendUrl}/login`, {
       method: "POST",
       headers: {
-        password: passwordElmt.current!.value,
+        password,
         token: getToken() ?? "",
       }
     });
@@ -38,8 +38,9 @@ const LoginPage: React.FC = () => {
     const data = await response.json() as Data;
 
     setIsSubmitting(false);
+    setPassword("");
 
-    if ("token" in data) {      
+    if ("token" in data) {
       setToken(data.token);
       dispatch({
         type: "SET_TOKEN",
@@ -51,12 +52,16 @@ const LoginPage: React.FC = () => {
     setIsError(true);
   }
 
+  const changeHandler = (event: ChangeEvent<HTMLInputElement>) => {
+    setPassword(event.target.value);
+  }
+
   return (
     <Container fluid className="d-flex align-items-center justify-content-center" style={{ height: '100vh' }}>
       <Form onSubmit={submitHandler} className={classes.form}>
         <Form.Group className={classes.group} controlId="formPassword">
           <h2 className="text-center">Password</h2>
-          <Form.Control ref={passwordElmt} disabled={isSubmitting} type="password" placeholder="Enter password" />
+          <Form.Control value={password} onChange={changeHandler} disabled={isSubmitting} type="password" placeholder="Enter password" />
           {isError && <p className="text-danger fs-3">Incorrect password!</p>}
         </Form.Group>
         {isSubmitting && <Spinner variant='primary' animation='border' />}

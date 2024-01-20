@@ -215,7 +215,9 @@ app.get("/api/get-slice", (req, res) => {
         return;
       }
 
-      res.status(200).send({ data: sliceRows, hasMore: (+offsetParam + +limitParam <= itemCountRow.count)});
+      const hasMore = (+offsetParam + +limitParam <= itemCountRow.count)      
+
+      res.status(200).send({ data: sliceRows, hasMore});
     });
   });
 });

@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { UIEvent, useEffect, useMemo, useRef, useState } from "react";
 
 import classes from "./HomePage.module.scss";
 
@@ -51,7 +51,7 @@ function HomePage() {
     dispatch(getImageSlice(0, cardsRendered.current, undefined, imageItems.map(item => item.id)));
   }
 
-  const renderNextCards = () => {
+  const renderNextCards = () => {   
     const doneLoading = () => {
       setLoadingImages(false);
     }
@@ -92,22 +92,15 @@ function HomePage() {
       window.addEventListener("resize", resizeHandler);
     }
 
-    cardsRef.current?.addEventListener("scroll", scrollHandler);
-
     return () => {
       window.removeEventListener("resize", resizeHandler);
-      cardsRef.current?.removeEventListener("scroll", scrollHandler)
     }
   }, []);
 
-  useEffect(() => {
-    if (!hasMore) {
-      cardsRef.current?.removeEventListener("scroll", scrollHandler);
-    }
-  }, [hasMore]);
-
   // A normal function, because it doesn't have to be defined above the usage
-  function scrollHandler(event: Event) {
+  function scrollHandler(event: UIEvent<HTMLDivElement>) {
+    if (!hasMore) return;    
+
     const element = event.target as HTMLDivElement;
 
     const condition = element.scrollHeight - element.scrollTop - element.clientHeight;
@@ -141,7 +134,7 @@ function HomePage() {
   return (
     <>
       <SearchBar />
-      <div className={classes.cards} ref={cardsRef}>
+      <div onScroll={scrollHandler} className={classes.cards} ref={cardsRef}>
         {content}
       </div>
     </>

@@ -36,7 +36,7 @@ export const getImageSlice = (offset: number, count: number, doneLoading?: () =>
 
     doneLoading?.();
 
-    if (!responseData.hasMore) {
+    if (!responseData.hasMore) {      
       dispatch({
         type: "HAS_NO_MORE_ITEMS"
       })

@@ -20,6 +20,7 @@
 
   &:hover {
     transform: scale(1.05);
+    filter: drop-shadow(10px 10px 0.8rem rgba(0, 0, 0, 0.15));
   }
 
   .image-wrapper {

@@ -56,7 +56,7 @@ function HomePage() {
       setLoadingImages(false);
     }
 
-    dispatch(getImageSlice(cardsRendered.current + 1, cardsOverflowCount.current, doneLoading, selectedCategory !== "All" ? selectedCategory : undefined));
+    dispatch(getImageSlice(cardsRendered.current + 1, cardsOverflowCount.current, doneLoading));
 
     cardsRendered.current += cardsOverflowCount.current;
   }

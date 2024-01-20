@@ -44,7 +44,8 @@ function HomePage() {
   }
 
   const initialRender = (cardsInHeight: number) => {
-    cardsRendered.current = cardsInHeight + cardsOverflowCount.current
+    cardsRendered.current = cardsInHeight + cardsOverflowCount.current;
+    
     dispatch(getImageSlice(0, cardsRendered.current))
   }
 
@@ -62,7 +63,6 @@ function HomePage() {
       const cardCount = getCardsInView(cardsRef.current);
 
       initialRender(cardCount);
-      // console.log("Initial cards rendered:", cardsRendered.current);
 
       updateCardData();
       setCardsInViewHeight(cardCount + cardsOverflowCount.current);

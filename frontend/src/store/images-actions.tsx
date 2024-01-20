@@ -22,9 +22,6 @@ export const getImageSlice = (offset: number, count: number) => {
     const response = await fetch(`${backendUrl}/get-slice?limit=${count}&offset=${offset}`);
     const responseData = await response.json() as { data: ImageItem[], hasMore: boolean };
 
-    console.log(responseData);
-    
-
     dispatch({
       type: "ADD_IMAGE_ITEMS",
       payload: responseData.data,

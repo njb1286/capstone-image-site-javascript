@@ -36,7 +36,26 @@
 
 }
 
+
+.buttons {
+  height: 5rem;
+  margin-top: 5rem;
+
+  button {
+    font-size: 2rem;
+    font-weight: 500;
+    padding-left: 10rem;
+    padding-right: 10rem;
+  }
+}
+
 @media (max-width: $media-width) {
+  .buttons {
+    width: 100%;
+    margin-top: -3rem;
+    margin-bottom: 5rem;
+  }
+
   .group {
     .info {
       display: flex;
@@ -66,14 +85,5 @@
     .body {
       height: 100%;
     }
-  }
-}
-
-.buttons {
-  height: 5rem;
-
-  button {
-    font-size: 2rem;
-    font-weight: 500;
   }
 }

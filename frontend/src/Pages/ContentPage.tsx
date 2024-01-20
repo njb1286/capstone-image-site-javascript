@@ -70,11 +70,6 @@ function ContentPage() {
       {modalPortal}
 
       <CardBody className={`row ${classes.body}`}>
-        <ButtonGroup className={classes.buttons}>
-          <button className="btn btn-lg btn-warning" onClick={handleUpdate}>Edit</button>
-          <button className="btn btn-lg btn-danger" onClick={handleDeleteBtnClick}>Delete</button>
-        </ButtonGroup>
-
         <div className={`${classes.info} ${classes.col}`}>
           <img alt={title} src={`${backendUrl}/get-image?id=${id}`} className={`card-img ${classes.img}`} />
           <h1 className="card-title text-center">{title}</h1>
@@ -93,7 +88,12 @@ function ContentPage() {
           {splitDescription}
         </div>
 
+
       </CardBody>
+      <ButtonGroup className={classes.buttons}>
+        <button className="btn btn-lg btn-primary" onClick={handleUpdate}>Edit</button>
+        <button className="btn btn-lg btn-danger" onClick={handleDeleteBtnClick}>Delete</button>
+      </ButtonGroup>
     </CardBody >
   );
 }

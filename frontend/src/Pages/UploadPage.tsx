@@ -35,7 +35,6 @@ function UploadPage() {
     onSubmit: submitHandler,
   });
 
-  // return <UploadForm updating={false} onSubmit={submitHandler} />
   return uploadForm;
 }
 

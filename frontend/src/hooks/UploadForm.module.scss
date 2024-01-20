@@ -17,6 +17,18 @@
   }
 }
 
+.buttons {
+  display: block;
+}
+
+.spinner {
+  visibility: hidden;
+
+  &.visible {
+    visibility: visible;
+  }
+}
+
 @media (max-width: $media-width) {
   .upload-form {
     padding: 2rem;

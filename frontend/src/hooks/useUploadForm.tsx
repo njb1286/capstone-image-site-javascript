@@ -1,6 +1,6 @@
 import { FormEvent, useEffect, useState } from "react";
 import classes from "./UploadForm.module.scss";
-import { Button, ButtonGroup, Form, FormControl, FormGroup } from "react-bootstrap";
+import { Button, ButtonGroup, Form, FormControl, FormGroup, Spinner } from "react-bootstrap";
 import { useFormField } from "../hooks/useFormField";
 import { useNavigate } from "react-router";
 import { Category, categories } from "../store/images-store";
@@ -120,8 +120,8 @@ export function useUploadForm(props: Readonly<UploadFormProps>) {
   }, []);
 
   const errorHandler = () => {
-    setIsError(true); 
-    setSubmitting(false); 
+    setIsError(true);
+    setSubmitting(false);
   }
 
   const setValues = (title: string, description: string, category: Category) => {
@@ -130,7 +130,7 @@ export function useUploadForm(props: Readonly<UploadFormProps>) {
     setCategory(category);
   }
 
-  const errorMessage = <p className={`text-danger`}>An error occurred!</p>
+  const errorMessage = <p className={`text-danger`}>An error occurred!</p>;
 
   const component = (
     <div className={classes["upload-form"]}>
@@ -157,22 +157,24 @@ export function useUploadForm(props: Readonly<UploadFormProps>) {
           </FormGroup>
         </div>
 
-        <ButtonGroup className={classes.buttons}>
-          <Button
-            disabled={
-              !titleValid ||
-              !descriptionValid ||
-              !imageValid ||
-              submitting
-            }
-            className={classes.btn}
-            type="submit"
-          >
-            Submit
-          </Button>
+          <Spinner className={`${classes.spinner} ${submitting ? classes.visible : ""}`} variant="primary" animation="border" />
 
-          {props.updating && <Button className={`${classes.btn} btn-danger`} type="button" onClick={() => navigate(`/views?id=${props.id!}`)}>Cancel</Button>}
-        </ButtonGroup>
+          <ButtonGroup className={classes.buttons}>
+            <Button
+              disabled={
+                !titleValid ||
+                !descriptionValid ||
+                !imageValid ||
+                submitting
+              }
+              className={classes.btn}
+              type="submit"
+            >
+              Submit
+            </Button>
+
+            {props.updating && <Button className={`${classes.btn} btn-danger`} type="button" onClick={() => navigate(`/views?id=${props.id!}`)}>Cancel</Button>}
+          </ButtonGroup>
       </Form>
 
       {isError && errorMessage}

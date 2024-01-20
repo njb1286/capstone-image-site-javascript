@@ -6,6 +6,7 @@ import { ImageActions, imageStore } from "../store/images-store";
 import { backendUrl } from "../store/backend-url";
 import classes from "./ContentPage.module.scss";
 import { useGetImageItem } from "../hooks/useGetImageItem";
+import { getRequestData } from "../helpers/token";
 
 export const errorComponent = <h2>Hmmm... we couldn't find that image...</h2>;
 
@@ -39,7 +40,7 @@ function ContentPage() {
   }
 
   const handleDeleteAction = async () => {
-    await fetch(`${backendUrl}/delete?id=${id}`);
+    await fetch(`${backendUrl}/delete?id=${id}`, getRequestData("DELETE"));
 
     dispatch<ImageActions>({
       type: "DELETE_IMAGE_ITEM",

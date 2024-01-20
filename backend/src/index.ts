@@ -1,8 +1,10 @@
-import express from "express";
+import express, { Request, Response } from "express";
 import multer from "multer";
 import sharp from "sharp";
 
 import { Database } from "sqlite3";
+import { password } from "./password";
+import { createToken, dateIsValid } from "./tokens";
 
 const db = new Database("database.sqlite");
 
@@ -17,6 +19,11 @@ db.exec(`CREATE TABLE IF NOT EXISTS images (
   date DATETIME DEFAULT CURRENT_TIMESTAMP,
   category TEXT NOT NULL
 );`);
+
+db.exec(`CREATE TABLE IF NOT EXISTS tokens (
+  token TEXT NOT NULL,
+  date DATETIME DEFAULT CURRENT_TIMESTAMP
+);`)
 
 const app = express();
 const upload = multer({ storage: multer.memoryStorage() });
@@ -34,7 +41,107 @@ const compressImage = async (image: Buffer) => {
     .toBuffer();
 }
 
+const isAuthenticated = async (req: Request, res: Response) => {
+
+}
+
+const validateToken = async (req: Request, res?: Response) => {
+  const token = req.get("token");
+  let returnValue = false;
+
+  if (!token) {
+    res?.status(401).send({ message: "No token provided" });
+    return returnValue;
+  }
+
+  const value = await new Promise<boolean | null>((resolve, reject) => {
+    db.get("SELECT token, date FROM tokens WHERE token = ?", token, (err, row: { token: string, date: string } | null) => {
+      if (err) {
+        const message = { message: "Failed to get token" };
+        resolve(false);
+        res?.status(401).send(message);
+        return;
+      }
+
+      if (!row) {
+        resolve(false);
+        return;
+      }
+
+      const validDate = dateIsValid(row.date);
+
+      if (!validDate) {
+        db.run("DELETE FROM tokens WHERE token = ?", row.token);
+        resolve(false);
+        return;
+      }
+
+      if (row.token === token) {
+        resolve(true);
+      }
+
+      resolve(false);
+    });
+  })
+
+  res?.status(201).send({ tokenIsValid: value })
+  return value;
+}
+
+app.get("/api/validate-token", express.json(), validateToken);
+
+app.post("/api/login", express.json(), async (req, res) => {
+  const passwordHeader = req.get("password");
+  const tokenHeader = req.get("token");
+
+  if (!passwordHeader) {
+    res.status(401).send({ message: "No password provided!" });
+    return;
+  }
+
+  if (passwordHeader !== password) {
+    res.status(401).send({ message: "Incorrect password!" });
+    return;
+  }
+
+  if (tokenHeader) {
+    const includesQuery = `SELECT token, date FROM tokens WHERE token = ?`;
+    const includesValues = [tokenHeader];
+
+    db.get(includesQuery, includesValues, (err, row: null | { token: string, date: string }) => {
+      if (row) {
+        const isValid = dateIsValid(row.date);
+
+        if (isValid) {
+          res.status(204).send({ message: "Token already valid!" })
+        }
+      }
+    })
+  }
+
+  const token = createToken();
+
+  const insertQuery = `INSERT INTO tokens (token) VALUES (?)`;
+  const values = [token];
+
+  db.run(insertQuery, values, (err) => {
+    if (err) {
+      res.status(500).send({ message: "Error inserting data" });
+      return;
+    }
+
+    res.status(200).send({ token });
+  })
+})
+
 app.post("/api/form", upload.single("image"), async (req, res) => {
+  const tokenIsValid = await validateToken(req);
+
+  if (!tokenIsValid) {
+    res.status(401).send({ message: "Invalid token" })
+    return;
+  }
+
   const { title, description, category } = req.body;
   let image = req.file?.buffer;
   let smallImage: Buffer | null = null;
@@ -67,14 +174,21 @@ interface Table {
   date: string;
 }
 
-app.get("/api/get", (req, res) => {
+app.get("/api/get", async (req, res) => {
+  const tokenIsValid = await validateToken(req);
+
+  if (!tokenIsValid) {
+    res.status(401).send({ message: "Invalid token" })
+    return;
+  }
+
   const selectQuery = `SELECT id, title, description, category, date FROM images WHERE id = ? ORDER BY id ASC`;
 
-  if (!req.query.id) {    
+  if (!req.query.id) {
     const loadedItems = req.get("loadedItems");
     const splitLoadedItems = loadedItems ? loadedItems.split(",") : null;
 
-    const excludeQuery = loadedItems ? ` id NOT IN (${splitLoadedItems!.map(() => "?").join(",")})` : null;  
+    const excludeQuery = loadedItems ? ` id NOT IN (${splitLoadedItems!.map(() => "?").join(",")})` : null;
 
     let query = `SELECT id, title, description, category, date FROM images`
     const categoryParam = req.query.category;
@@ -101,12 +215,12 @@ app.get("/api/get", (req, res) => {
       if (!query.includes("WHERE")) query += " WHERE";
       query += excludeQuery;
       values.push(...splitLoadedItems!);
-    }    
+    }
 
     db.all(query, values, (err: unknown, row: Table) => {
       if (err) {
         res.status(500).send("Error getting data");
-        
+
         return;
       }
 
@@ -119,10 +233,10 @@ app.get("/api/get", (req, res) => {
     })
 
     return;
-  }  
+  }
 
   const values = [req.query.id];
-  
+
 
   db.get(selectQuery, values, (err, row) => {
     if (err) {
@@ -139,7 +253,14 @@ app.get("/api/get", (req, res) => {
   });
 });
 
-app.get("/api/last", (_, res) => {
+app.get("/api/last", async (req, res) => {
+  const tokenIsValid = await validateToken(req);
+
+  if (!tokenIsValid) {
+    res.status(401).send({ message: "Invalid token" })
+    return;
+  }
+
   const selectQuery = `SELECT id, title, description, category, date FROM images ORDER BY id ASC LIMIT 1`;
 
   db.get(selectQuery, (err, row) => {
@@ -157,7 +278,14 @@ app.get("/api/last", (_, res) => {
   });
 })
 
-app.get("/api/get-slice", (req, res) => {
+app.get("/api/get-slice", async (req, res) => {
+  const tokenIsValid = await validateToken(req);
+
+  if (!tokenIsValid) {
+    res.status(401).send({ message: "Invalid token" })
+    return;
+  }
+
   const limitParam = req.query.limit;
   const offsetParam = req.query.offset;
   const loadedItems = req.get("loadedItems");
@@ -185,7 +313,7 @@ app.get("/api/get-slice", (req, res) => {
     res.status(400).send("Offset must be a number");
     return;
   }
-  
+
   db.get<{ count: number }>("SELECT COUNT(*) AS count FROM images", (err, itemCountRow) => {
     if (err) {
       res.status(500).send("Error getting data");
@@ -198,7 +326,7 @@ app.get("/api/get-slice", (req, res) => {
     }
 
     const query = `SELECT id, title, description, category, date FROM images ${excludeQuery ? "WHERE " + excludeQuery : ""} ORDER BY id ASC LIMIT ? OFFSET ?`;
-    
+
     const values = [+limitParam, offsetParam];
     if (loadedItems) {
       values.unshift(...splitLoadedItems!);
@@ -215,9 +343,9 @@ app.get("/api/get-slice", (req, res) => {
         return;
       }
 
-      const hasMore = (+offsetParam + +limitParam <= itemCountRow.count)      
+      const hasMore = (+offsetParam + +limitParam <= itemCountRow.count)
 
-      res.status(200).send({ data: sliceRows, hasMore});
+      res.status(200).send({ data: sliceRows, hasMore });
     });
   });
 });
@@ -270,7 +398,14 @@ app.get("/api/get-small-image", (req, res) => {
   });
 })
 
-app.get("/api/delete", (req, res) => {
+app.get("/api/delete", async (req, res) => {
+  const tokenIsValid = await validateToken(req);
+
+  if (!tokenIsValid) {
+    res.status(401).send({ message: "Invalid token" })
+    return;
+  }
+
   const id = req.query.id;
 
   if (!id) {
@@ -291,6 +426,12 @@ app.get("/api/delete", (req, res) => {
 });
 
 app.post("/api/update", upload.single("image"), async (req, res) => {
+  const tokenIsValid = await validateToken(req);
+
+  if (!tokenIsValid) {
+    res.status(401).send({ message: "Invalid token" })
+    return;
+  }
 
   const { id, title, description, category } = req.body;
   let image = req.file?.buffer;

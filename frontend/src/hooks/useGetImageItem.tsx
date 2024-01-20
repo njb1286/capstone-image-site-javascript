@@ -5,6 +5,7 @@ import { backendUrl } from "../store/backend-url";
 import { ActionCreator } from "../types";
 import LoadingPage from "../Components/LoadingPage";
 import { Dispatch } from "@reduxjs/toolkit";
+import { getRequestData } from "../helpers/token";
 
 type ReturnType = ActionCreator<{
   COMPONENT: JSX.Element;
@@ -41,7 +42,7 @@ export function useGetImageItem<T extends (string | number) | null>(id: T): Retu
 
   async function getImageItem() {
     try {
-      const response = await fetch(`${backendUrl}/get?id=${id}`);
+      const response = await fetch(`${backendUrl}/get?id=${id}`, getRequestData("GET"));
 
       if (response.status > 299) {
         setIsError(true);

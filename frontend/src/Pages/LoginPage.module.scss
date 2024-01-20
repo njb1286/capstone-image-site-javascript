@@ -1,0 +1,12 @@
+.group {
+  display: grid;
+  grid-template-rows: 1fr 1fr 1fr;
+}
+
+.button {
+  display: block;
+}
+
+.form * {
+  font-size: 1.5em;
+}

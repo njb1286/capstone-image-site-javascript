@@ -21,6 +21,7 @@ const initialState = {
   hasMoreItems: true,
 
   loadedCategories: [] as readonly Category[],
+  token: null as string | null,
 }
 
 export type ImageState = typeof initialState;
@@ -38,6 +39,7 @@ export type ImageActions = ActionCreator<{
 
   SET_MODAL_VISIBLE: boolean;
   ADD_LOADED_CATEGORY: Category;
+  SET_TOKEN: string | null,
 
 }> | ActionCreatorNoPayload<[
   "HAS_NO_MORE_ITEMS"
@@ -175,6 +177,12 @@ const imagesReducer: Reducer<ImageState, ImageActions> = (state = initialState, 
         ...state,
         hasMoreItems: false,
       }
+
+      case "SET_TOKEN":
+        return {
+          ...state,
+          token: action.payload,
+        }
 
     case "ADD_LOADED_CATEGORY": {
       if (state.loadedCategories.includes(action.payload)) return state;

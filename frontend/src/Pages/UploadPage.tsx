@@ -3,6 +3,7 @@ import { backendUrl } from "../store/backend-url";
 import { useUploadForm } from "../hooks/useUploadForm";
 import { Category } from "../store/images-store";
 import { useAddImageItem } from "../hooks/useAddImageItem";
+import { getRequestData } from "../helpers/token";
 
 function UploadPage() {
   const navigate = useNavigate();
@@ -17,8 +18,8 @@ function UploadPage() {
     formData.append("category", category);
 
     const response = await fetch(`${backendUrl}/form`, {
-      method: "POST",
       body: formData,
+      ...getRequestData("POST"),
     });
 
     if (response.status > 299) {

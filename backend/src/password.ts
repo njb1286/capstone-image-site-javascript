@@ -1,0 +1,1 @@
+export const password = "k4lecafCwk4wmbQl3";

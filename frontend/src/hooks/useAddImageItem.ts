@@ -2,9 +2,10 @@ import { useDispatch } from "react-redux";
 import { backendUrl } from "../store/backend-url"
 import { ImageActions, ImageItem } from "../store/images-store";
 import { Dispatch } from "@reduxjs/toolkit";
+import { getRequestData } from "../helpers/token";
 
 const getImageById = async (id: number) => {
-  const response = await fetch(`${backendUrl}/get?id=${id}`);
+  const response = await fetch(`${backendUrl}/get?id=${id}`, getRequestData("GET"));
 
   if (response.status >= 299) {
     return null;
@@ -15,7 +16,7 @@ const getImageById = async (id: number) => {
 }
 
 const getLastImageItem = async () => {
-  const response = await fetch(`${backendUrl}/last`);
+  const response = await fetch(`${backendUrl}/last`, getRequestData("GET"));
 
   if (response.status >= 299) {
     return null;

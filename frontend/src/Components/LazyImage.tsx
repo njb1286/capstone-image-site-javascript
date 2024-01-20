@@ -17,16 +17,24 @@ const LazyImage = ({ id, wrapperClassName, imageClassName, title }: LazyImagePro
   const smallImageUrl = `${backendUrl}/get-small-image?id=${id}`;
   const imageUrl = `${backendUrl}/get-image?id=${id}`;
 
+  const imageRendered = useRef(false);
+
   useEffect(() => {
+    if (imageRendered.current) return;
+
     const smallImage = new Image();
     smallImage.src = smallImageUrl;
+
+    if (!shouldRenderImage) return;
 
     const image = new Image();
     image.src = imageUrl;
     image.onload = () => {
       setImageLoaded(true);
     };
-  }, [id]);
+
+    imageRendered.current = true;
+  }, [id, shouldRenderImage]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(

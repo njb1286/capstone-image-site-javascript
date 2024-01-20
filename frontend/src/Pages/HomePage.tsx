@@ -109,7 +109,6 @@ function HomePage() {
     }
   }, []);
 
-  // A normal function, because it doesn't have to be defined above the usage
   function scrollHandler(event: UIEvent<HTMLDivElement>) {
     if (!hasMore) return;
 

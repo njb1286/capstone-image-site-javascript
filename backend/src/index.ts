@@ -261,7 +261,7 @@ app.get("/api/last", async (req, res) => {
     return;
   }
 
-  const selectQuery = `SELECT id, title, description, category, date FROM images ORDER BY id ASC LIMIT 1`;
+  const selectQuery = `SELECT id, title, description, category, date FROM images ORDER BY id DESC LIMIT 1`;
 
   db.get(selectQuery, (err, row) => {
     if (err) {
@@ -398,7 +398,7 @@ app.get("/api/get-small-image", (req, res) => {
   });
 })
 
-app.get("/api/delete", async (req, res) => {
+app.delete("/api/delete", async (req, res) => {
   const tokenIsValid = await validateToken(req);
 
   if (!tokenIsValid) {

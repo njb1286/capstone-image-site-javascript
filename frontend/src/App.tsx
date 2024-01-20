@@ -1,9 +1,8 @@
-import React, { Suspense, useEffect } from "react";
+import React, { Suspense } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import classes from "./App.module.scss";
 import Header from "./Components/Header";
-import { useUpdateImageItems } from "./hooks/useUpdateImageItems";
 import LoadingPage from "./Components/LoadingPage";
 
 const lazyLoader = (path: string) => React.lazy(() => import(/* @vite-ignore */path));
@@ -15,12 +14,6 @@ const UpdatePage = lazyLoader("./Pages/UpdatePage");
 const HomePage = lazyLoader("./Pages/HomePage");
 
 function App() {
-  const updateImageItems = useUpdateImageItems();
-
-  // useEffect(() => {
-  //   updateImageItems();
-  // }, [updateImageItems]);
-
   const loadingPage = <LoadingPage />;
 
   return (

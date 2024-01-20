@@ -58,6 +58,8 @@ function HomePage() {
   }
 
   useEffect(() => {
+    updateCardData();
+    
     if (cardsRef.current) {
       const cardCount = getCardsInView(cardsRef.current);
 

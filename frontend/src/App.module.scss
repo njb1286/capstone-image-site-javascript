@@ -19,9 +19,3 @@
     row-gap: 2rem;
   }
 }
-
-@media (max-width: $media-width) {
-  .column-wrapper {
-    overflow: hidden;
-  }
-}

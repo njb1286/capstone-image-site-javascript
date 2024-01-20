@@ -4,7 +4,11 @@ import { ImageItem } from "../store/images-store";
 import { CardFooter, CardHeader, CardText } from "react-bootstrap";
 import LazyImage from "./LazyImage";
 
-function Card({ title, id, category }: Readonly<ImageItem>) {
+type CardProps = ImageItem & {
+  itemIndex?: number;
+}
+
+function Card({ title, id, category }: Readonly<CardProps>) {
 
   return (
     <NavLink to={`/views?id=${id}`} className={`card text-center ${classes.card}`}>

@@ -30,7 +30,7 @@ function CategoriesDropdown<T extends readonly string[], U extends T[number]>(pr
         {props.title && `${props.title}: `}{category}
       </Dropdown.Toggle>
 
-      <Dropdown.Menu className={classes.menu}>
+      <Dropdown.Menu className={`dropdown-menu ${classes.menu}`}>
         {props.categories.map(categoryItem => {
           return <Dropdown.Item className={`${classes["category-item"]} ${category.toLowerCase() === categoryItem.toLowerCase() ? classes.active : ""}`} as={"button"} onClick={selectCategory} key={`category_${categoryItem}`}>{categoryItem}</Dropdown.Item>
         })}

@@ -51,14 +51,14 @@ function HomePage() {
     dispatch(getImageSlice(0, cardsRendered.current, undefined, imageItems.map(item => item.id)));
   }
 
-  const renderNextCards = () => {    
+  const renderNextCards = () => {
     const doneLoading = () => {
       setLoadingImages(false);
     }
-    
-    dispatch(getImageSlice(cardsRendered.current, cardsOverflowCount.current, doneLoading, loadedImages.current));    
 
-    cardsRendered.current += cardsOverflowCount.current;    
+    dispatch(getImageSlice(cardsRendered.current, cardsOverflowCount.current, doneLoading, loadedImages.current));
+
+    cardsRendered.current += cardsOverflowCount.current;
   }
 
   const resizeHandler = () => {
@@ -71,7 +71,7 @@ function HomePage() {
     if (selectedCategory === "All") return;
 
     if (loadedCategories.includes(selectedCategory)) return;
-    
+
     const loadedItems = imageItems.filter(item => item.category === selectedCategory).map(item => item.id);
 
     dispatch(getCategoryItems(selectedCategory, loadedItems));
@@ -92,16 +92,26 @@ function HomePage() {
       window.addEventListener("resize", resizeHandler);
     }
 
+    cardsRef.current?.addEventListener("scroll", scrollHandler);
+
     return () => {
       window.removeEventListener("resize", resizeHandler);
+      cardsRef.current?.removeEventListener("scroll", scrollHandler)
     }
   }, []);
 
-  const scrollHandler = (event: React.UIEvent<HTMLDivElement, UIEvent>) => {
+  useEffect(() => {
+    if (!hasMore) {
+      cardsRef.current?.removeEventListener("scroll", scrollHandler);
+    }
+  }, [hasMore]);
+
+  // A normal function, because it doesn't have to be defined above the usage
+  function scrollHandler(event: Event) {
     const element = event.target as HTMLDivElement;
 
     const condition = element.scrollHeight - element.scrollTop - element.clientHeight;
-    
+
     if (Math.abs(condition) < 25 && !loadingImages) {
       setLoadingImages(true);
       renderNextCards();
@@ -109,7 +119,7 @@ function HomePage() {
   }
 
   const filteredImageItems = useMemo(() => {
-    return imageItems.filter(item => {
+    return (selectedCategory === "All" && !searchValue) ? imageItems : imageItems.filter(item => {
       const matchesCategory = selectedCategory === "All" || item.category === selectedCategory;
       const matchesSearch = !searchValue || item.title.toLowerCase().includes(searchValue.toLowerCase());
 
@@ -121,7 +131,7 @@ function HomePage() {
     <ErrorPage message="No images found" />
   ) : (
     <>
-      {filteredImageItems.map(item => {
+      {filteredImageItems.map((item) => {
         return <Card {...item} key={item.id} />;
       })}
       {hasMore && selectedCategory === "All" && !searchValue && <LoadingPage fullScreen={false} className={classes["loading-images"]} />}
@@ -131,7 +141,7 @@ function HomePage() {
   return (
     <>
       <SearchBar />
-      <div onScroll={scrollHandler} className={classes.cards} ref={cardsRef}>
+      <div className={classes.cards} ref={cardsRef}>
         {content}
       </div>
     </>

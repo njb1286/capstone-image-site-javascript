@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { backendUrl } from "../store/backend-url";
 import classes from "./LazyImage.module.scss";
 
@@ -11,6 +11,8 @@ type LazyImageProps = {
 
 const LazyImage = ({ id, wrapperClassName, imageClassName, title }: LazyImageProps) => {
   const [imageLoaded, setImageLoaded] = useState(false);
+  const elementRef = useRef<HTMLImageElement>(null);
+  const [shouldRenderImage, setShouldRenderImage] = useState(false);
 
   const smallImageUrl = `${backendUrl}/get-small-image?id=${id}`;
   const imageUrl = `${backendUrl}/get-image?id=${id}`;
@@ -26,8 +28,30 @@ const LazyImage = ({ id, wrapperClassName, imageClassName, title }: LazyImagePro
     };
   }, [id]);
 
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => setShouldRenderImage(entry.isIntersecting),
+      {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0.1,
+      }
+    );
+
+    if (elementRef.current) {
+      observer.observe(elementRef.current);
+    }
+
+    return () => {
+      // Clean up the observer when the component unmounts.
+      if (elementRef.current) {
+        observer.unobserve(elementRef.current);
+      }
+    };
+  }, []);
+
   return (
-    <div className={`${wrapperClassName} ${classes["image-wrapper"]}`}>
+    <div ref={elementRef} className={`${wrapperClassName} ${classes["image-wrapper"]}`}>
       <div
         style={{
           backgroundImage: `url(${smallImageUrl})`,
@@ -35,12 +59,12 @@ const LazyImage = ({ id, wrapperClassName, imageClassName, title }: LazyImagePro
         className={classes["loading-img"]}
       />
 
-      <img
+      {shouldRenderImage && <img
         alt={title}
         src={imageUrl}
         loading="lazy"
         className={`${imageClassName} ${classes.image} ${imageLoaded ? classes.loaded : ""}`}
-      />
+      />}
     </div>
   )
 }

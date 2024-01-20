@@ -72,7 +72,7 @@ function ContentPage() {
       <CardBody className={`row ${classes.body}`}>
         <div className={`${classes.info} ${classes.col}`}>
           <img alt={title} src={`${backendUrl}/get-image?id=${id}`} className={`card-img ${classes.img}`} />
-          <h1 className="card-title text-center">{title}</h1>
+          <h1 className={`card-title text-center ${classes.titlee}`}>{title}</h1>
 
           <div className="container">
             <div className="row my-4">

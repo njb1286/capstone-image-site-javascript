@@ -17,12 +17,9 @@ export const getImageItems = () => {
 
 }
 
-export const getImageSlice = (offset: number, count: number, doneLoading?: () => void, category?: Category) => {
+export const getImageSlice = (offset: number, count: number, doneLoading?: () => void) => {
   return async function (dispatch: Dispatch<ImageActions>) {
-    let url = `${backendUrl}/get-slice?limit=${count}&offset=${offset}`;
-    if (category) {
-      url += `&category=${category.toLowerCase()}`;
-    }
+    const url = `${backendUrl}/get-slice?limit=${count}&offset=${offset}`;
 
     const response = await fetch(url);
     const responseData = await response.json() as { data: ImageItem[], hasMore: boolean };
@@ -39,5 +36,19 @@ export const getImageSlice = (offset: number, count: number, doneLoading?: () =>
         type: "HAS_NO_MORE_ITEMS"
       })
     }
+  }
+}
+
+export const getCategoryItems = (category: Category) => {
+  return async function (dispatch: Dispatch<ImageActions>) {
+    const url = `${backendUrl}/get?category=${category.toLowerCase()}`;
+
+    const response = await fetch(url);
+    const responseData = await response.json() as ImageItem[];    
+
+    dispatch({
+      type: "ADD_IMAGE_ITEMS",
+      payload: responseData,
+    });
   }
 }

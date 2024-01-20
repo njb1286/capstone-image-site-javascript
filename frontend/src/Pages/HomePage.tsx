@@ -7,7 +7,7 @@ import Card from "../Components/Card";
 import SearchBar from "../Components/SearchBar";
 import ErrorPage from "../Components/ErrorPage";
 import { ImageState, imageStore } from "../store/images-store";
-import { getImageSlice } from "../store/images-actions";
+import { getCategoryItems, getImageSlice } from "../store/images-actions";
 import LoadingPage from "../Components/LoadingPage";
 
 const cardHeight = 600;
@@ -56,10 +56,18 @@ function HomePage() {
       setLoadingImages(false);
     }
 
-    dispatch(getImageSlice(cardsRendered.current + 1, cardsOverflowCount.current, doneLoading, selectedCategory !== "All" ? selectedCategory : undefined));
+    dispatch(getImageSlice(cardsRendered.current + 1, cardsOverflowCount.current, doneLoading));
 
     cardsRendered.current += cardsOverflowCount.current;
   }
+
+  useEffect(() => {
+    if (!hasMore) return;
+
+    if (selectedCategory === "All") return;
+
+    dispatch(getCategoryItems(selectedCategory));
+  }, [selectedCategory]);
 
   useEffect(() => {
     if (!hasMore) return;
@@ -104,7 +112,7 @@ function HomePage() {
       {filteredImageItems.map(item => {
         return <Card {...item} key={item.id} />;
       })}
-      {hasMore && <LoadingPage fullScreen={false} className={classes["loading-images"]} />}
+      {hasMore && selectedCategory === "All" && <LoadingPage fullScreen={false} className={classes["loading-images"]} />}
     </>
   );
 

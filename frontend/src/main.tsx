@@ -9,5 +9,5 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <Provider store={imageStore}>
       <App />
     </Provider>
-  // </React.StrictMode>,
+  </React.StrictMode>,
 )

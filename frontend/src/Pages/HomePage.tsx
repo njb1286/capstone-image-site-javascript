@@ -23,7 +23,7 @@ function HomePage() {
   const [cardsInViewHeight, setCardsInViewHeight] = useState<number | null>(null);
 
   const cardsPerRow = useRef(3);
-  const cardsOverflowCount = useRef(9);
+  const cardsOverflowCount = useRef(6);
   const cardsRendered = useRef(0);
 
   function getCardsInView(element: HTMLElement) {
@@ -35,27 +35,26 @@ function HomePage() {
   const updateCardData = () => {
     if (window.innerWidth < 768) {
       cardsPerRow.current = 1;
-      cardsOverflowCount.current = 6;
+      cardsOverflowCount.current = 3;
       return;
     }
 
     cardsPerRow.current = 3;
-    cardsOverflowCount.current = 9;
+    cardsOverflowCount.current = 6;
   }
 
   const initialRender = (cardsInHeight: number) => {
     cardsRendered.current = cardsInHeight + cardsOverflowCount.current;
     
-    dispatch(getImageSlice(0, cardsRendered.current))
+    dispatch(getImageSlice(0, cardsRendered.current));
   }
 
   const renderNextCards = () => {
-    const newRenderedCards = cardsRendered.current + cardsOverflowCount.current;
+    console.log("Offset", cardsRendered.current + 1, "Count", cardsOverflowCount.current);
+    
+    dispatch(getImageSlice(cardsRendered.current + 1, cardsOverflowCount.current));
 
-    console.log("Rendering cards from", cardsRendered.current + 1, "to", newRenderedCards);
-
-
-    cardsRendered.current = newRenderedCards;
+    cardsRendered.current += cardsOverflowCount.current;
   }
 
   useEffect(() => {

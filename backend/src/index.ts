@@ -135,17 +135,19 @@ app.get("/api/get-slice", (req, res) => {
     return;
   }
 
-  const query = `SELECT id, title, description, category, date FROM images ${offsetParam ? "WHERE id > ?" : ""} ORDER BY id ASC LIMIT ?`;  
+  if (!offsetParam) {
+    res.status(400).send("No offset provided");
+    return;
+  }
 
-  const values = [limitParam];
-  if (offsetParam) {
-    if (isNaN(+offsetParam)) {
-      res.status(400).send("Offset must be a number");
-      return;
-    }
-    // values.push(offsetParam);    
-    values.unshift(offsetParam);
-  };
+  if (isNaN(+offsetParam)) {
+    res.status(400).send("Offset must be a number");
+    return;
+  }
+
+  const query = `SELECT id, title, description, category, date FROM images ORDER BY id ASC LIMIT ? OFFSET ?`;
+
+  const values = [limitParam, offsetParam];
 
   db.get<{ count: number }>("SELECT COUNT(*) AS count FROM images", (err, itemCountRow) => {
     if (err) {
@@ -172,7 +174,7 @@ app.get("/api/get-slice", (req, res) => {
       console.log();
       
 
-      res.status(200).send({ data: sliceRows, hasMore: itemCountRow.count > +limitParam });
+      res.status(200).send({ data: sliceRows, hasMore: +offsetParam + +limitParam < itemCountRow.count });
     });
   });
 });

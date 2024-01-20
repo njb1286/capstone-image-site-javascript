@@ -25,7 +25,10 @@ export const getImageSlice = (offset: number, count: number) => {
     dispatch({
       type: "ADD_IMAGE_ITEMS",
       payload: responseData.data,
-    })
+    });    
+
+    console.log("Got items", responseData.data);
+    
 
     if (!responseData.hasMore) {
       dispatch({

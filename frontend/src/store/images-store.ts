@@ -79,7 +79,7 @@ const imagesReducer: Reducer<ImageState, ImageActions> = (state = initialState, 
   }
 
   const insertImageItems = (items: ImageItem[]) => {
-    const imageItemsCopy = [...state.imageItems];    
+    const imageItemsCopy = [...state.imageItems];        
 
     for (const item of items) {
       let insertionIndex = -1;
@@ -108,7 +108,7 @@ const imagesReducer: Reducer<ImageState, ImageActions> = (state = initialState, 
       };
 
       imageItemsCopy.splice(insertionIndex, 0, item);
-    }
+    }    
 
     return imageItemsCopy;
   }
@@ -140,7 +140,7 @@ const imagesReducer: Reducer<ImageState, ImageActions> = (state = initialState, 
     }
 
     case "ADD_IMAGE_ITEMS": {
-      const newImageItems = insertImageItems(action.payload);      
+      const newImageItems = insertImageItems(action.payload);            
 
       return {
         ...state,

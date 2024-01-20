@@ -1,6 +1,5 @@
 import { Reducer, configureStore } from "@reduxjs/toolkit";
 import { ActionCreator, ActionCreatorNoPayload } from "../types";
-import { SearchBarCategory } from "../Components/SearchBar";
 
 export const categories = ["Animals", "Architecture", "Food", "Nature", "Other", "People", "Sports", "Technology", "Travel"] as const;
 export type Category = typeof categories[number];
@@ -17,10 +16,8 @@ export class ImageItem {
 
 const initialState = {
   imageItems: [] as readonly ImageItem[],
-  searchValue: "",
 
   modalIsVisible: false,
-  selectedCategory: "All" satisfies SearchBarCategory as SearchBarCategory,
   hasMoreItems: true,
 
   loadedCategories: [] as readonly Category[],
@@ -33,7 +30,6 @@ type Optional<T extends object> = {
 }
 
 export type ImageActions = ActionCreator<{
-  SET_SEARCH_VALUE: string;
   SET_IMAGE_ITEMS: ImageItem[];
   ADD_IMAGE_ITEM: ImageItem;
   ADD_IMAGE_ITEMS: ImageItem[];
@@ -43,7 +39,6 @@ export type ImageActions = ActionCreator<{
   SET_MODAL_VISIBLE: boolean;
   ADD_LOADED_CATEGORY: Category;
 
-  SET_SELECTED_CATEGORY: SearchBarCategory;
 }> | ActionCreatorNoPayload<[
   "HAS_NO_MORE_ITEMS"
 ]>;
@@ -117,11 +112,6 @@ const imagesReducer: Reducer<ImageState, ImageActions> = (state = initialState, 
   }
 
   switch (action.type) {
-    case "SET_SEARCH_VALUE":
-      return {
-        ...state,
-        searchValue: action.payload,
-      }
 
     case "SET_IMAGE_ITEMS": {
       const imageItems = [...action.payload].sort((a, b) => a.id - b.id);      
@@ -178,12 +168,6 @@ const imagesReducer: Reducer<ImageState, ImageActions> = (state = initialState, 
       return {
         ...state,
         modalIsVisible: action.payload,
-      }
-
-    case "SET_SELECTED_CATEGORY":
-      return {
-        ...state,
-        selectedCategory: action.payload,
       }
 
     case "HAS_NO_MORE_ITEMS":

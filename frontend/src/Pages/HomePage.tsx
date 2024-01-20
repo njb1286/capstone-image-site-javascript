@@ -1,10 +1,10 @@
 import { useDispatch, useSelector } from "react-redux";
-import { UIEvent, useEffect, useMemo, useRef, useState } from "react";
+import { ChangeEvent, UIEvent, useEffect, useMemo, useRef, useState } from "react";
 
 import classes from "./HomePage.module.scss";
 
 import Card from "../Components/Card";
-import SearchBar from "../Components/SearchBar";
+import SearchBar, { SearchBarCategory } from "../Components/SearchBar";
 import ErrorPage from "../Components/ErrorPage";
 import { ImageState, imageStore } from "../store/images-store";
 import { getCategoryItems, getImageSlice } from "../store/images-actions";
@@ -13,13 +13,13 @@ import LoadingPage from "../Components/LoadingPage";
 const cardHeight = 600;
 
 function HomePage() {
-  const searchValue = useSelector((state: ImageState) => state.searchValue);
-  const selectedCategory = useSelector((state: ImageState) => state.selectedCategory);
   const hasMore = useSelector((state: ImageState) => state.hasMoreItems);
   const imageItems = useSelector((state: ImageState) => state.imageItems);
   const loadedCategories = useSelector((state: ImageState) => state.loadedCategories);
   const dispatch = useDispatch<typeof imageStore.dispatch>();
   const [loadingImages, setLoadingImages] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<SearchBarCategory>("All");
 
   const cardsRef = useRef<HTMLDivElement>(null);
 
@@ -133,7 +133,7 @@ function HomePage() {
 
   return (
     <>
-      <SearchBar />
+      <SearchBar onSelectCategory={setSelectedCategory} onChange={setSearchValue} />
       <div onScroll={scrollHandler} className={classes.cards} ref={cardsRef}>
         {content}
       </div>

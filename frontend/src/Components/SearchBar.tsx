@@ -1,63 +1,49 @@
-import { useDispatch } from "react-redux";
 import classes from "./SearchBar.module.scss";
-import { categories, imageStore } from "../store/images-store";
+import { categories } from "../store/images-store";
 import { InputGroup, Spinner } from "react-bootstrap";
 import CategoriesDropdown from "./CategoriesDropdown";
-import { useEffect, useState } from "react";
-import { getByTitle } from "../store/images-actions";
+import { ChangeEvent, useEffect, useState } from "react";
 
 const searchBarCategories = ["All", ...categories] as const;
 export type SearchBarCategory = typeof searchBarCategories[number];
 
-function SearchBar() {
-  const dispatch = useDispatch<typeof imageStore.dispatch>();
+type SearchBarProps = {
+  onChange?: (value: string) => void;
+  onSelectCategory?: (category: SearchBarCategory) => void;
+}
+
+function SearchBar(props: Readonly<SearchBarProps>) {
   const [isSearching, setIsSearching] = useState(false);
-  const [searchValue, setSearchValue] = useState("");
-  const [isInitial, setIsInitial] = useState(true);
+  const [value, setValue] = useState("");
+
 
   useEffect(() => {
-    if (isInitial) {
-      setIsInitial(false);
-      return;
-    }
-
     setIsSearching(true);
 
-    const timeout = setTimeout(async () => {
-      if (searchValue) {
-        await dispatch(getByTitle(searchValue));
-      }
-
-      dispatch({
-        type: "SET_SEARCH_VALUE",
-        payload: searchValue,
-      });
-
+    const timeout = setTimeout(() => {
+      props.onChange?.(value);
       setIsSearching(false);
-    }, 350);
+    }, 350)
 
     return () => {
       clearTimeout(timeout);
       setIsSearching(false);
     }
-  }, [searchValue]);
+  }, [value]);
 
-  const changeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchValue(event.target.value);
+  const categoryHandler = (category: SearchBarCategory) => {
+    props.onSelectCategory?.(category);
   }
 
-  const selectHandler = (category: SearchBarCategory) => {
-    dispatch({
-      type: "SET_SELECTED_CATEGORY",
-      payload: category,
-    });
+  const inputHandler = (event: ChangeEvent<HTMLInputElement>) => {
+    setValue(event.target.value);
   }
 
   return (
     <div className={classes["search-bar-wrapper"]}>
       <InputGroup className={classes["search-section"]}>
-        <input onChange={changeHandler} type="text" className={`form-control ${classes["search-input"]}`} placeholder="Search..." />
-        <CategoriesDropdown title="Filter" onSelect={selectHandler} categories={searchBarCategories} default="All" />
+        <input onChange={inputHandler} type="text" className={`form-control ${classes["search-input"]}`} placeholder="Search..." />
+        <CategoriesDropdown title="Filter" onSelect={categoryHandler} categories={searchBarCategories} default="All" />
       </InputGroup>
       {isSearching && <div className={classes["spinner-wrapper"]}><Spinner animation="border" variant="primary" /></div>}
     </div>

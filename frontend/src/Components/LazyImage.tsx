@@ -58,6 +58,17 @@ const LazyImage = ({ id, wrapperClassName, imageClassName, title }: LazyImagePro
     };
   }, []);
 
+  let content: JSX.Element | null = <img
+    alt={title}
+    src={imageUrl}
+    loading="lazy"
+    className={`${imageClassName} ${classes.image} ${shouldRenderImage ? classes.visible : ""} ${imageLoaded ? classes.loaded : ""}`}
+  />;
+
+  if (!shouldRenderImage && !imageRendered.current) {
+    content = null;
+  }
+
   return (
     <div ref={elementRef} className={`${wrapperClassName} ${classes["image-wrapper"]}`}>
       <div
@@ -67,12 +78,7 @@ const LazyImage = ({ id, wrapperClassName, imageClassName, title }: LazyImagePro
         className={classes["loading-img"]}
       />
 
-      <img
-        alt={title}
-        src={imageUrl}
-        loading="lazy"
-        className={`${imageClassName} ${classes.image} ${shouldRenderImage ? classes.visible : ""} ${imageLoaded && shouldRenderImage ? classes.loaded : ""}`}
-      />
+      {content}
     </div>
   )
 }

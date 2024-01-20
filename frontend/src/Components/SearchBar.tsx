@@ -1,30 +1,40 @@
 import { useDispatch } from "react-redux";
 import classes from "./SearchBar.module.scss";
-import { ImageActions, categories } from "../store/images-store";
+import { categories, imageStore } from "../store/images-store";
 import { InputGroup, Spinner } from "react-bootstrap";
 import CategoriesDropdown from "./CategoriesDropdown";
-import { Dispatch } from "@reduxjs/toolkit";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { getByTitle } from "../store/images-actions";
 
 const searchBarCategories = ["All", ...categories] as const;
 export type SearchBarCategory = typeof searchBarCategories[number];
 
 function SearchBar() {
-  const dispatch = useDispatch<Dispatch<ImageActions>>();
+  const dispatch = useDispatch<typeof imageStore.dispatch>();
   const [isSearching, setIsSearching] = useState(false);
   const [searchValue, setSearchValue] = useState("");
+  const [isInitial, setIsInitial] = useState(true);
 
   useEffect(() => {
+    if (isInitial) {
+      setIsInitial(false);
+      return;
+    }
+
     setIsSearching(true);
 
-    const timeout = setTimeout(() => {
+    const timeout = setTimeout(async () => {
+      if (searchValue) {
+        await dispatch(getByTitle(searchValue));
+      }
+
       dispatch({
         type: "SET_SEARCH_VALUE",
         payload: searchValue,
       });
 
       setIsSearching(false);
-    }, 250);
+    }, 350);
 
     return () => {
       clearTimeout(timeout);
@@ -40,7 +50,7 @@ function SearchBar() {
     dispatch({
       type: "SET_SELECTED_CATEGORY",
       payload: category,
-    })
+    });
   }
 
   return (

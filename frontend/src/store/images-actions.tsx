@@ -52,3 +52,18 @@ export const getCategoryItems = (category: Category) => {
     });
   }
 }
+
+export const getByTitle = (title: string) => {
+  return async function (dispatch: Dispatch<ImageActions>) {
+    const url = new URL(`${backendUrl}/get`);
+    url.searchParams.set("title", title.toLowerCase());
+
+    const response = await fetch(url);
+    const responseData = await response.json() as ImageItem[];    
+
+    dispatch({
+      type: "ADD_IMAGE_ITEMS",
+      payload: responseData,
+    });
+  }
+}

@@ -73,12 +73,21 @@ app.get("/api/get", (req, res) => {
   if (!req.query.id) {
     let query = `SELECT id, title, description, category, date FROM images`
     const categoryParam = req.query.category;
+    const titleParam = req.query.title;
     
     const values = [] as string[];
 
     if (categoryParam) {
       query += ` WHERE LOWER(category) = ?`;
       values.push(categoryParam as string);
+    }
+
+    if (titleParam) {
+      if (categoryParam) query += " AND";
+
+      query += ` WHERE LOWER(title) LIKE ?`;
+
+      values.push(`%${titleParam as string}%`);
     }
 
     db.all(query, values, (err: unknown, row: Table) => {

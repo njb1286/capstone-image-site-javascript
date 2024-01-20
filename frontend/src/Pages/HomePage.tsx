@@ -112,7 +112,7 @@ function HomePage() {
       {filteredImageItems.map(item => {
         return <Card {...item} key={item.id} />;
       })}
-      {hasMore && selectedCategory === "All" && <LoadingPage fullScreen={false} className={classes["loading-images"]} />}
+      {hasMore && selectedCategory === "All" && !searchValue && <LoadingPage fullScreen={false} className={classes["loading-images"]} />}
     </>
   );
 

@@ -153,11 +153,11 @@ export function useUploadForm(props: Readonly<UploadFormProps>) {
 
           <FormGroup>
             <Form.Label>Category</Form.Label>
-            <CategoriesDropdown onSelect={setCategory} categories={categories} default={category} />
+            <CategoriesDropdown className={classes.dropdown} onSelect={setCategory} categories={categories} default={category} />
           </FormGroup>
         </div>
 
-        <ButtonGroup>
+        <ButtonGroup className={classes.buttons}>
           <Button
             disabled={
               !titleValid ||

@@ -8,6 +8,7 @@ type CategoriesDropdownProps<T extends readonly string[], U extends T[number]> =
   default: U;
   onSelect?: (category: T[number]) => void;
   title?: string;
+  className?: string;
 }
 
 function CategoriesDropdown<T extends readonly string[], U extends T[number]>(props: Readonly<CategoriesDropdownProps<T, U>>) {
@@ -24,7 +25,7 @@ function CategoriesDropdown<T extends readonly string[], U extends T[number]>(pr
   }
 
   return (
-    <Dropdown className={classes.dropdown}>
+    <Dropdown className={`${classes.dropdown} ${props.className ?? ""}`}>
       <Dropdown.Toggle className={classes.categories}>
         {props.title && `${props.title}: `}{category}
       </Dropdown.Toggle>

@@ -17,6 +17,7 @@ function HomePage() {
   const selectedCategory = useSelector((state: ImageState) => state.selectedCategory);
   const hasMore = useSelector((state: ImageState) => state.hasMoreItems);
   const imageItems = useSelector((state: ImageState) => state.imageItems);
+  const loadedCategories = useSelector((state: ImageState) => state.loadedCategories);
   const dispatch = useDispatch<typeof imageStore.dispatch>();
   const [loadingImages, setLoadingImages] = useState(false);
 
@@ -65,6 +66,8 @@ function HomePage() {
     if (!hasMore) return;
 
     if (selectedCategory === "All") return;
+
+    if (loadedCategories.includes(selectedCategory)) return;
 
     dispatch(getCategoryItems(selectedCategory));
   }, [selectedCategory]);

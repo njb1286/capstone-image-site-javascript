@@ -1,4 +1,4 @@
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import classes from "./HomePage.module.scss";
@@ -6,7 +6,8 @@ import classes from "./HomePage.module.scss";
 import Card from "../Components/Card";
 import SearchBar from "../Components/SearchBar";
 import ErrorPage from "../Components/ErrorPage";
-import { ImageState } from "../store/images-store";
+import { ImageState, imageStore } from "../store/images-store";
+import { getImageSlice } from "../store/images-actions";
 
 const cardHeight = 600;
 
@@ -15,6 +16,8 @@ function HomePage() {
   const selectedCategory = useSelector((state: ImageState) => state.selectedCategory);
   const hasMore = useSelector((state: ImageState) => state.hasMoreItems);
   const imageItems = useSelector((state: ImageState) => state.imageItems);
+  const dispatch = useDispatch<typeof imageStore.dispatch>();
+
   const cardsRef = useRef<HTMLDivElement>(null);
 
   const [cardsInViewHeight, setCardsInViewHeight] = useState<number | null>(null);
@@ -23,9 +26,9 @@ function HomePage() {
   const cardsOverflowCount = useRef(9);
   const cardsRendered = useRef(0);
 
-  function getCardsInView(element: HTMLElement) {    
+  function getCardsInView(element: HTMLElement) {
     const result = Math.max(Math.ceil(element.clientHeight / cardHeight * cardsPerRow.current), cardsPerRow.current);
-    
+
     return Math.ceil(result / 3) * 3;
   }
 
@@ -41,25 +44,26 @@ function HomePage() {
   }
 
   const initialRender = (cardsInHeight: number) => {
-    cardsRendered.current = cardsInHeight + cardsOverflowCount.current;
+    cardsRendered.current = cardsInHeight + cardsOverflowCount.current
+    dispatch(getImageSlice(0, cardsRendered.current))
   }
 
   const renderNextCards = () => {
     const newRenderedCards = cardsRendered.current + cardsOverflowCount.current;
 
     console.log("Rendering cards from", cardsRendered.current + 1, "to", newRenderedCards);
-    
-    
+
+
     cardsRendered.current = newRenderedCards;
   }
 
   useEffect(() => {
     if (cardsRef.current) {
-      const cardCount = getCardsInView(cardsRef.current);      
+      const cardCount = getCardsInView(cardsRef.current);
 
       initialRender(cardCount);
-      console.log("Initial cards rendered:", cardsRendered.current);
-      
+      // console.log("Initial cards rendered:", cardsRendered.current);
+
       updateCardData();
       setCardsInViewHeight(cardCount + cardsOverflowCount.current);
 
@@ -84,18 +88,18 @@ function HomePage() {
   const content = !filteredImageItems.length ? (
     <ErrorPage message="No images found" />
   ) : (
-    <div ref={cardsRef} className={classes.cards}>
-      {filteredImageItems.map(item => {
-        return <Card {...item} key={item.id} />;
-      })}
-    </div>
+    <>{filteredImageItems.map(item => {
+      return <Card {...item} key={item.id} />;
+    })}</>
   );
 
   return (
     <>
-      <button onClick={renderNextCards}>Next cards</button>
+      {hasMore && <button onClick={renderNextCards}>Load more images</button>}
       <SearchBar />
-      {content}
+      <div className={classes.cards} ref={cardsRef}>
+        {content}
+      </div>
     </>
   );
 }

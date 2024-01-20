@@ -135,14 +135,16 @@ app.get("/api/get-slice", (req, res) => {
     return;
   }
 
-  const query = `SELECT id, title, description, category, date FROM images ${offsetParam ? "WHERE id < ?" : ""} ORDER BY id ASC LIMIT ?`;
+  const query = `SELECT id, title, description, category, date FROM images ${offsetParam ? "WHERE id > ?" : ""} ORDER BY id ASC LIMIT ?`;  
+
   const values = [limitParam];
   if (offsetParam) {
     if (isNaN(+offsetParam)) {
       res.status(400).send("Offset must be a number");
       return;
     }
-    values.push(offsetParam);
+    // values.push(offsetParam);    
+    values.unshift(offsetParam);
   };
 
   db.get<{ count: number }>("SELECT COUNT(*) AS count FROM images", (err, itemCountRow) => {
@@ -166,6 +168,9 @@ app.get("/api/get-slice", (req, res) => {
         res.status(404).send("No data found");
         return;
       }
+
+      console.log();
+      
 
       res.status(200).send({ data: sliceRows, hasMore: itemCountRow.count > +limitParam });
     });

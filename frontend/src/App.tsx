@@ -6,7 +6,7 @@ import Header from "./Components/Header";
 import { useUpdateImageItems } from "./hooks/useUpdateImageItems";
 import LoadingPage from "./Components/LoadingPage";
 
-const lazyLoader = (path: string) => React.lazy(() => import(path));
+const lazyLoader = (path: string) => React.lazy(() => import(/* @vite-ignore */path));
 
 const AboutPage = lazyLoader("./Pages/AboutPage");
 const ContentPage = lazyLoader("./Pages/ContentPage");
@@ -17,9 +17,9 @@ const HomePage = lazyLoader("./Pages/HomePage");
 function App() {
   const updateImageItems = useUpdateImageItems();
 
-  useEffect(() => {
-    updateImageItems();
-  }, [updateImageItems]);
+  // useEffect(() => {
+  //   updateImageItems();
+  // }, [updateImageItems]);
 
   const loadingPage = <LoadingPage />;
 

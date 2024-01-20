@@ -56,7 +56,7 @@ function HomePage() {
       setLoadingImages(false);
     }
 
-    dispatch(getImageSlice(cardsRendered.current + 1, cardsOverflowCount.current, doneLoading));
+    dispatch(getImageSlice(cardsRendered.current + 1, cardsOverflowCount.current, doneLoading, selectedCategory !== "All" ? selectedCategory : undefined));
 
     cardsRendered.current += cardsOverflowCount.current;
   }
@@ -72,6 +72,10 @@ function HomePage() {
       initialRender(cardCount);
 
       updateCardData();
+
+      if (cardsRef.current.scrollHeight <= cardsRef.current.clientHeight) {
+        renderNextCards();
+      }
 
       window.addEventListener("resize", () => {
         updateCardData();
@@ -100,18 +104,20 @@ function HomePage() {
   const content = !filteredImageItems.length ? (
     <ErrorPage message="No images found" />
   ) : (
-    <>{filteredImageItems.map(item => {
-      return <Card {...item} key={item.id} />;
-    })}</>
+    <>
+      {filteredImageItems.map(item => {
+        return <Card {...item} key={item.id} />;
+      })}
+      {hasMore && <LoadingPage fullScreen={false} className={classes["loading-images"]} />}
+    </>
   );
 
   return (
     <>
-      {/* {hasMore && <button onClick={renderNextCards}>Load more images</button>} */}
       <SearchBar />
       <div onScroll={scrollHandler} className={classes.cards} ref={cardsRef}>
         {content}
-        {hasMore && <LoadingPage fullScreen={false} className={classes["loading-images"]} />}
+
       </div>
     </>
   );

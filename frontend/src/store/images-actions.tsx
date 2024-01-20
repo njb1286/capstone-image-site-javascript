@@ -1,5 +1,5 @@
 import { Dispatch } from "@reduxjs/toolkit";
-import { ImageActions, ImageItem } from "./images-store";
+import { Category, ImageActions, ImageItem } from "./images-store";
 import { backendUrl } from "./backend-url";
 
 // Redux thunk action creator
@@ -17,9 +17,14 @@ export const getImageItems = () => {
 
 }
 
-export const getImageSlice = (offset: number, count: number, doneLoading?: () => void) => {
+export const getImageSlice = (offset: number, count: number, doneLoading?: () => void, category?: Category) => {
   return async function (dispatch: Dispatch<ImageActions>) {
-    const response = await fetch(`${backendUrl}/get-slice?limit=${count}&offset=${offset}`);
+    let url = `${backendUrl}/get-slice?limit=${count}&offset=${offset}`;
+    if (category) {
+      url += `&category=${category.toLowerCase()}`;
+    }
+
+    const response = await fetch(url);
     const responseData = await response.json() as { data: ImageItem[], hasMore: boolean };
 
     dispatch({

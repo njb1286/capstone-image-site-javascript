@@ -124,6 +124,7 @@ app.get("/api/last", (_, res) => {
 app.get("/api/get-slice", (req, res) => {
   const limitParam = req.query.limit;
   const offsetParam = req.query.offset;
+  const categoryParam = req.query.category;
 
   if (!limitParam) {
     res.status(400).send("No limit provided");
@@ -145,9 +146,12 @@ app.get("/api/get-slice", (req, res) => {
     return;
   }
 
-  const query = `SELECT id, title, description, category, date FROM images ORDER BY id ASC LIMIT ? OFFSET ?`;
+  const query = `SELECT id, title, description, category, date FROM images${categoryParam ? "WHERE LOWER(category) = ?" : ""} ORDER BY id ASC LIMIT ? OFFSET ?`;
 
   const values = [limitParam, offsetParam];
+  if (categoryParam) {
+    values.unshift(categoryParam);
+  }
 
   db.get<{ count: number }>("SELECT COUNT(*) AS count FROM images", (err, itemCountRow) => {
     if (err) {
@@ -174,7 +178,7 @@ app.get("/api/get-slice", (req, res) => {
       console.log();
       
 
-      res.status(200).send({ data: sliceRows, hasMore: +offsetParam + +limitParam < itemCountRow.count });
+      res.status(200).send({ data: sliceRows, hasMore: (+offsetParam + +limitParam < itemCountRow.count) || categoryParam !== undefined });
     });
   });
 });

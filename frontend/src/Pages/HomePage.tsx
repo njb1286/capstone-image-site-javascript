@@ -45,13 +45,17 @@ function HomePage() {
     cardsOverflowCount.current = 6;
   }
 
-  const initialRender = (cardsInHeight: number) => {
+  const initialRender = async (cardsInHeight: number) => {
     cardsRendered.current = cardsInHeight + cardsOverflowCount.current;
 
-    dispatch(getImageSlice(0, cardsRendered.current, undefined, imageItems.map(item => item.id)));
+    setLoadingImages(true);
+
+    await dispatch(getImageSlice(0, cardsRendered.current, undefined, imageItems.map(item => item.id)));
+
+    setLoadingImages(false);
   }
 
-  const renderNextCards = () => {   
+  const renderNextCards = () => {
     const doneLoading = () => {
       setLoadingImages(false);
     }
@@ -66,15 +70,23 @@ function HomePage() {
   }
 
   useEffect(() => {
-    if (!hasMore) return;
+    const fn = async () => {
+      if (!hasMore) return;
 
-    if (selectedCategory === "All") return;
+      if (selectedCategory === "All") return;
 
-    if (loadedCategories.includes(selectedCategory)) return;
+      if (loadedCategories.includes(selectedCategory)) return;
 
-    const loadedItems = imageItems.filter(item => item.category === selectedCategory).map(item => item.id);
+      setLoadingImages(true);
 
-    dispatch(getCategoryItems(selectedCategory, loadedItems));
+      const loadedItems = imageItems.filter(item => item.category === selectedCategory).map(item => item.id);
+
+      await dispatch(getCategoryItems(selectedCategory, loadedItems));
+
+      setLoadingImages(false);
+    }
+
+    fn();
   }, [selectedCategory]);
 
   useEffect(() => {
@@ -99,7 +111,7 @@ function HomePage() {
 
   // A normal function, because it doesn't have to be defined above the usage
   function scrollHandler(event: UIEvent<HTMLDivElement>) {
-    if (!hasMore) return;    
+    if (!hasMore) return;
 
     const element = event.target as HTMLDivElement;
 
@@ -120,7 +132,7 @@ function HomePage() {
     });
   }, [selectedCategory, searchValue, imageItems]);
 
-  const content = !filteredImageItems.length ? (
+  const content = !filteredImageItems.length && !loadingImages ? (
     <ErrorPage message="No images found" />
   ) : (
     <>

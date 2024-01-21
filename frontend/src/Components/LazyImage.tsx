@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { backendUrl } from "../store/backend-url";
 import classes from "./LazyImage.module.scss";
+import { Spinner } from "react-bootstrap";
 
 type LazyImageProps = {
   id: number;
@@ -78,6 +79,7 @@ const LazyImage = ({ id, wrapperClassName, imageClassName, title, size }: LazyIm
         }}
         className={classes["loading-img"]}
       />
+      <div className={classes["spinner-wrapper"]}><Spinner className={classes.spinner} variant="primary" animation="border" /></div>
 
       {content}
     </div>

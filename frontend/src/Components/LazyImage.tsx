@@ -43,7 +43,7 @@ const LazyImage = ({ id, wrapperClassName, imageClassName, title, size }: LazyIm
       {
         root: null,
         rootMargin: '0px',
-        threshold: .4,
+        threshold: .1,
       }
     );
 

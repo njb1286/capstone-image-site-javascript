@@ -1,6 +1,5 @@
 import { backendUrl } from "../store/backend-url";
 import { useNavigate } from "react-router";
-import { useUpdateImageItems } from "../hooks/useUpdateImageItems";
 import { Category, ImageActions, ImageState } from "../store/images-store";
 import { useUploadForm } from "../hooks/useUploadForm";
 import { useGetImageItem } from "../hooks/useGetImageItem";
@@ -11,7 +10,6 @@ import { getRequestData } from "../helpers/token";
 
 function UpdatePage() {
   const navigate = useNavigate();
-  const updateImagesState = useUpdateImageItems();
   const dispatch = useDispatch<Dispatch<ImageActions>>();
   const searchParams = new URLSearchParams(location.search);
 

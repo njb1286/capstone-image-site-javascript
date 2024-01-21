@@ -5,6 +5,7 @@ import sharp from "sharp";
 import { Database } from "sqlite3";
 import { password } from "./password";
 import { createToken, dateIsValid } from "./tokens";
+import path from "path";
 
 const db = new Database("database.sqlite");
 
@@ -24,9 +25,14 @@ db.exec(`CREATE TABLE IF NOT EXISTS tokens (
   date DATETIME DEFAULT CURRENT_TIMESTAMP
 );`)
 
-
-
 const app = express();
+app.use(express.static(path.resolve(__dirname, "..", "public")))
+
+app.get("/", (req, res) => {
+  res.sendFile(path.resolve(__dirname, "..", "public", "index.html"));
+})
+
+
 const upload = multer({ storage: multer.memoryStorage() });
 
 const compressSmallImage = async (image: Buffer) => {

@@ -10,14 +10,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { Dispatch } from "@reduxjs/toolkit";
 import { ImageActions, ImageState } from "./store/images-store";
 
-const lazyLoader = (path: string) => React.lazy(() => import(/* @vite-ignore */path));
-
-const AboutPage = lazyLoader("./Pages/AboutPage");
-const ContentPage = lazyLoader("./Pages/ContentPage");
-const UploadPage = lazyLoader("./Pages/UploadPage");
-const UpdatePage = lazyLoader("./Pages/UpdatePage");
-const HomePage = lazyLoader("./Pages/HomePage");
-const LoginPage = lazyLoader("./Pages/LoginPage");
+const AboutPage = React.lazy(() => import("./Pages/AboutPage"));
+const ContentPage = React.lazy(() => import("./Pages/ContentPage"));
+const UploadPage = React.lazy(() => import("./Pages/UploadPage"));
+const UpdatePage = React.lazy(() => import("./Pages/UpdatePage"));
+const HomePage = React.lazy(() => import("./Pages/HomePage"));
+const LoginPage = React.lazy(() => import("./Pages/LoginPage"));
 
 type State = "loading" | "login" | "valid";
 
@@ -79,8 +77,10 @@ function App() {
   }
 
   const returnedComponent = state !== "valid" ? <Routes>
-    <Route path="/*" element={component} />
+    <Route path="/" element={component} />
   </Routes> : component;
+
+  if (location.pathname.startsWith("/api")) return;
 
   return (
     <BrowserRouter>

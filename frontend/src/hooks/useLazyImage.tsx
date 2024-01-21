@@ -14,7 +14,7 @@ type LazyImageProps = {
 export const useLazyImage = ({ id, wrapperClassName, imageClassName, title, size }: LazyImageProps) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const elementRef = useRef<HTMLImageElement>(null);
-  const [shouldRenderImage, setShouldRenderImage] = useState(true);
+  const [shouldRenderImage, setShouldRenderImage] = useState(false);
 
   const smallImageUrl = `${backendUrl}/get-image?id=${id}&size=small`;
   const imageUrl = `${backendUrl}/get-image?id=${id}&size=${size ?? "large"}`;

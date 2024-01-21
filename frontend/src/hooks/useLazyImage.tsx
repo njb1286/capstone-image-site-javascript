@@ -11,15 +11,16 @@ type LazyImageProps = {
   size?: "small" | "medium" | "large";
 }
 
-const LazyImage = ({ id, wrapperClassName, imageClassName, title, size }: LazyImageProps) => {
+export const useLazyImage = ({ id, wrapperClassName, imageClassName, title, size }: LazyImageProps) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const elementRef = useRef<HTMLImageElement>(null);
-  const [shouldRenderImage, setShouldRenderImage] = useState(false);
+  const [shouldRenderImage, setShouldRenderImage] = useState(true);
 
   const smallImageUrl = `${backendUrl}/get-image?id=${id}&size=small`;
   const imageUrl = `${backendUrl}/get-image?id=${id}&size=${size ?? "large"}`;
 
   const imageRendered = useRef(false);
+  const observerRef = useRef<IntersectionObserver | null>(null);
 
   useEffect(() => {
     if (imageRendered.current) return;
@@ -39,8 +40,10 @@ const LazyImage = ({ id, wrapperClassName, imageClassName, title, size }: LazyIm
   }, [id, shouldRenderImage]);
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => setShouldRenderImage(entry.isIntersecting),
+    observerRef.current = new IntersectionObserver(
+      ([entry]) => {
+        setShouldRenderImage(entry.isIntersecting);
+      },
       {
         root: null,
         rootMargin: '0px',
@@ -49,41 +52,44 @@ const LazyImage = ({ id, wrapperClassName, imageClassName, title, size }: LazyIm
     );
 
     if (elementRef.current) {
-      observer.observe(elementRef.current);
+      observerRef.current.observe(elementRef.current);
     }
 
     return () => {
       // Clean up the observer when the component unmounts.
       if (elementRef.current) {
-        observer.unobserve(elementRef.current);
+        observerRef.current!.unobserve(elementRef.current);
       }
     };
   }, []);
+
+  const reobserve = () => {
+    observerRef.current!.unobserve(elementRef.current!);
+    observerRef.current!.observe(elementRef.current!);
+  }
 
   let content: JSX.Element | null = <img
     alt={title}
     src={imageUrl}
     loading="lazy"
-    className={`${imageClassName} ${classes.image} ${shouldRenderImage ? classes.visible : ""} ${imageLoaded ? classes.loaded : ""}`}
+    className={`${imageClassName ?? ""} ${classes.image} ${shouldRenderImage ? classes.visible : ""} ${imageLoaded ? classes.loaded : ""}`}
   />;
 
   if (!shouldRenderImage && !imageRendered.current) {
     content = null;
   }
 
-  return (
-    <div ref={elementRef} className={`${wrapperClassName} ${classes["image-wrapper"]}`}>
-      <div
-        style={{
-          backgroundImage: `url(${smallImageUrl})`,
-        }}
-        className={classes["loading-img"]}
-      />
-      <div className={classes["spinner-wrapper"]}><Spinner className={classes.spinner} variant="primary" animation="border" /></div>
+  const component = <div ref={elementRef} className={`${wrapperClassName} ${classes["image-wrapper"]}`}>
+    <div
+      style={{
+        backgroundImage: `url(${smallImageUrl})`,
+      }}
+      className={classes["loading-img"]}
+    />
+    <div className={classes["spinner-wrapper"]}><Spinner className={classes.spinner} variant="primary" animation="border" /></div>
 
-      {content}
-    </div>
-  )
+    {content}
+  </div>
+
+  return [component, reobserve] as const;
 }
-
-export default LazyImage;

@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { ChangeEvent, UIEvent, useEffect, useMemo, useRef, useState } from "react";
+import { UIEvent, useEffect, useMemo, useRef, useState } from "react";
 
 import classes from "./HomePage.module.scss";
 
@@ -124,20 +124,36 @@ function HomePage() {
   }
 
   const filteredImageItems = useMemo(() => {
-    return (selectedCategory === "All" && !searchValue) ? imageItems : imageItems.filter(item => {
+    const imageItemsCopy = [...imageItems].sort((a, b) => {
+      if (selectedSort === "Title") {
+        return a.title.localeCompare(b.title);
+      }
+
+      if (selectedSort === "Category") {
+        return a.category.localeCompare(b.category);
+      }
+
+      if (selectedSort === "Date") {
+        return new Date(a.date).getTime() - new Date(b.date).getTime();
+      }
+
+      return a.id - b.id;
+    });
+
+    return (selectedCategory === "All" && !searchValue) ? imageItemsCopy : imageItemsCopy.filter(item => {
       const matchesCategory = selectedCategory === "All" || item.category === selectedCategory;
       const matchesSearch = !searchValue || item.title.toLowerCase().includes(searchValue.toLowerCase());
 
       return matchesCategory && matchesSearch;
     });
-  }, [selectedCategory, searchValue, imageItems]);
+  }, [selectedCategory, searchValue, imageItems, selectedSort]);
 
   const content = !filteredImageItems.length && !loadingImages ? (
     <ErrorPage message="No images found" />
   ) : (
     <>
       {filteredImageItems.map((item) => {
-        return <Card {...item} key={item.id} />;
+        return <Card stateToListenTo={selectedSort} {...item} key={item.id} />;
       })}
       {hasMore && selectedCategory === "All" && !searchValue && <LoadingPage fullScreen={false} className={classes["loading-images"]} />}
     </>

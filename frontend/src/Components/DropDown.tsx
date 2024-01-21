@@ -1,9 +1,9 @@
 import { Dropdown } from "react-bootstrap"
 
-import classes from "./CategoriesDropdown.module.scss"
+import classes from "./DropDown.module.scss"
 import { useState } from "react";
 
-type CategoriesDropdownProps<T extends readonly string[], U extends T[number]> = {
+type DropDownProps<T extends readonly string[], U extends T[number]> = {
   categories: T;
   default: U;
   onSelect?: (category: T[number]) => void;
@@ -11,7 +11,7 @@ type CategoriesDropdownProps<T extends readonly string[], U extends T[number]> =
   className?: string;
 }
 
-function CategoriesDropdown<T extends readonly string[], U extends T[number]>(props: Readonly<CategoriesDropdownProps<T, U>>) {
+function DropDown<T extends readonly string[], U extends T[number]>(props: Readonly<DropDownProps<T, U>>) {
   const [category, setCategory] = useState<T[number]>(props.default);
 
   const selectCategory = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
@@ -39,4 +39,4 @@ function CategoriesDropdown<T extends readonly string[], U extends T[number]>(pr
   )
 }
 
-export default CategoriesDropdown;
+export default DropDown;

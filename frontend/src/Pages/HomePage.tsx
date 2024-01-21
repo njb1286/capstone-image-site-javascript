@@ -4,7 +4,7 @@ import { ChangeEvent, UIEvent, useEffect, useMemo, useRef, useState } from "reac
 import classes from "./HomePage.module.scss";
 
 import Card from "../Components/Card";
-import SearchBar, { SearchBarCategory } from "../Components/SearchBar";
+import SearchBar, { SearchBarCategory, SearchBarSort } from "../Components/SearchBar";
 import ErrorPage from "../Components/ErrorPage";
 import { ImageState, imageStore } from "../store/images-store";
 import { getCategoryItems, getImageSlice } from "../store/images-actions";
@@ -20,6 +20,7 @@ function HomePage() {
   const [loadingImages, setLoadingImages] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<SearchBarCategory>("All");
+  const [selectedSort, setSelectedSort] = useState<SearchBarSort>("Date");
 
   const cardsRef = useRef<HTMLDivElement>(null);
 
@@ -144,7 +145,11 @@ function HomePage() {
 
   return (
     <>
-      <SearchBar onSelectCategory={setSelectedCategory} onChange={setSearchValue} />
+      <SearchBar
+        onSelectCategory={setSelectedCategory}
+        onChange={setSearchValue}
+        onSelectSort={setSelectedSort}
+      />
       <div onScroll={scrollHandler} className={classes.cards} ref={cardsRef}>
         {content}
       </div>

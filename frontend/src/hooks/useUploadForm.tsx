@@ -4,7 +4,7 @@ import { Button, ButtonGroup, Form, FormControl, FormGroup, Spinner } from "reac
 import { useFormField } from "../hooks/useFormField";
 import { useNavigate } from "react-router";
 import { Category, categories } from "../store/images-store";
-import CategoriesDropdown from "../Components/CategoriesDropdown";
+import DropDown from "../Components/DropDown";
 
 export type UploadFormSubmitEvent = (title: string, description: string, image: File | null, category: Category) => Promise<void>;
 
@@ -153,7 +153,7 @@ export function useUploadForm(props: Readonly<UploadFormProps>) {
 
           <FormGroup>
             <Form.Label>Category</Form.Label>
-            <CategoriesDropdown className={classes.dropdown} onSelect={setCategory} categories={categories} default={category} />
+            <DropDown className={classes.dropdown} onSelect={setCategory} categories={categories} default={category} />
           </FormGroup>
         </div>
 

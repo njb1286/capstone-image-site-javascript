@@ -14,8 +14,8 @@ const LazyImage = ({ id, wrapperClassName, imageClassName, title }: LazyImagePro
   const elementRef = useRef<HTMLImageElement>(null);
   const [shouldRenderImage, setShouldRenderImage] = useState(false);
 
-  const smallImageUrl = `${backendUrl}/get-small-image?id=${id}`;
-  const imageUrl = `${backendUrl}/get-image?id=${id}`;
+  const smallImageUrl = `${backendUrl}/get-image?id=${id}&size=small`;
+  const imageUrl = `${backendUrl}/get-image?id=${id}&size=large`;
 
   const imageRendered = useRef(false);
 

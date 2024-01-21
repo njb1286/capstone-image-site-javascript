@@ -8,16 +8,15 @@ import { createToken, dateIsValid } from "./tokens";
 
 const db = new Database("database.sqlite");
 
-// TODO if desired: make a tiny version of the image to display before the full size image is loaded
-
 db.exec(`CREATE TABLE IF NOT EXISTS images (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   title TEXT NOT NULL,
-  image BLOB NOT NULL,
+  largeImage BLOB NOT NULL,
   smallImage BLOB NOT NULL,
   description TEXT NOT NULL,
   date DATETIME DEFAULT CURRENT_TIMESTAMP,
-  category TEXT NOT NULL
+  category TEXT NOT NULL,
+  mediumImage BLOB NOT NULL
 );`);
 
 db.exec(`CREATE TABLE IF NOT EXISTS tokens (
@@ -35,14 +34,17 @@ const compressSmallImage = async (image: Buffer) => {
     .toBuffer();
 }
 
+const compressMediumImage = async (image: Buffer) => {
+  return await sharp(image)
+    .resize(512)
+    .jpeg({ quality: 50 })
+    .toBuffer();
+}
+
 const compressImage = async (image: Buffer) => {
   return await sharp(image)
     .jpeg({ quality: 60 })
     .toBuffer();
-}
-
-const isAuthenticated = async (req: Request, res: Response) => {
-
 }
 
 const validateToken = async (req: Request, res?: Response) => {
@@ -126,7 +128,7 @@ app.post("/api/login", express.json(), async (req, res) => {
 
   db.run(insertQuery, values, (err) => {
     if (err) {
-      res.status(500).send({ message: "Error inserting data" });
+      res.status(500).send({ message: "Error inserting data:" + err });
       return;
     }
 
@@ -156,7 +158,7 @@ app.post("/api/form", upload.single("image"), async (req, res) => {
 
   db.run(insertQuery, values, function (err) {
     if (err) {
-      res.status(500).send("Error inserting data");
+      res.status(500).send("Error inserting data: " + err);
       return;
     }
 
@@ -168,10 +170,11 @@ interface Table {
   id: number;
   title: string;
   description: string;
-  image: Blob;
+  largeImage: Blob;
   smallImage: Blob;
   category: string;
   date: string;
+  mediumImage: Blob;
 }
 
 app.get("/api/get", async (req, res) => {
@@ -219,7 +222,7 @@ app.get("/api/get", async (req, res) => {
 
     db.all(query, values, (err: unknown, row: Table) => {
       if (err) {
-        res.status(500).send("Error getting data");
+        res.status(500).send("Error getting data:" + err);
 
         return;
       }
@@ -240,7 +243,7 @@ app.get("/api/get", async (req, res) => {
 
   db.get(selectQuery, values, (err, row) => {
     if (err) {
-      res.status(500).send("Error getting data");
+      res.status(500).send("Error getting data: " + err);
       return;
     }
 
@@ -265,7 +268,7 @@ app.get("/api/last", async (req, res) => {
 
   db.get(selectQuery, (err, row) => {
     if (err) {
-      res.status(500).send("Error getting data");
+      res.status(500).send("Error getting data: " + err);
       return;
     }
 
@@ -316,7 +319,7 @@ app.get("/api/get-slice", async (req, res) => {
 
   db.get<{ count: number }>("SELECT COUNT(*) AS count FROM images", (err, itemCountRow) => {
     if (err) {
-      res.status(500).send("Error getting data");
+      res.status(500).send("Error getting data: " + err);
       return;
     }
 
@@ -334,7 +337,7 @@ app.get("/api/get-slice", async (req, res) => {
 
     db.all(query, values, (err, sliceRows) => {
       if (err) {
-        res.status(500).send("Error getting data");
+        res.status(500).send("Error getting data: " + err);
         return;
       }
 
@@ -351,16 +354,26 @@ app.get("/api/get-slice", async (req, res) => {
 });
 
 app.get("/api/get-image", (req, res) => {
+  const validSizes = ["large", "medium", "small"] as const;
+  type Size = typeof validSizes[number];
+
+  const sizeParam = (req.query.size as Size) ?? "large";
+
+  if (!validSizes.includes(sizeParam)) {
+    res.status(400).send("Invalid size");
+    return;
+  }
+
   if (!req.query.id) {
     res.status(400).send("No id provided");
     return;
   }
 
-  const selectQuery = `SELECT image FROM images where id = ?`;
+  const selectQuery = `SELECT ${sizeParam}Image FROM images where id = ?`;  
 
   db.get(selectQuery, [req.query.id], (err, row: Table) => {
     if (err) {
-      res.status(500).send("Error getting data");
+      res.status(500).send("Error getting data: " + err);
       return;
     }
 
@@ -370,31 +383,7 @@ app.get("/api/get-image", (req, res) => {
     }
 
     res.contentType("image/png");
-    res.send(row.image);
-  });
-})
-
-app.get("/api/get-small-image", (req, res) => {
-  if (!req.query.id) {
-    res.status(400).send("No id provided");
-    return;
-  }
-
-  const selectQuery = `SELECT smallImage FROM images where id = ?`;
-
-  db.get(selectQuery, [req.query.id], (err, row: Table) => {
-    if (err) {
-      res.status(500).send("Error getting data");
-      return;
-    }
-
-    if (!row) {
-      res.status(404).send("No data found");
-      return;
-    }
-
-    res.contentType("image/png");
-    res.send(row.smallImage);
+    res.send(row[`${sizeParam}Image`]);
   });
 })
 
@@ -417,7 +406,7 @@ app.delete("/api/delete", async (req, res) => {
 
   db.run(deleteQuery, [id], (err) => {
     if (err) {
-      res.status(500).send("Error deleting data");
+      res.status(500).send("Error deleting data: " + err);
       return;
     }
 
@@ -434,12 +423,14 @@ app.post("/api/update", upload.single("image"), async (req, res) => {
   }
 
   const { id, title, description, category } = req.body;
-  let image = req.file?.buffer;
+  let largeImage = req.file?.buffer;
   let smallImage: Buffer | null = null;
+  let mediumImage: Buffer | null = null;
 
-  if (image) {
-    image = await compressImage(image);
-    smallImage = await compressSmallImage(image);
+  if (largeImage) {
+    largeImage = await compressImage(largeImage);
+    mediumImage = await compressMediumImage(largeImage);
+    smallImage = await compressSmallImage(mediumImage);
   }
 
   if (!id) {
@@ -447,18 +438,20 @@ app.post("/api/update", upload.single("image"), async (req, res) => {
     return;
   }
 
-  const updateQuery = `UPDATE images SET title = ?, description = ?, category = ?${image ? ", image = ?, smallImage = ?" : ""} WHERE id = ?`;
+  const updateQuery = `UPDATE images SET ${largeImage ? "largeImage = ?, smallImage = ?, mediumImage = ?," : ""} title = ?, description = ?, category = ? WHERE id = ?`;
   const values = [title, description, category];
 
-  if (image) {
-    values.push(image, smallImage);
+  if (largeImage) {
+    values.unshift(largeImage, smallImage, mediumImage);
   }
-
+  
   values.push(id);
+
 
   db.run(updateQuery, values, (err) => {
     if (err) {
-      res.status(500).send("Error updating data");
+      res.status(500).send("Error updating data: " + err);
+      
       return;
     }
 

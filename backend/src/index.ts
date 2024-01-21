@@ -24,6 +24,8 @@ db.exec(`CREATE TABLE IF NOT EXISTS tokens (
   date DATETIME DEFAULT CURRENT_TIMESTAMP
 );`)
 
+
+
 const app = express();
 const upload = multer({ storage: multer.memoryStorage() });
 
@@ -36,8 +38,8 @@ const compressSmallImage = async (image: Buffer) => {
 
 const compressMediumImage = async (image: Buffer) => {
   return await sharp(image)
-    .resize(512)
-    .jpeg({ quality: 50 })
+    .resize(384)
+    .jpeg({ quality: 40 })
     .toBuffer();
 }
 

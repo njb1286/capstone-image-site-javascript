@@ -16,7 +16,7 @@ function Card({ title, id, category }: Readonly<CardProps>) {
         <h2>{title}</h2>
       </CardHeader>
 
-      <LazyImage title={title} id={id} />
+      <LazyImage title={title} id={id} size="medium" />
 
       <CardFooter className={classes.footer}>
         <CardText className={classes.category}>Category: {category}</CardText>

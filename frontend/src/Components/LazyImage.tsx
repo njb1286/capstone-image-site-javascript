@@ -7,15 +7,16 @@ type LazyImageProps = {
   title: string;
   wrapperClassName?: string;
   imageClassName?: string;
+  size?: "small" | "medium" | "large";
 }
 
-const LazyImage = ({ id, wrapperClassName, imageClassName, title }: LazyImageProps) => {
+const LazyImage = ({ id, wrapperClassName, imageClassName, title, size }: LazyImageProps) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const elementRef = useRef<HTMLImageElement>(null);
   const [shouldRenderImage, setShouldRenderImage] = useState(false);
 
   const smallImageUrl = `${backendUrl}/get-image?id=${id}&size=small`;
-  const imageUrl = `${backendUrl}/get-image?id=${id}&size=large`;
+  const imageUrl = `${backendUrl}/get-image?id=${id}&size=${size ?? "large"}`;
 
   const imageRendered = useRef(false);
 

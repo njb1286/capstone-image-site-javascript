@@ -149,18 +149,21 @@ app.post("/api/form", upload.single("image"), async (req, res) => {
   const { title, description, category } = req.body;
   let image = req.file?.buffer;
   let smallImage: Buffer | null = null;
+  let mediumImage: Buffer | null = null;
 
   if (image) {
     smallImage = await compressSmallImage(image);
-    image = await compressImage(image);
+    mediumImage = await compressMediumImage(image);
+    image = await compressImage(mediumImage);
   }
 
-  const insertQuery = `INSERT INTO images (title, image, smallImage, description, category) VALUES (?, ?, ?, ?, ?)`;
-  const values = [title, image, smallImage, description, category];
+  const insertQuery = `INSERT INTO images (title, largeImage, smallImage, mediumImage, description, category) VALUES (?, ?, ?, ?, ?, ?)`;
+  const values = [title, image, smallImage, mediumImage, description, category];
 
-  db.run(insertQuery, values, function (err) {
+  db.run(insertQuery, values, (err) => {
     if (err) {
       res.status(500).send("Error inserting data: " + err);
+      
       return;
     }
 

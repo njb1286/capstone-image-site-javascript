@@ -32,7 +32,7 @@ function ContentPage() {
 
   });
 
-  const [component, reobserve] = useLazyImage({
+  const [component] = useLazyImage({
     id: +id,
     title: "title" in getImageItem.payload ? getImageItem.payload.title : "",
     wrapperClassName: `card-img ${classes["image-wrapper"]}`,

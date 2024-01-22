@@ -1,1 +1,1 @@
-export const backendUrl = "http://localhost:3000/api";
+export const backendUrl = `${window.location.protocol}//${window.location.host}/api`;

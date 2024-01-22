@@ -4,7 +4,8 @@
   "description": "",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "export SITE_PASSWORD=`cat ../password.txt` && nodemon --exec ts-node ./src/index.ts"
+    "start": "export SITE_PASSWORD=`cat ../password.txt` && nodemon --exec ts-node ./src/index.ts",
+    "build": "webpack --config webpack.config.js"
   },
   "keywords": [],
   "author": "",
@@ -18,14 +19,16 @@
     "nodemon": "^3.0.1",
     "sharp": "^0.33.2",
     "sqlite3": "^5.1.7",
-    "ts-node": "^10.9.1"
+    "ts-loader": "^9.5.1",
+    "ts-node": "^10.9.1",
+    "webpack-node-externals": "^3.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.18.13",
     "@babel/preset-env": "^7.18.10",
     "@types/node": "^20.11.5",
     "babel-loader": "^8.2.5",
-    "webpack": "^5.74.0",
+    "webpack": "^5.89.0",
     "webpack-cli": "^4.10.0",
     "webpack-dev-server": "^4.10.0"
   }

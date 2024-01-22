@@ -13,11 +13,12 @@
       margin-bottom: 2rem;
     }
 
-    p {
+    p, li {
       font-size: 1.8rem;
       line-height: 2.5rem;
       padding: 0 3rem;
       margin-bottom: 0;
+      list-style-type: none;
     }
 
     .image-wrapper {

@@ -72,7 +72,7 @@ function ContentPage() {
 
   const { title, description } = imageData;
 
-  const splitDescription = description.split("\n").map((item, index) => <p key={`${item}__${index}`}>{item} <br /></p>);
+  const splitDescription = description.split("\n").map((item, index) => <li key={`${item}__${index}`}>{item} <br /></li>);
 
   const uploadDate = new Date(imageData.date).toLocaleDateString();
 
@@ -97,7 +97,7 @@ function ContentPage() {
             </div>
           </div>
 
-          <div className={classes.description}>{splitDescription}</div>
+          <ul className={classes.description}>{splitDescription}</ul>
         </div>
 
 

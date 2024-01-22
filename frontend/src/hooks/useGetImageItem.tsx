@@ -49,7 +49,7 @@ export function useGetImageItem<T extends (string | number) | null>(id: T): Retu
         return;
       }
 
-      const data = await response.json();
+      const data = await response.json() as ImageItem;      
       
       dispatch({
         type: "ADD_IMAGE_ITEM",

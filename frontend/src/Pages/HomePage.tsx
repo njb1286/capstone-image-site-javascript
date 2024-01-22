@@ -21,6 +21,7 @@ function HomePage() {
   const [searchValue, setSearchValue] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<SearchBarCategory>("All");
   const [selectedSort, setSelectedSort] = useState<SearchBarSort>("Date");
+  const isInitialRender = useSelector((state: ImageState) => state.initialRender);
 
   const cardsRef = useRef<HTMLDivElement>(null);
 
@@ -47,6 +48,10 @@ function HomePage() {
   }
 
   const initialRender = async (cardsInHeight: number) => {
+    dispatch({
+      type: "INITIAL_RENDER",
+    })
+    
     cardsRendered.current = cardsInHeight + cardsOverflowCount.current;
 
     setLoadingImages(true);
@@ -98,7 +103,7 @@ function HomePage() {
     if (cardsRef.current) {
       const cardCount = getCardsInView(cardsRef.current);
 
-      initialRender(cardCount);
+      if (!isInitialRender) initialRender(cardCount);
 
       updateCardData();
 

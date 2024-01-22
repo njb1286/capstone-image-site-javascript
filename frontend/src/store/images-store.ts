@@ -22,6 +22,7 @@ const initialState = {
 
   loadedCategories: [] as readonly Category[],
   token: null as string | null,
+  initialRender: false,
 }
 
 export type ImageState = typeof initialState;
@@ -42,7 +43,8 @@ export type ImageActions = ActionCreator<{
   SET_TOKEN: string | null,
 
 }> | ActionCreatorNoPayload<[
-  "HAS_NO_MORE_ITEMS"
+  "HAS_NO_MORE_ITEMS",
+  "INITIAL_RENDER"
 ]>;
 
 const imagesReducer: Reducer<ImageState, ImageActions> = (state = initialState, action) => {
@@ -116,7 +118,7 @@ const imagesReducer: Reducer<ImageState, ImageActions> = (state = initialState, 
   switch (action.type) {
 
     case "SET_IMAGE_ITEMS": {
-      const imageItems = [...action.payload].sort((a, b) => a.id - b.id);      
+      const imageItems = [...action.payload].sort((a, b) => a.id - b.id);
 
       return {
         ...state,
@@ -178,11 +180,11 @@ const imagesReducer: Reducer<ImageState, ImageActions> = (state = initialState, 
         hasMoreItems: false,
       }
 
-      case "SET_TOKEN":
-        return {
-          ...state,
-          token: action.payload,
-        }
+    case "SET_TOKEN":
+      return {
+        ...state,
+        token: action.payload,
+      }
 
     case "ADD_LOADED_CATEGORY": {
       if (state.loadedCategories.includes(action.payload)) return state;
@@ -192,6 +194,12 @@ const imagesReducer: Reducer<ImageState, ImageActions> = (state = initialState, 
         loadedCategories: [...state.loadedCategories, action.payload],
       }
     }
+
+    case "INITIAL_RENDER":
+      return {
+        ...state,
+        initialRender: true,
+      }
 
     default:
       return state;

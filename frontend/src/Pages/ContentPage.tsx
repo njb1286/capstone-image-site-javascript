@@ -7,6 +7,7 @@ import { backendUrl } from "../store/backend-url";
 import classes from "./ContentPage.module.scss";
 import { useGetImageItem } from "../hooks/useGetImageItem";
 import { getRequestData } from "../helpers/token";
+import { useLazyImage } from "../hooks/useLazyImage";
 
 export const errorComponent = <h2>Hmmm... we couldn't find that image...</h2>;
 
@@ -29,6 +30,15 @@ function ContentPage() {
       </>
     );
 
+  });
+
+  const [component, reobserve] = useLazyImage({
+    id: +id,
+    title: "title" in getImageItem.payload ? getImageItem.payload.title : "",
+    wrapperClassName: `card-img ${classes["image-wrapper"]}`,
+    defaultImageShouldLoad: true,
+    imageClassName: classes.image,
+    loadingImageClassName: classes["loading-image"],
   });
 
   if (getImageItem.type === "COMPONENT") {
@@ -72,7 +82,8 @@ function ContentPage() {
 
       <CardBody className={`row ${classes.body}`}>
         <div className={`${classes.info} ${classes.col}`}>
-          <img alt={title} src={`${backendUrl}/get-image?id=${id}`} className={`card-img ${classes.img}`} />
+          {/* <img alt={title} src={`${backendUrl}/get-image?id=${id}`} className={`card-img ${classes.img}`} /> */}
+          {component}
           <h1 className={`card-title text-center ${classes.title}`}>{title}</h1>
 
           <div className="container">
@@ -86,11 +97,12 @@ function ContentPage() {
             </div>
           </div>
 
-          {splitDescription}
+          <div className={classes.description}>{splitDescription}</div>
         </div>
 
 
       </CardBody>
+      
       <ButtonGroup className={classes.buttons}>
         <button className="btn btn-lg btn-primary" onClick={handleUpdate}>Edit</button>
         <button className="btn btn-lg btn-danger" onClick={handleDeleteBtnClick}>Delete</button>

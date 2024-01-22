@@ -8,16 +8,18 @@ type LazyImageProps = {
   title: string;
   wrapperClassName?: string;
   imageClassName?: string;
+  loadingImageClassName?: string
   size?: "small" | "medium" | "large";
+  defaultImageShouldLoad?: boolean;
 }
 
-export const useLazyImage = ({ id, wrapperClassName, imageClassName, title, size }: LazyImageProps) => {
+export const useLazyImage = (props: LazyImageProps) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const elementRef = useRef<HTMLImageElement>(null);
-  const [shouldRenderImage, setShouldRenderImage] = useState(false);
+  const [shouldRenderImage, setShouldRenderImage] = useState(props.defaultImageShouldLoad ?? false);
 
-  const smallImageUrl = `${backendUrl}/get-image?id=${id}&size=small`;
-  const imageUrl = `${backendUrl}/get-image?id=${id}&size=${size ?? "large"}`;
+  const smallImageUrl = `${backendUrl}/get-image?id=${props.id}&size=small`;
+  const imageUrl = `${backendUrl}/get-image?id=${props.id}&size=${props.size ?? "large"}`;
 
   const imageRendered = useRef(false);
   const observerRef = useRef<IntersectionObserver | null>(null);
@@ -37,7 +39,7 @@ export const useLazyImage = ({ id, wrapperClassName, imageClassName, title, size
     };
 
     imageRendered.current = true;
-  }, [id, shouldRenderImage]);
+  }, [props.id, shouldRenderImage]);
 
   useEffect(() => {
     observerRef.current = new IntersectionObserver(
@@ -69,23 +71,27 @@ export const useLazyImage = ({ id, wrapperClassName, imageClassName, title, size
   }
 
   let content: JSX.Element | null = <img
-    alt={title}
+    alt={props.title}
     src={imageUrl}
     loading="lazy"
-    className={`${imageClassName ?? ""} ${classes.image} ${shouldRenderImage ? classes.visible : ""} ${imageLoaded ? classes.loaded : ""}`}
+    className={`${props.imageClassName ?? ""} ${classes.image} ${shouldRenderImage ? classes.visible : ""} ${imageLoaded ? classes.loaded : ""}`}
   />;
 
   if (!shouldRenderImage && !imageRendered.current) {
     content = null;
   }
 
-  const component = <div ref={elementRef} className={`${wrapperClassName} ${classes["image-wrapper"]}`}>
-    <div
+  const component = <div ref={elementRef} className={`${props.wrapperClassName} ${classes["image-wrapper"]}`}>
+    {/* <div
       style={{
         backgroundImage: `url(${smallImageUrl})`,
       }}
-      className={classes["loading-img"]}
-    />
+      className={`${classes["loading-img"]} ${props.loadingImageClassName ?? ""}`}
+    /> */}
+
+    <div className={`${classes["loading-img"]} ${props.loadingImageClassName ?? ""}`}>
+      <img src={smallImageUrl} alt={props.title} />
+    </div>
     <div className={classes["spinner-wrapper"]}><Spinner className={classes.spinner} variant="primary" animation="border" /></div>
 
     {content}

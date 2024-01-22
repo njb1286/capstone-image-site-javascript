@@ -20,12 +20,15 @@
       margin-bottom: 0;
     }
 
-
-    .img {
+    .image-wrapper {
       -webkit-user-drag: none;
       float: right;
       width: 50%;
       margin: 0 5rem;
+    }
+
+    .loading-image {
+      position: static;
     }
   }
 
@@ -65,14 +68,14 @@
         order: 1;
       }
 
-      .img {
+      .image-wrapper {
         width: 100%;
         float: none;
         order: 2;
         margin: 2rem 0;
       }
 
-      p {
+      .description {
         order: 3;
       }
     }

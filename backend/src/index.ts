@@ -28,7 +28,11 @@ db.exec(`CREATE TABLE IF NOT EXISTS tokens (
 const app = express();
 app.use(express.static(path.resolve(__dirname, "..", "public")))
 
-app.get("/", (req, res) => {
+app.use((req, res, next) => {
+  if (req.path.startsWith("/api")) {
+    next();
+    return;
+  }
   res.sendFile(path.resolve(__dirname, "..", "public", "index.html"));
 })
 
@@ -169,7 +173,7 @@ app.post("/api/form", upload.single("image"), async (req, res) => {
   db.run(insertQuery, values, (err) => {
     if (err) {
       res.status(500).send("Error inserting data: " + err);
-      
+
       return;
     }
 
@@ -380,7 +384,7 @@ app.get("/api/get-image", (req, res) => {
     return;
   }
 
-  const selectQuery = `SELECT ${sizeParam}Image FROM images where id = ?`;  
+  const selectQuery = `SELECT ${sizeParam}Image FROM images where id = ?`;
 
   db.get(selectQuery, [req.query.id], (err, row: Table) => {
     if (err) {
@@ -455,14 +459,14 @@ app.post("/api/update", upload.single("image"), async (req, res) => {
   if (largeImage) {
     values.unshift(largeImage, smallImage, mediumImage);
   }
-  
+
   values.push(id);
 
 
   db.run(updateQuery, values, (err) => {
     if (err) {
       res.status(500).send("Error updating data: " + err);
-      
+
       return;
     }
 

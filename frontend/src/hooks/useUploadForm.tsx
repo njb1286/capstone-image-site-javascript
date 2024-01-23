@@ -90,12 +90,19 @@ export function useUploadForm(props: Readonly<UploadFormProps>) {
 
   const [imageComponent, imageValid, image, setImageTouched, setImageValid] = useFormField(
     FormControl,
-    { type: "file", accept: "image/*" },
+    { type: "file", accept: "image/png, image/jpeg, image/jpg" },
     makeInitialState(null),
     (event) => event.target.files![0],
     (value) => {
-      if (!value && props.updating !== true) {
-        return "Image is required"
+      if (!value) {
+        if (props.updating !== true) return undefined;
+
+        return "Image is required";
+      }
+
+      const validImageTypes = ["image/png", "image/jpeg", "image/jpg"];
+      if (!validImageTypes.includes(value.type)) {
+        return "Image must be a png, jpeg, or jpg";
       }
     }
   );

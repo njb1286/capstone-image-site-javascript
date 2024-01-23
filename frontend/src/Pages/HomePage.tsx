@@ -30,7 +30,7 @@ function HomePage() {
     }
   }, {
     root: null,
-    rootMargin: "0px",
+    rootMargin: "20px",
     threshold: 0.1,
   }));
 

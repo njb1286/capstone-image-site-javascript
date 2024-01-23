@@ -13,6 +13,21 @@
   font-size: 1.5em;
 }
 
+.switch {
+  border: none;
+  outline: none;
+  text-align: left;
+  color: #007bff;
+  text-decoration: none;
+  background-color: transparent;
+  cursor: pointer;
+  font-size: 1em;
+
+  &:hover {
+    color: #0056b3;
+  }
+}
+
 @media (max-width: $media-width) {
   .form {
     width: 100%;

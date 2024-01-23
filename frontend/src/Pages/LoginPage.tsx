@@ -20,6 +20,7 @@ const LoginPage: React.FC = () => {
   const [isError, setIsError] = useState(false);
   const dispatch = useDispatch<Dispatch<ImageActions>>();
   const [password, setPassword] = useState("");
+  const [isSingleUse, setIsSingleUse] = useState(false);
 
   const submitHandler = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -56,12 +57,17 @@ const LoginPage: React.FC = () => {
     setPassword(event.target.value);
   }
 
+  const switchHandler = () => {
+    setIsSingleUse(prevState => !prevState);
+  }
+
   return (
     <Container fluid className="d-flex align-items-center justify-content-center" style={{ height: '100vh' }}>
       <Form onSubmit={submitHandler} className={classes.form}>
         <Form.Group className={classes.group} controlId="formPassword">
-          <h2 className="text-center">Password</h2>
-          <Form.Control value={password} onChange={changeHandler} disabled={isSubmitting} type="password" placeholder="Enter password" />
+          <h2 className="text-center">{isSingleUse ? "Single-use password" : "Password"}</h2>
+          <Form.Control value={password} onChange={changeHandler} disabled={isSubmitting} type="password" placeholder={isSingleUse ? "Enter single use password" : "Enter password"} />
+          <button type="button" onClick={switchHandler} className={classes.switch}>{isSingleUse ? "Enter single use password" : "Enter normal password"}</button>
           {isError && <p className="text-danger fs-3">Incorrect password!</p>}
         </Form.Group>
         {isSubmitting && <Spinner variant='primary' animation='border' />}

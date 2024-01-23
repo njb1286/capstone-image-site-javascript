@@ -83,7 +83,7 @@ const GeneratePasswordPage = () => {
       {password && (
         <Alert variant="success" className={classes.success}>
           <div className={classes["message-items"]}>
-            <textarea onClick={textAreaClickHandler} ref={textAreaRef} rows={1} readOnly className={classes["password-text"]}>{password}</textarea>
+            <textarea value={password} onClick={textAreaClickHandler} ref={textAreaRef} rows={1} readOnly className={classes["password-text"]} />
             <Overlay target={copyButtonRef.current} show={showTooltip} placement="top">
               {(props) => (
                 <Tooltip className={classes.tooltip} id="copy-tooltip" {...props}>

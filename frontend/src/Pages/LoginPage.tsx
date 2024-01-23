@@ -33,6 +33,7 @@ const LoginPage: React.FC = () => {
       headers: {
         password,
         token: getToken() ?? "",
+        singleUse: isSingleUse.toString(),
       }
     });
 
@@ -67,7 +68,7 @@ const LoginPage: React.FC = () => {
         <Form.Group className={classes.group} controlId="formPassword">
           <h2 className="text-center">{isSingleUse ? "Single-use password" : "Password"}</h2>
           <Form.Control value={password} onChange={changeHandler} disabled={isSubmitting} type="password" placeholder={isSingleUse ? "Enter single use password" : "Enter password"} />
-          <button type="button" onClick={switchHandler} className={classes.switch}>{isSingleUse ? "Enter single use password" : "Enter normal password"}</button>
+          <button type="button" onClick={switchHandler} className={classes.switch}>{isSingleUse ? "Enter normal password" : "Enter single use password"}</button>
           {isError && <p className="text-danger fs-3">Incorrect password!</p>}
         </Form.Group>
         {isSubmitting && <Spinner variant='primary' animation='border' />}

@@ -168,12 +168,50 @@ app.post("/api/login", express.json(), async (req, res) => {
   const passwordHeader = req.get("password");
   const tokenHeader = req.get("token");
 
+  const isSingleUse = req.get("singleUse") as "true" | "false" | undefined;
+
   if (!passwordHeader) {
     res.status(401).send({ message: "No password provided!" });
     return;
   }
 
-  if (passwordHeader !== password) {
+  let singleUseSuccess = false;
+
+  if (isSingleUse === "true") {
+    
+    const result = await new Promise<boolean | string>((resolve, reject) => {
+      db.get("SELECT * FROM tempPasswords WHERE password = ?", passwordHeader, (err, row: { date: string, password: string }) => {
+        if (err) {
+          resolve("Error getting data:" + err);
+          return;
+        }
+
+        if (!row) {
+          resolve("Invalid password");
+          return;
+        }
+
+        const validDate = dateIsValid(row.date);
+        if (!validDate) {
+          db.run("DELETE FROM tempPasswords WHERE password = ?", row.password); // Delete the password if it's expired
+          resolve("Invalid password");
+          return;
+        }
+
+        db.run("DELETE FROM tempPasswords WHERE password = ?", row.password); // Delete the password that has been used
+        resolve(true);
+      });
+    });
+
+    if (typeof result === "string") {
+      res.status(401).send({ message: result });
+      return;
+    }
+
+    singleUseSuccess = result;
+  }
+
+  if (passwordHeader !== password && !singleUseSuccess) {
     res.status(401).send({ message: "Incorrect password!" });
     return;
   }

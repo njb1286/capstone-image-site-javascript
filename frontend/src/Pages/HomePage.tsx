@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { UIEvent, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import classes from "./HomePage.module.scss";
 
@@ -22,6 +22,17 @@ function HomePage() {
   const [selectedCategory, setSelectedCategory] = useState<SearchBarCategory>("All");
   const [selectedSort, setSelectedSort] = useState<SearchBarSort>("Date");
   const isInitialRender = useSelector((state: ImageState) => state.initialRender);
+  const loadingPageRef = useRef<HTMLDivElement>(null);
+  const [mounted, setMounted] = useState(false);
+  const observer = useRef<IntersectionObserver>(new IntersectionObserver(([entries]) => {
+    if (entries.isIntersecting && !loadingImages) {
+      renderNextCards();
+    }
+  }, {
+    root: null,
+    rootMargin: "0px",
+    threshold: 0.1,
+  }));
 
   const cardsRef = useRef<HTMLDivElement>(null);
 
@@ -51,7 +62,7 @@ function HomePage() {
     dispatch({
       type: "INITIAL_RENDER",
     })
-    
+
     cardsRendered.current = cardsInHeight + cardsOverflowCount.current;
 
     setLoadingImages(true);
@@ -94,9 +105,22 @@ function HomePage() {
 
     fn();
   }, [selectedCategory]);
+  
+  /* 
+    For tracking if the component has mounted,
+    for making sure that the elements are rendered
+    so the observer can observe them 
+  */
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (!hasMore) return;
+
+    if (loadingPageRef.current) {
+      observer.current.observe(loadingPageRef.current);
+    }
 
     updateCardData();
 
@@ -112,21 +136,12 @@ function HomePage() {
 
     return () => {
       window.removeEventListener("resize", resizeHandler);
+      if (loadingPageRef.current) {
+        observer.current.unobserve(loadingPageRef.current);
+      }
     }
-  }, []);
+  }, [mounted]);
 
-  function scrollHandler(event: UIEvent<HTMLDivElement>) {
-    if (!hasMore) return;
-
-    const element = event.target as HTMLDivElement;
-
-    const condition = element.scrollHeight - element.scrollTop - element.clientHeight;
-
-    if (Math.abs(condition) < 25 && !loadingImages) {
-      setLoadingImages(true);
-      renderNextCards();
-    }
-  }
 
   const filteredImageItems = useMemo(() => {
     const imageItemsCopy = [...imageItems].sort((a, b) => {
@@ -160,7 +175,7 @@ function HomePage() {
       {filteredImageItems.map((item) => {
         return <Card stateToListenTo={selectedSort} {...item} key={item.id} />;
       })}
-      {hasMore && selectedCategory === "All" && !searchValue && <LoadingPage fullScreen={false} className={classes["loading-images"]} />}
+      <LoadingPage ref={loadingPageRef} fullScreen={false} className={`${classes["loading-images"]} ${hasMore && selectedCategory === "All" && !searchValue ? classes.visible : ""}`} />
     </>
   );
 
@@ -171,7 +186,7 @@ function HomePage() {
         onChange={setSearchValue}
         onSelectSort={setSelectedSort}
       />
-      <div onScroll={scrollHandler} className={classes.cards} ref={cardsRef}>
+      <div className={classes.cards} ref={cardsRef}>
         {content}
       </div>
     </>

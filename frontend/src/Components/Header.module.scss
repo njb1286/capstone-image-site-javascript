@@ -30,7 +30,11 @@
   .navigation {
     display: flex;
     flex-direction: column;
-    margin-bottom: 3rem;
     row-gap: 1rem;
+    height: auto;
+  }
+  
+  .header-wrapper {
+    grid-template-rows: 3fr 3fr 1fr;
   }
 }

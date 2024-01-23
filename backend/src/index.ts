@@ -37,7 +37,20 @@ app.use((req, res, next) => {
 })
 
 
-const upload = multer({ storage: multer.memoryStorage() });
+const upload = multer({
+  storage: multer.memoryStorage(),
+  fileFilter: (req, file, cb) => {
+    // Test the mimetype of the file
+    const filetypes = /jpeg|jpg|png/;
+    const mimetype = filetypes.test(file.mimetype);
+
+    if (mimetype) {
+      return cb(null, true);
+    }
+
+    cb(new Error('Invalid file type. Only jpeg, jpg, and png image files are allowed.'));
+  },
+});
 
 const compressSmallImage = async (image: Buffer) => {
   return await sharp(image)

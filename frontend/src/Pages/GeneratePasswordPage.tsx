@@ -22,6 +22,7 @@ const GeneratePasswordPage = () => {
   const [error, setError] = useState<null | string>(null);
   const [showTooltip, setShowTooltip] = useState(false);
   const copyButtonRef = useRef<HTMLButtonElement>(null);
+  const textAreaRef = useRef<HTMLTextAreaElement>(null);
 
   const generatePasswordHandler = async () => {
     const response = await fetch(`${backendUrl}/generate-password`, getRequestData("GET"));
@@ -61,6 +62,12 @@ const GeneratePasswordPage = () => {
     }
   }
 
+  const textAreaClickHandler = () => {
+    if (textAreaRef.current) {
+      textAreaRef.current.select();
+    }
+  }
+
   return (
     <div className={`d-flex fs-4 justify-content-start align-items-center flex-column vh-100 ${classes.container}`}>
       <h1 className={classes.title}>Generate a single use password</h1>
@@ -75,19 +82,21 @@ const GeneratePasswordPage = () => {
 
       {password && (
         <Alert variant="success" className={classes.success}>
-          <p className={classes["password-text"]}>{password}</p>
-          <Overlay target={copyButtonRef.current} show={showTooltip} placement="top">
-            {(props) => (
-              <Tooltip className={classes.tooltip} id="copy-tooltip" {...props}>
-                Copied!
-              </Tooltip>
-            )}
-          </Overlay>
-          <button onClick={copyHandler} ref={copyButtonRef} className={classes["copy-wrapper"]}>
-            <div className={classes.copy}>
-              <FaCopy />
-            </div>
-          </button>
+          <div className={classes["message-items"]}>
+            <textarea onClick={textAreaClickHandler} ref={textAreaRef} rows={1} readOnly className={classes["password-text"]}>{password}</textarea>
+            <Overlay target={copyButtonRef.current} show={showTooltip} placement="top">
+              {(props) => (
+                <Tooltip className={classes.tooltip} id="copy-tooltip" {...props}>
+                  Copied!
+                </Tooltip>
+              )}
+            </Overlay>
+            <button onClick={copyHandler} ref={copyButtonRef} className={classes["copy-wrapper"]}>
+              <div className={classes.copy}>
+                <FaCopy />
+              </div>
+            </button>
+          </div>
         </Alert>
       )}
     </div>

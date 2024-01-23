@@ -6,6 +6,7 @@ import { Database } from "sqlite3";
 import { password } from "./password";
 import { createToken, dateIsValid } from "./tokens";
 import path from "path";
+import rateLimit from "express-rate-limit";
 
 const db = new Database("database.sqlite");
 
@@ -26,6 +27,15 @@ db.exec(`CREATE TABLE IF NOT EXISTS tokens (
 );`)
 
 const app = express();
+
+// Help prevent DDoS attacks
+const limiter = rateLimit({
+  windowMs: 20 * 1000,
+  max: 100,
+});
+
+app.use(limiter);
+
 app.use(express.static(path.resolve(__dirname, "..", "public")))
 
 app.use((req, res, next) => {

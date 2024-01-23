@@ -24,7 +24,7 @@ db.exec(`CREATE TABLE IF NOT EXISTS images (
 db.exec(`CREATE TABLE IF NOT EXISTS tokens (
   token TEXT NOT NULL,
   date DATETIME DEFAULT CURRENT_TIMESTAMP
-);`)
+);`);
 
 const app = express();
 

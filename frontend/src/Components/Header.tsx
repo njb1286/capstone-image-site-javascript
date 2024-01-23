@@ -11,6 +11,7 @@ function Header() {
       <HeaderLink path="/" title="Home" />
       <HeaderLink path="/about" title="About" />
       <HeaderLink path="/upload" title="Upload" />
+      <HeaderLink path="/generate-password" title="Generate Password" />
     </div>
   </div>;
 }

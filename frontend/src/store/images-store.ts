@@ -23,6 +23,8 @@ const initialState = {
   loadedCategories: [] as readonly Category[],
   token: null as string | null,
   initialRender: false,
+
+  tempPassword: "",
 }
 
 export type ImageState = typeof initialState;
@@ -41,6 +43,8 @@ export type ImageActions = ActionCreator<{
   SET_MODAL_VISIBLE: boolean;
   ADD_LOADED_CATEGORY: Category;
   SET_TOKEN: string | null,
+
+  SET_TEMP_PASSWORD: string;
 
 }> | ActionCreatorNoPayload<[
   "HAS_NO_MORE_ITEMS",
@@ -199,6 +203,12 @@ const imagesReducer: Reducer<ImageState, ImageActions> = (state = initialState, 
       return {
         ...state,
         initialRender: true,
+      }
+
+    case "SET_TEMP_PASSWORD":
+      return {
+        ...state,
+        tempPassword: action.payload,
       }
 
     default:

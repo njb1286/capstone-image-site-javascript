@@ -5,6 +5,11 @@ export const createToken = () => {
   return token;
 }
 
+export const createPassword = () => {
+  const password = `${crypto.randomBytes(16).toString("base64")}}`;
+  return password;
+}
+
 const daysFrom = (date: string) => {
   const formatDate = new Date(date);
   const currentDate = new Date();

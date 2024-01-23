@@ -4,7 +4,7 @@ import sharp from "sharp";
 
 import { Database } from "sqlite3";
 import { password } from "./password";
-import { createToken, dateIsValid } from "./tokens";
+import { createPassword, createToken, dateIsValid } from "./tokens";
 import path from "path";
 import rateLimit from "express-rate-limit";
 
@@ -23,6 +23,11 @@ db.exec(`CREATE TABLE IF NOT EXISTS images (
 
 db.exec(`CREATE TABLE IF NOT EXISTS tokens (
   token TEXT NOT NULL,
+  date DATETIME DEFAULT CURRENT_TIMESTAMP
+);`);
+
+db.exec(`CREATE TABLE IF NOT EXISTS tempPasswords (
+  password TEXT NOT NULL,
   date DATETIME DEFAULT CURRENT_TIMESTAMP
 );`);
 
@@ -124,6 +129,38 @@ const validateToken = async (req: Request, res?: Response) => {
   res?.status(201).send({ tokenIsValid: value })
   return value;
 }
+
+app.get("/api/generate-password", async (req, res) => {
+  const tokenIsValid = await validateToken(req);
+
+  if (!tokenIsValid) {
+    res.status(401).send({ message: "Invalid token" })
+    return;
+  }
+
+  const password = createPassword();
+
+  db.get("SELECT * FROM tempPasswords", (err, row: { date: string, password: string }) => {
+    if (err) return;
+
+    if (!row) return;
+
+    const validDate = dateIsValid(row.date);
+
+    if (validDate) return;
+
+    db.run("DELETE FROM tempPasswords WHERE password = ?", row.password);
+  });
+
+  db.run("INSERT INTO tempPasswords (password) VALUES (?)", password, (err) => {
+    if (err) {
+      res.status(500).send({ message: "Error inserting data:" + err });
+      return;
+    }
+
+    res.status(200).send({ password });
+  });
+});
 
 app.get("/api/validate-token", express.json(), validateToken);
 

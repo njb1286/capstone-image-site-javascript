@@ -4,3 +4,4 @@ password.txt
 backend/public
 backend/dist
 backend/.vscode
+backend/.gitignore

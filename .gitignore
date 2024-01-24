@@ -3,3 +3,4 @@ backend/node_modules
 password.txt
 backend/public
 backend/dist
+backend/.vscode

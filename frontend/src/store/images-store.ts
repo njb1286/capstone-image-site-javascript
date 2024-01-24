@@ -51,73 +51,73 @@ export type ImageActions = ActionCreator<{
   "INITIAL_RENDER"
 ]>;
 
-const imagesReducer: Reducer<ImageState, ImageActions> = (state = initialState, action) => {
-
   /* 
     Iterate over the array, and place the item in the correct position instead of
     creating a new array with the added item, then sorting it.
 
     I need to keep this array sorted so I can maintain item order
   */
-  const insertImageItem = (item: ImageItem) => {
-    const imageItemsCopy = [...state.imageItems];
-
-    let insertionIndex = -1;
-
-    for (let i = 0; i < imageItemsCopy.length; i++) {
-      if (item.id < imageItemsCopy[i].id && insertionIndex === -1) {
-        insertionIndex = i;
-        continue;
+    const insertImageItem = (state: ImageState, item: ImageItem) => {
+      const imageItemsCopy = [...state.imageItems];
+  
+      let insertionIndex = -1;
+  
+      for (let i = 0; i < imageItemsCopy.length; i++) {
+        if (item.id < imageItemsCopy[i].id && insertionIndex === -1) {
+          insertionIndex = i;
+          continue;
+        }
+  
+        if (insertionIndex !== -1 && imageItemsCopy[i].id === item.id) {
+          return null;
+        }
       }
-
-      if (insertionIndex !== -1 && imageItemsCopy[i].id === item.id) {
-        return null;
+  
+      if (insertionIndex !== -1) {
+        imageItemsCopy.splice(insertionIndex, 0, item);
+        return imageItemsCopy;
       }
+  
+      imageItemsCopy.push(item);
+      return imageItemsCopy;
     }
-
-    if (insertionIndex !== -1) {
-      imageItemsCopy.splice(insertionIndex, 0, item);
+  
+    const insertImageItems = (state: ImageState, items: ImageItem[]) => {
+      const imageItemsCopy = [...state.imageItems];
+  
+      for (const item of items) {
+        let insertionIndex = -1;
+        let hasCopy = false;
+  
+        for (let i = 0; i < imageItemsCopy.length; i++) {
+          if (hasCopy) break;
+  
+          if (item.id === imageItemsCopy[i].id) {
+            hasCopy = true;
+            break;
+          };
+  
+          if (insertionIndex !== -1) continue;
+  
+          if (item.id < imageItemsCopy[i].id) {
+            insertionIndex = i;
+          }
+        }
+  
+        if (hasCopy) continue;
+  
+        if (insertionIndex === -1) {
+          imageItemsCopy.push(item);
+          continue;
+        };
+  
+        imageItemsCopy.splice(insertionIndex, 0, item);
+      }
+  
       return imageItemsCopy;
     }
 
-    imageItemsCopy.push(item);
-    return imageItemsCopy;
-  }
-
-  const insertImageItems = (items: ImageItem[]) => {
-    const imageItemsCopy = [...state.imageItems];
-
-    for (const item of items) {
-      let insertionIndex = -1;
-      let hasCopy = false;
-
-      for (let i = 0; i < imageItemsCopy.length; i++) {
-        if (hasCopy) break;
-
-        if (item.id === imageItemsCopy[i].id) {
-          hasCopy = true;
-          break;
-        };
-
-        if (insertionIndex !== -1) continue;
-
-        if (item.id < imageItemsCopy[i].id) {
-          insertionIndex = i;
-        }
-      }
-
-      if (hasCopy) continue;
-
-      if (insertionIndex === -1) {
-        imageItemsCopy.push(item);
-        continue;
-      };
-
-      imageItemsCopy.splice(insertionIndex, 0, item);
-    }
-
-    return imageItemsCopy;
-  }
+const imagesReducer: Reducer<ImageState, ImageActions> = (state = initialState, action) => {
 
   switch (action.type) {
 
@@ -131,7 +131,7 @@ const imagesReducer: Reducer<ImageState, ImageActions> = (state = initialState, 
     }
 
     case "ADD_IMAGE_ITEM": {
-      const newImageItems = insertImageItem(action.payload);
+      const newImageItems = insertImageItem(state, action.payload);
 
       if (!newImageItems) return state;
 
@@ -142,7 +142,7 @@ const imagesReducer: Reducer<ImageState, ImageActions> = (state = initialState, 
     }
 
     case "ADD_IMAGE_ITEMS": {
-      const newImageItems = insertImageItems(action.payload);
+      const newImageItems = insertImageItems(state, action.payload);
 
       return {
         ...state,

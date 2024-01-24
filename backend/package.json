@@ -5,7 +5,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "export SITE_PASSWORD=`cat ../password.txt` && export PORT=8080 && nodemon --exec ts-node ./src/index.ts",
-    "build": "webpack --config webpack.config.js"
+    "startHeroku": "ts-node ./src/index.ts"
   },
   "keywords": [],
   "author": "",

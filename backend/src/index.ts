@@ -35,8 +35,8 @@ const app = express();
 
 // Help prevent DDoS attacks
 const limiter = rateLimit({
-  windowMs: 20 * 1000,
-  max: 100,
+  windowMs: 10 * 1000,
+  max: 1000,
 });
 
 app.use(limiter);

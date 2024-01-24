@@ -4,7 +4,7 @@
   "description": "",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "export SITE_PASSWORD=`cat ../password.txt` && nodemon --exec ts-node ./src/index.ts",
+    "start": "export SITE_PASSWORD=`cat ../password.txt` && export PORT=8080 && nodemon --exec ts-node ./src/index.ts",
     "build": "webpack --config webpack.config.js"
   },
   "keywords": [],

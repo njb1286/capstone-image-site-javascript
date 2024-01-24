@@ -95,7 +95,7 @@ export function useUploadForm(props: Readonly<UploadFormProps>) {
     (event) => event.target.files![0],
     (value) => {
       if (!value) {
-        if (props.updating !== true) return undefined;
+        if (props.updating) return undefined;
 
         return "Image is required";
       }

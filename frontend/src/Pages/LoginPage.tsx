@@ -66,9 +66,16 @@ const LoginPage: React.FC = () => {
     <Container fluid className="d-flex align-items-center justify-content-center" style={{ height: '100vh' }}>
       <Form onSubmit={submitHandler} className={classes.form}>
         <Form.Group className={classes.group} controlId="formPassword">
-          <h2 className="text-center">{isSingleUse ? "Single-use password" : "Password"}</h2>
-          <Form.Control value={password} onChange={changeHandler} disabled={isSubmitting} type="password" placeholder={isSingleUse ? "Enter single use password" : "Enter password"} />
-          <button type="button" onClick={switchHandler} className={classes.switch}>{isSingleUse ? "Enter normal password" : "Enter single use password"}</button>
+          <h2 className="text-center">Password</h2>
+          <Form.Control value={password} onChange={changeHandler} disabled={isSubmitting} type="password" placeholder="Enter password" />
+          <Form.Check
+            type="checkbox"
+            label="Single-use password"
+            checked={isSingleUse}
+            onChange={switchHandler}
+            className={classes.switch}
+            id="single-use-password-input"
+          />
           {isError && <p className="text-danger fs-3">Incorrect password!</p>}
         </Form.Group>
         {isSubmitting && <Spinner variant='primary' animation='border' />}

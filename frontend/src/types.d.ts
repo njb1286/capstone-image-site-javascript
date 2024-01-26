@@ -7,6 +7,7 @@ import {
   MouseEvent as _MouseEvent,
   MutableRefObject as _MutableRefObject
 } from "react";
+import { Action, Dispatch as _Dispatch } from "@reduxjs/toolkit";
 
 // Utilities for this file
 type Optional<T extends object> = {
@@ -33,6 +34,7 @@ declare global {
   type ChangeEvent = _ChangeEvent;
   type ReactMouseEvent<T = Element, U = MouseEvent> = _MouseEvent<T, U>;
   type MutableRefObject<T extends HTMLElement> = _MutableRefObject<T>;
+  type Dispatch<T extends Action> = _Dispatch<T>;
 
 
   type Category = typeof categories[number];

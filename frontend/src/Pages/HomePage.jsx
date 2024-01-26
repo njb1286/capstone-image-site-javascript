@@ -17,8 +17,8 @@ function HomePage() {
   /**
    * @type {boolean}
    */
-  const hasMore = useSelector(/** @param {ImageState} state */ (state) => state.hasMoreItems);
-  const imageItems = useSelector(/** @param {ImageState} state */ (state) => state.imageItems);
+  const hasMore = useSelector(/** @param {ImageState} state */(state) => state.hasMoreItems);
+  const imageItems = useSelector(/** @param {ImageState} state */(state) => state.imageItems);
   const loadedCategories = useSelector(/** @param {ImageState} state */(state) => state.loadedCategories);
   const dispatch = useDispatch();
   const [loadingImages, setLoadingImages] = useState(false);
@@ -27,7 +27,7 @@ function HomePage() {
   const [selectedCategory, setSelectedCategory] = useState(Category.ALL);
 
   const [selectedSort, setSelectedSort] = useState(Sort.DATE);
-  const isInitialRender = useSelector(/** @param {ImageState} state */ (state) => state.initialRender);
+  const isInitialRender = useSelector(/** @param {ImageState} state */(state) => state.initialRender);
   const loadingPageRef = useRef(null);
   const [mounted, setMounted] = useState(false);
   const observer = useRef(new IntersectionObserver(([entries]) => {
@@ -124,9 +124,7 @@ function HomePage() {
     so the observer can observe them 
   */
   useEffect(() => {
-    setTimeout(() => {
-      setMounted(true);
-    }, 50);
+    setMounted(true);
   }, []);
 
   // Reobserve
@@ -199,7 +197,7 @@ function HomePage() {
       {filteredImageItems.map((item) => {
         return <Card stateToListenTo={selectedSort} {...item} key={item.id} />;
       })}
-      <LoadingPage ref={loadingPageRef} fullScreen={false} className={`${classes["loading-images"]} ${hasMore && selectedCategory === "All" && !searchValue ? classes.visible : ""}`} />
+
     </>
   );
 
@@ -212,6 +210,7 @@ function HomePage() {
       />
       <div className={`${classes.cards} ${hasNoImageItems ? "" : classes.grid}`} ref={cardsRef}>
         {content}
+        <LoadingPage ref={loadingPageRef} fullScreen={false} className={`${classes["loading-images"]} ${hasMore && selectedCategory === "All" && !searchValue ? classes.visible : ""}`} />
       </div>
     </>
   );

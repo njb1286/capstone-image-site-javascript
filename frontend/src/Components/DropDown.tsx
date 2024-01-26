@@ -3,17 +3,25 @@ import { Dropdown } from "react-bootstrap"
 import classes from "./DropDown.module.scss"
 import { useState } from "react";
 
-function DropDown(props) {
-  const [category, setCategory] = useState(props.default);
+type DropDownProps<T extends readonly string[], U extends T[number]> = {
+  categories: T;
+  default: U;
+  onSelect?: (category: T[number]) => void;
+  title?: string;
+  className?: string;
+}
 
-  const selectCategory = (event) => {
+function DropDown<T extends readonly string[], U extends T[number]>(props: Readonly<DropDownProps<T, U>>) {
+  const [category, setCategory] = useState<T[number]>(props.default);
+
+  const selectCategory = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     event.preventDefault();
 
-    const element = event.target;
+    const element = event.target as HTMLButtonElement;
 
-    setCategory(element.textContent);
+    setCategory(element.textContent as T[number]);
 
-    props.onSelect?.(element.textContent);
+    props.onSelect?.(element.textContent as T[number]);
   }
 
   return (

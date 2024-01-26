@@ -1,16 +1,25 @@
 import { useDispatch, useSelector } from "react-redux"
 import { useEffect, useRef, useState } from "react";
+import { ImageActions, ImageItem, ImageState } from "../store/images-store";
 import { backendUrl } from "../store/backend-url";
+import { ActionCreator } from "../types";
 import LoadingPage from "../Components/LoadingPage";
+import { Dispatch } from "@reduxjs/toolkit";
 import { getRequestData } from "../helpers/token";
+import PageNotFound from "../Pages/PageNotFound";
 
-export function useGetImageItem(id) {
+type ReturnType = ActionCreator<{
+  COMPONENT: JSX.Element;
+  IMAGE_ITEM: ImageItem;
+}>;
+
+export function useGetImageItem<T extends (string | number) | null>(id: T): ReturnType {
   const [isError, setIsError] = useState(false);
-  const [imageItemState, setImageItemState] = useState(null);
+  const [imageItemState, setImageItemState] = useState<ImageItem | null>(null);
   const hasRun = useRef(false);
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<Dispatch<ImageActions>>();
 
-  const imageItems = useSelector((state) => state.imageItems);
+  const imageItems = useSelector((state: ImageState) => state.imageItems);
 
   useEffect(() => {
     if (hasRun.current) return;
@@ -41,7 +50,7 @@ export function useGetImageItem(id) {
         return;
       }
 
-      const data = await response.json();      
+      const data = await response.json() as ImageItem;      
       
       dispatch({
         type: "ADD_IMAGE_ITEM",
@@ -56,7 +65,7 @@ export function useGetImageItem(id) {
   if (isError) {
     return {
       type: "COMPONENT",
-      payload: <h2>Hmmm... we couldn't find that image...</h2>,
+      payload: <PageNotFound hasLink message="Hmmm... we couldn't find that image" />,
     };
   }
 

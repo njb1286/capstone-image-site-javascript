@@ -1,20 +1,31 @@
-import { useEffect, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import classes from "./UploadForm.module.scss";
 import { Button, ButtonGroup, Form, FormControl, FormGroup, Spinner } from "react-bootstrap";
-import { useFormField } from "./useFormField";
+import { useFormField } from "../hooks/useFormField";
 import { useNavigate } from "react-router";
-import { categories } from "../store/images-store";
+import { Category, categories } from "../store/images-store";
 import DropDown from "../Components/DropDown";
 
+export type UploadFormSubmitEvent = (title: string, description: string, image: File | null, category: Category) => Promise<void>;
+
+type UploadFormProps = {
+  title?: string;
+  description?: string;
+  updating?: boolean;
+  id?: number
+  onSubmit: UploadFormSubmitEvent;
+  category?: Category;
+}
+
 // Do not mistake this for a component, it was converted from a component to a hook
-export function useUploadForm(props) {
+export function useUploadForm(props: Readonly<UploadFormProps>) {
   const [submitting, setSubmitting] = useState(false);
-  const [category, setCategory] = useState(props.category ?? "Other");
+  const [category, setCategory] = useState<Category>(props.category ?? "Other");
   const [isError, setIsError] = useState(false);
 
   const navigate = useNavigate();
 
-  const submitHandler = (event) => {
+  const submitHandler = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     // Note: this is just in case the user manually changes the button's disabled tag to false
@@ -32,7 +43,12 @@ export function useUploadForm(props) {
     props.onSubmit(title, description, image, category);
   };
 
-  function makeInitialState(value) {
+  function makeInitialState<T>(value: T): {
+    touched: boolean;
+    isValid: boolean;
+    value: T;
+    errorMessage: string | undefined;
+  } {
     return {
       touched: false,
       isValid: false,
@@ -76,7 +92,7 @@ export function useUploadForm(props) {
     FormControl,
     { type: "file", accept: "image/png, image/jpeg, image/jpg" },
     makeInitialState(null),
-    (event) => event.target.files[0],
+    (event) => event.target.files![0],
     (value) => {
       if (!value) {
         if (props.updating) return undefined;
@@ -115,7 +131,7 @@ export function useUploadForm(props) {
     setSubmitting(false);
   }
 
-  const setValues = (title, description, category) => {
+  const setValues = (title: string, description: string, category: Category) => {
     setTitleValue(title);
     setDescriptionValue(description);
     setCategory(category);
@@ -164,7 +180,7 @@ export function useUploadForm(props) {
               Submit
             </Button>
 
-            {props.updating && <Button className={`${classes.btn} btn-danger`} type="button" onClick={() => navigate(`/views?id=${props.id}`)}>Cancel</Button>}
+            {props.updating && <Button className={`${classes.btn} btn-danger`} type="button" onClick={() => navigate(`/views?id=${props.id!}`)}>Cancel</Button>}
           </ButtonGroup>
       </Form>
 
@@ -172,5 +188,5 @@ export function useUploadForm(props) {
     </div>
   )
 
-  return [component, errorHandler, setValues];
+  return [component, errorHandler, setValues] as const;
 }

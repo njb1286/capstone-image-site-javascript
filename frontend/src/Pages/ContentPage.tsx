@@ -2,20 +2,19 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { Button, ButtonGroup, CardBody } from "react-bootstrap";
 import { useModal } from "../hooks/useModal";
+import { ImageActions, imageStore } from "../store/images-store";
 import { backendUrl } from "../store/backend-url";
 import classes from "./ContentPage.module.scss";
 import { useGetImageItem } from "../hooks/useGetImageItem";
 import { getRequestData } from "../helpers/token";
 import { useLazyImage } from "../hooks/useLazyImage";
 
-export const errorComponent = <h2>Hmmm... we couldn't find that image...</h2>;
-
 function ContentPage() {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
-  const id = searchParams.get("id");
+  const id = searchParams.get("id")!;
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<typeof imageStore.dispatch>();
   const getImageItem = useGetImageItem(id);
 
   const [modalPortal, setDeleteModalIsVisible] = useModal("Delete Image", "Are you sure you want to delete this image?", (closeHandler) => {
@@ -51,7 +50,7 @@ function ContentPage() {
   const handleDeleteAction = async () => {
     await fetch(`${backendUrl}/delete?id=${id}`, getRequestData("DELETE"));
 
-    dispatch({
+    dispatch<ImageActions>({
       type: "DELETE_IMAGE_ITEM",
       payload: +id,
     })

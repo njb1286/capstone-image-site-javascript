@@ -1,7 +1,11 @@
 import { forwardRef } from 'react';
 import { Spinner } from 'react-bootstrap';
 
-const LoadingPage = forwardRef((props, ref) => {
+type LoadingPageProps = {
+  className?: string;
+  fullScreen?: boolean;
+}
+const LoadingPage = forwardRef<HTMLDivElement, LoadingPageProps>((props, ref) => {
   const fullScreenProp = props.fullScreen ?? true;
 
   return (

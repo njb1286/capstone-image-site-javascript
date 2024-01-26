@@ -3,16 +3,26 @@ import { backendUrl } from "../store/backend-url";
 import classes from "./LazyImage.module.scss";
 import { Spinner } from "react-bootstrap";
 
-export const useLazyImage = (props) => {
+type LazyImageProps = {
+  id: number;
+  title: string;
+  wrapperClassName?: string;
+  imageClassName?: string;
+  loadingImageClassName?: string
+  size?: "small" | "medium" | "large";
+  defaultImageShouldLoad?: boolean;
+}
+
+export const useLazyImage = (props: LazyImageProps) => {
   const [imageLoaded, setImageLoaded] = useState(false);
-  const elementRef = useRef(null);
+  const elementRef = useRef<HTMLImageElement>(null);
   const [shouldRenderImage, setShouldRenderImage] = useState(props.defaultImageShouldLoad ?? false);
 
   const smallImageUrl = `${backendUrl}/get-image?id=${props.id}&size=small`;
   const imageUrl = `${backendUrl}/get-image?id=${props.id}&size=${props.size ?? "large"}`;
 
   const imageRendered = useRef(false);
-  const observerRef = useRef(null);
+  const observerRef = useRef<IntersectionObserver | null>(null);
 
   useEffect(() => {
     if (imageRendered.current) return;
@@ -50,17 +60,17 @@ export const useLazyImage = (props) => {
     return () => {
       // Clean up the observer when the component unmounts.
       if (elementRef.current) {
-        observerRef.current.unobserve(elementRef.current);
+        observerRef.current!.unobserve(elementRef.current);
       }
     };
   }, []);
 
   const reobserve = () => {
-    observerRef.current.unobserve(elementRef.current);
-    observerRef.current.observe(elementRef.current);
+    observerRef.current!.unobserve(elementRef.current!);
+    observerRef.current!.observe(elementRef.current!);
   }
 
-  let content = <img
+  let content: JSX.Element | null = <img
     alt={props.title}
     src={imageUrl}
     loading="lazy"
@@ -87,5 +97,5 @@ export const useLazyImage = (props) => {
     {content}
   </div>
 
-  return [component, reobserve];
+  return [component, reobserve] as const;
 }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { ChangeEvent, FormEvent, useState } from 'react';
 
 import classes from "./LoginPage.module.scss";
 
@@ -6,15 +6,23 @@ import { Container, Form, Button, Spinner } from 'react-bootstrap';
 import { backendUrl } from '../store/backend-url';
 import { getToken, setToken } from '../helpers/token';
 import { useDispatch } from 'react-redux';
+import { Dispatch } from '@reduxjs/toolkit';
+import { ImageActions } from '../store/images-store';
 
-const LoginPage = () => {
+type Data = {
+  message: string;
+} | {
+  token: string;
+}
+
+const LoginPage: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isError, setIsError] = useState(false);
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<Dispatch<ImageActions>>();
   const [password, setPassword] = useState("");
   const [isSingleUse, setIsSingleUse] = useState(false);
 
-  const submitHandler = async (event) => {
+  const submitHandler = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setIsError(false);
 
@@ -29,7 +37,7 @@ const LoginPage = () => {
       }
     });
 
-    const data = await response.json();
+    const data = await response.json() as Data;
 
     setIsSubmitting(false);
     setPassword("");
@@ -46,7 +54,7 @@ const LoginPage = () => {
     setIsError(true);
   }
 
-  const changeHandler = (event) => {
+  const changeHandler = (event: ChangeEvent<HTMLInputElement>) => {
     setPassword(event.target.value);
   }
 

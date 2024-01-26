@@ -2,7 +2,12 @@ import { NavLink } from "react-router-dom";
 
 import classes from "./HeaderLink.module.scss";
 
-function HeaderLink({ title, path }) {
+type HeaderLinkProps = {
+  title: string;
+  path: string;
+}
+
+function HeaderLink({ title, path }: Readonly<HeaderLinkProps>) {
   const linkClass = classes.link;
 
   return <div className={classes["link-wrapper"]}>

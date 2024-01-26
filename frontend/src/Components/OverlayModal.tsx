@@ -2,7 +2,15 @@ import { Modal } from 'react-bootstrap';
 
 import classes from "./OverlayModal.module.scss";
 
-const OverlayModal = (props) => {
+type OverlayModalProps = {
+  visible: boolean;
+  title: string;
+  content: string;
+  renderedButtons: JSX.Element;
+  onClose: () => void;
+}
+
+const OverlayModal = (props: OverlayModalProps) => {
   return (
     <Modal show={props.visible} onHide={props.onClose}>
       <Modal.Header closeButton>

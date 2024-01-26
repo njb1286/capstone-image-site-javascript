@@ -1,23 +1,25 @@
 import { backendUrl } from "../store/backend-url";
 import { useNavigate } from "react-router";
+import { Category, ImageActions, ImageState } from "../store/images-store";
 import { useUploadForm } from "../hooks/useUploadForm";
 import { useGetImageItem } from "../hooks/useGetImageItem";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { Dispatch } from "@reduxjs/toolkit";
 import { getRequestData } from "../helpers/token";
 
 function UpdatePage() {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<Dispatch<ImageActions>>();
   const searchParams = new URLSearchParams(location.search);
 
   const id = searchParams.get("id");
 
-  const imageItem = useSelector((state) => id ? state.imageItems.find(item => item.id === +id) : undefined);
+  const imageItem = useSelector((state: ImageState) => id ? state.imageItems.find(item => item.id === +id) : undefined);
 
   const getImageItem = useGetImageItem(id);
   const [uploadForm, errorHandler, setFormFields] = useUploadForm({
-    id: +id,
+    id: +id!,
     onSubmit: submitHandler,
     updating: true,
     title: getImageItem.type === "IMAGE_ITEM" ? getImageItem.payload.title : "",
@@ -36,14 +38,14 @@ function UpdatePage() {
   }
 
 
-  async function submitHandler(title, description, image, category) {
+  async function submitHandler(title: string, description: string, image: File | null, category: Category) {
 
     const formData = new FormData();
 
-    formData.append("image", image);
+    formData.append("image", image!);
     formData.append("title", title);
     formData.append("description", description);
-    formData.append("id", id);
+    formData.append("id", id!);
     formData.append("category", category);
 
     const response = await fetch(`${backendUrl}/update?id=${id}`, {
@@ -62,7 +64,7 @@ function UpdatePage() {
     dispatch({
       type: "UPDATE_IMAGE_ITEM",
       payload: {
-        id: +id,
+        id: +id!,
         title,
         description,
         category,

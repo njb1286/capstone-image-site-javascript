@@ -4,26 +4,27 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import classes from "./HomePage.module.scss";
 
 import Card from "../Components/Card";
-import SearchBar from "../Components/SearchBar";
-import ErrorPage from "../Components/ErrorPage";
+import SearchBar, { SearchBarCategory, SearchBarSort } from "../Components/SearchBar";
+import { ImageState, imageStore } from "../store/images-store";
 import { getCategoryItems, getImageSlice } from "../store/images-actions";
 import LoadingPage from "../Components/LoadingPage";
+import PageNotFound from "./PageNotFound";
 
 const cardHeight = 600;
 
 function HomePage() {
-  const hasMore = useSelector((state) => state.hasMoreItems);
-  const imageItems = useSelector((state) => state.imageItems);
-  const loadedCategories = useSelector((state) => state.loadedCategories);
-  const dispatch = useDispatch();
+  const hasMore = useSelector((state: ImageState) => state.hasMoreItems);
+  const imageItems = useSelector((state: ImageState) => state.imageItems);
+  const loadedCategories = useSelector((state: ImageState) => state.loadedCategories);
+  const dispatch = useDispatch<typeof imageStore.dispatch>();
   const [loadingImages, setLoadingImages] = useState(false);
   const [searchValue, setSearchValue] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("All");
-  const [selectedSort, setSelectedSort] = useState("Date");
-  const isInitialRender = useSelector((state) => state.initialRender);
-  const loadingPageRef = useRef(null);
+  const [selectedCategory, setSelectedCategory] = useState<SearchBarCategory>("All");
+  const [selectedSort, setSelectedSort] = useState<SearchBarSort>("Date");
+  const isInitialRender = useSelector((state: ImageState) => state.initialRender);
+  const loadingPageRef = useRef<HTMLDivElement>(null);
   const [mounted, setMounted] = useState(false);
-  const observer = useRef(new IntersectionObserver(([entries]) => {
+  const observer = useRef<IntersectionObserver>(new IntersectionObserver(([entries]) => {
     if (entries.isIntersecting && !loadingImages) {
       renderNextCards();
     }
@@ -33,14 +34,14 @@ function HomePage() {
     threshold: 0.1,
   }));
 
-  const cardsRef = useRef(null);
+  const cardsRef = useRef<HTMLDivElement>(null);
 
   const cardsPerRow = useRef(3);
   const cardsOverflowCount = useRef(6);
   const cardsRendered = useRef(0);
   const loadedImages = useRef(imageItems.map(item => item.id));
 
-  function getCardsInView(element) {
+  function getCardsInView(element: HTMLElement) {
     const result = Math.max(Math.ceil(element.clientHeight / cardHeight * cardsPerRow.current), cardsPerRow.current);
 
     return Math.ceil(result / 3) * 3;
@@ -57,7 +58,7 @@ function HomePage() {
     cardsOverflowCount.current = 6;
   }
 
-  const initialRender = async (cardsInHeight) => {
+  const initialRender = async (cardsInHeight: number) => {
     dispatch({
       type: "INITIAL_RENDER",
     })
@@ -114,6 +115,14 @@ function HomePage() {
     setMounted(true);
   }, []);
 
+  // Reobserve
+  useEffect(() => {
+    if (loadingPageRef.current) {
+      observer.current.unobserve(loadingPageRef.current);
+      observer.current.observe(loadingPageRef.current);
+    }
+  }, [searchValue]);
+
   useEffect(() => {
     if (!hasMore) return;
 
@@ -167,8 +176,10 @@ function HomePage() {
     });
   }, [selectedCategory, searchValue, imageItems, selectedSort]);
 
-  const content = !filteredImageItems.length && !loadingImages ? (
-    <ErrorPage message="No images found" />
+  const hasNoImageItems = !filteredImageItems.length && !loadingImages;
+
+  const content = hasNoImageItems ? (
+    <PageNotFound message="No images were found!" />
   ) : (
     <>
       {filteredImageItems.map((item) => {
@@ -185,7 +196,7 @@ function HomePage() {
         onChange={setSearchValue}
         onSelectSort={setSelectedSort}
       />
-      <div className={classes.cards} ref={cardsRef}>
+      <div className={`${classes.cards} ${hasNoImageItems ? "" : classes.grid}`} ref={cardsRef}>
         {content}
       </div>
     </>

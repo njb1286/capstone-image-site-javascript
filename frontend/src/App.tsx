@@ -7,6 +7,8 @@ import LoadingPage from "./Components/LoadingPage";
 import { validateToken } from "./helpers/validateToken";
 import { getToken } from "./helpers/token";
 import { useDispatch, useSelector } from "react-redux";
+import { Dispatch } from "@reduxjs/toolkit";
+import { ImageActions, ImageState } from "./store/images-store";
 
 const AboutPage = lazy(() => import("./Pages/AboutPage"));
 const ContentPage = lazy(() => import("./Pages/ContentPage"));
@@ -15,19 +17,26 @@ const UpdatePage = lazy(() => import("./Pages/UpdatePage"));
 const HomePage = lazy(() => import("./Pages/HomePage"));
 const LoginPage = lazy(() => import("./Pages/LoginPage"));
 const GeneratePasswordPage = lazy(() => import("./Pages/GeneratePasswordPage"));
+const PageNotFound = lazy(() => import("./Pages/PageNotFound"));
+
+type State = "loading" | "login" | "valid";
 
 function App() {
-  const [state, setState] = useState("loading");
-  const dispatch = useDispatch();
-  const token = useSelector((state) => state.token);
-
-  const loadingPage = <LoadingPage />;
+  const [state, setState] = useState<State>("loading");
+  const dispatch = useDispatch<Dispatch<ImageActions>>();
+  const token = useSelector((state: ImageState) => state.token);
+  const [serverFound, setServerFound] = useState(true);
 
   useEffect(() => {
     const getTokenIsValid = async () => {
       const isValid = await validateToken(token);
 
-      if (isValid) {
+      if ("status" in isValid) {
+        setServerFound(false);
+        return;
+      }
+
+      if (isValid.valid) {
         setState("valid");
         return;
       }
@@ -47,7 +56,23 @@ function App() {
     })
   }, []);
 
-  let component = <LoadingPage />;
+  if (!serverFound) return (
+    <div style={{
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center",
+      height: "100vh",
+      fontSize: "2rem"
+    }}>
+      <h1>We apologize for the inconvenience</h1>
+      <p>Our server appears to be down. Please try again later</p>
+    </div>
+  );
+
+  const loadingPage = <LoadingPage />;
+
+  let component = loadingPage;
 
   if (state === "login") {
     component = <Suspense fallback={loadingPage}><LoginPage /></Suspense>;
@@ -67,6 +92,7 @@ function App() {
             <Route element={<Suspense fallback={loadingPage}><UploadPage /></Suspense>} path="/upload" />
             <Route element={<Suspense fallback={loadingPage}><UpdatePage /></Suspense>} path="/update" />
             <Route element={<Suspense fallback={loadingPage}><GeneratePasswordPage /></Suspense>} path="/generate-password" />
+            <Route element={<Suspense fallback={loadingPage}><PageNotFound hasLink message="Hmmm... we couldn't find that page" /></Suspense>} path="/*" />
           </Routes>
         </div>
 
@@ -74,8 +100,6 @@ function App() {
     )
   }
 
-  // Login page validation
-  
   const returnedComponent = state !== "valid" ? <Routes>
     <Route path="/*" element={component} />
   </Routes> : component;

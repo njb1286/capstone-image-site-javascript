@@ -2,7 +2,7 @@ import { useState } from "react";
 import OverlayModal from "../Components/OverlayModal";
 import { createPortal } from "react-dom";
 
-export const useModal = (title, content, renderButtons) => {
+export const useModal = (title: string, content: string, renderButtons: (_closeHandler: () => void) => JSX.Element) => {
   const [visible, setVisible] = useState(false);
 
   const closeHandler = () => {
@@ -17,8 +17,8 @@ export const useModal = (title, content, renderButtons) => {
     onClose={closeHandler}
   />
 
-  const portal = createPortal(component, document.getElementById("modal"));
+  const portal = createPortal(component, document.getElementById("modal")!);
 
 
-  return [portal, setVisible];
+  return [portal, setVisible] as const;
 }

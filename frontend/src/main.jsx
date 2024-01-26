@@ -1,7 +1,7 @@
 import ReactDOM from 'react-dom/client'
-import App from './App.jsx'
+import App from './App'
 import { Provider } from 'react-redux'
-import { imageStore } from './store/images-store.js'
+import { imageStore } from './store/images-store'
 import React from 'react'
 
 ReactDOM.createRoot(document.getElementById('root')).render(

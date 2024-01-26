@@ -124,7 +124,9 @@ function HomePage() {
     so the observer can observe them 
   */
   useEffect(() => {
-    setMounted(true);
+    setTimeout(() => {
+      setMounted(true);
+    }, 50);
   }, []);
 
   // Reobserve

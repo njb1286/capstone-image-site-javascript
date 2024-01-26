@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux"
 import { useEffect, useRef, useState } from "react";
-import { ImageItem, ImageState } from "../store/images-store";
+import { ImageItem } from "../store/images-store";
 import { backendUrl } from "../store/backend-url";
 import LoadingPage from "../Components/LoadingPage";
 import { getRequestData } from "../helpers/token";

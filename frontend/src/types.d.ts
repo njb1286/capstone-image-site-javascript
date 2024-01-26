@@ -11,6 +11,7 @@ import {
   SetStateAction as _SetStateAction,
 } from "react";
 import { Action, Dispatch as _Dispatch } from "@reduxjs/toolkit";
+import { FormControlProps as _FormControlProps } from "react-bootstrap";
 
 declare global {
   // Utilities for this file
@@ -40,6 +41,7 @@ declare global {
   type ReactDispatch<T> = _ReactDispatch<T>;
   type SetStateAction<T> = _SetStateAction<T>;
   type ReactPortal = _ReactPortal;
+  type FormControlProps = _FormControlProps;
 
 
   // Types

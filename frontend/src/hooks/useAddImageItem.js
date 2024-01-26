@@ -1,7 +1,6 @@
 import { useDispatch } from "react-redux";
 import { backendUrl } from "../store/backend-url"
-import { ImageActions, ImageItem } from "../store/images-store";
-import { Dispatch } from "@reduxjs/toolkit";
+import { ImageItem } from "../store/images-store";
 import { getRequestData } from "../helpers/token";
 
 /** @param {number} id */

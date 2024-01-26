@@ -1,7 +1,6 @@
 import { useNavigate } from "react-router";
 import { backendUrl } from "../store/backend-url";
 import { useUploadForm } from "../hooks/useUploadForm";
-import { Category } from "../store/images-store";
 import { useAddImageItem } from "../hooks/useAddImageItem";
 import { getRequestData } from "../helpers/token";
 

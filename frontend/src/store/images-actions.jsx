@@ -1,5 +1,4 @@
-import { Dispatch } from "@reduxjs/toolkit";
-import { Category, ImageItem } from "./images-store";
+import { ImageItem } from "./images-store";
 import { backendUrl } from "./backend-url";
 import { getRequestData, getToken } from "../helpers/token";
 

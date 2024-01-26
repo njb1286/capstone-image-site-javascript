@@ -1,6 +1,5 @@
 import { backendUrl } from "../store/backend-url";
 import { useNavigate } from "react-router";
-import { Category } from "../store/images-store";
 import { useUploadForm } from "../hooks/useUploadForm";
 import { useGetImageItem } from "../hooks/useGetImageItem";
 import { useEffect } from "react";

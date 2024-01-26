@@ -13,12 +13,13 @@ import { useEffect } from "react";
 
 /**
  * @template T
- * @param {CardProps<T>} props
+ * @param {CardProps<T> & ImageItem} props
  */
 
 function Card(props) {
+  const { title, id } = props;
 
-  const [lazyImageComponent, reobserve] = useLazyImage({title: props.title, id: props.id, size: "medium"});
+  const [lazyImageComponent, reobserve] = useLazyImage({title, id, size: "medium"});
 
   useEffect(() => {
     reobserve();

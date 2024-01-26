@@ -3,7 +3,7 @@ import classes from "./UploadForm.module.scss";
 import { Button, ButtonGroup, Form, FormControl, FormGroup, Spinner } from "react-bootstrap";
 import { useFormField } from "./useFormField";
 import { useNavigate } from "react-router";
-import { Category, categories } from "../store/images-store";
+import { categories } from "../store/images-store";
 import DropDown from "../Components/DropDown";
 
 /**
@@ -29,7 +29,7 @@ import DropDown from "../Components/DropDown";
 // Do not mistake this for a component, it was converted from a component to a hook
 export function useUploadForm(props) {
   const [submitting, setSubmitting] = useState(false);
-  const [category, setCategory] = useState < Category > (props.category ?? "Other");
+  const [category, setCategory] = useState(props.category ?? "Other");
   const [isError, setIsError] = useState(false);
 
   const navigate = useNavigate();

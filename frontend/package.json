@@ -1,7 +1,7 @@
 {
-  "name": "ecommerce-site",
+  "name": "image-uploader",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -12,7 +12,6 @@
   "dependencies": {
     "@reduxjs/toolkit": "^1.9.7",
     "bootstrap": "^5.3.2",
-    "express": "^4.18.2",
     "react": "^18.2.0",
     "react-bootstrap": "^2.9.1",
     "react-dom": "^18.2.0",

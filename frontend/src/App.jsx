@@ -77,7 +77,7 @@ function App() {
   // Login page validation
   
   const returnedComponent = state !== "valid" ? <Routes>
-    <Route path="/" element={component} />
+    <Route path="/*" element={component} />
   </Routes> : component;
 
   if (location.pathname.startsWith("/api")) return;

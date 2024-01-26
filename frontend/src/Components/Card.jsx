@@ -1,6 +1,5 @@
 import { NavLink } from "react-router-dom";
 import classes from "./Card.module.scss";
-import { ImageItem } from "../store/images-store";
 import { CardFooter, CardHeader, CardText } from "react-bootstrap";
 import { useLazyImage } from "../hooks/useLazyImage";
 import { useEffect } from "react";

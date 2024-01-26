@@ -5,7 +5,10 @@ import {
   FormEvent as _FormEvent, 
   ChangeEvent as _ChangeEvent,
   MouseEvent as _MouseEvent,
-  MutableRefObject as _MutableRefObject
+  MutableRefObject as _MutableRefObject,
+  ReactPortal as _ReactPortal,
+  Dispatch as _ReactDispatch,
+  SetStateAction as _SetStateAction,
 } from "react";
 import { Action, Dispatch as _Dispatch } from "@reduxjs/toolkit";
 
@@ -35,6 +38,9 @@ declare global {
   type ReactMouseEvent<T = Element, U = MouseEvent> = _MouseEvent<T, U>;
   type MutableRefObject<T extends HTMLElement> = _MutableRefObject<T>;
   type Dispatch<T extends Action> = _Dispatch<T>;
+  type ReactDispatch<T> = _ReactDispatch<T>;
+  type SetStateAction<T> = _SetStateAction<T>;
+  type ReactPortal = _ReactPortal;
 
 
   type Category = typeof categories[number];

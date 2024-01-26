@@ -4,14 +4,16 @@ import { ImageActions, ImageItem } from "../store/images-store";
 import { Dispatch } from "@reduxjs/toolkit";
 import { getRequestData } from "../helpers/token";
 
-const getImageById = async (id: number) => {
+/** @param {number} id */
+const getImageById = async (id) => {
   const response = await fetch(`${backendUrl}/get?id=${id}`, getRequestData("GET"));
 
   if (response.status >= 299) {
     return null;
   }
 
-  const data = await response.json() as ImageItem;
+  /** @type {ImageItem} */
+  const data = await response.json();
   return data;
 }
 
@@ -22,16 +24,19 @@ const getLastImageItem = async () => {
     return null;
   }
 
-  const data = await response.json() as ImageItem;
+  /** @type {ImageItem} */
+  const data = await response.json();
 
   return data;
 }
 
 export const useAddImageItem = () => {
-  const dispatch = useDispatch<Dispatch<ImageActions>>();
+  /** @type {Dispatch<ImageActions>} */
+  const dispatch = useDispatch();
 
   // If there is no id, get the last item and add it to the database
-  const updateItems = async (id?: number) => {
+  /** @param {number | undefined} id */
+  const updateItems = async (id) => {
     if (id) {
       const imageItem = await getImageById(id);
 

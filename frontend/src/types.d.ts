@@ -4,6 +4,7 @@ import { ImageItem as _ImageItem, categories } from "./store/images-store";
 import { 
   FormEvent as _FormEvent, 
   ChangeEvent as _ChangeEvent,
+  MouseEvent as _MouseEvent,
   MutableRefObject as _MutableRefObject
 } from "react";
 
@@ -30,6 +31,7 @@ declare global {
   type ImageItem = _ImageItem;
   type FormEvent = _FormEvent;
   type ChangeEvent = _ChangeEvent;
+  type ReactMouseEvent<T = Element, U = MouseEvent> = _MouseEvent<T, U>;
   type MutableRefObject<T extends HTMLElement> = _MutableRefObject<T>;
 
 

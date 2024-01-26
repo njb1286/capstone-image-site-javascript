@@ -3,25 +3,43 @@ import { Dropdown } from "react-bootstrap"
 import classes from "./DropDown.module.scss"
 import { useState } from "react";
 
-type DropDownProps<T extends readonly string[], U extends T[number]> = {
-  categories: T;
-  default: U;
-  onSelect?: (category: T[number]) => void;
-  title?: string;
-  className?: string;
-}
+/**
+ * @template T
+ * @template U
+ * @typedef DropDownProps
+ * @property {T} categories
+ * @property {U} default
+ * @property {(category: T[number]) => void} [onSelect]
+ * @property {string} [title]
+ * @property {string} [className]
+ */
 
-function DropDown<T extends readonly string[], U extends T[number]>(props: Readonly<DropDownProps<T, U>>) {
-  const [category, setCategory] = useState<T[number]>(props.default);
+/**
+ * @template T
+ * @template U
+ * @param {DropDownProps<T, U>} props 
+ */
 
-  const selectCategory = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+function DropDown(props) {
+  /**
+   * @type {[T[number], (category: T[number]) => void}
+   */
+  const [category, setCategory] = useState(props.default);
+
+  /**
+   * @param {ReactMouseEvent<HTMLButtonElement>} event 
+   */
+  const selectCategory = (event) => {
     event.preventDefault();
 
-    const element = event.target as HTMLButtonElement;
+    /**
+     * @type {HTMLButtonElement}
+     */
+    const element = event.target;
 
-    setCategory(element.textContent as T[number]);
+    setCategory(element.textContent);
 
-    props.onSelect?.(element.textContent as T[number]);
+    props.onSelect?.(element.textContent);
   }
 
   return (

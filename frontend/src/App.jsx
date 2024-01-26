@@ -7,8 +7,6 @@ import LoadingPage from "./Components/LoadingPage";
 import { validateToken } from "./helpers/validateToken";
 import { getToken } from "./helpers/token";
 import { useDispatch, useSelector } from "react-redux";
-import { Dispatch } from "@reduxjs/toolkit";
-import { ImageActions, ImageState } from "./store/images-store";
 
 const AboutPage = lazy(() => import("./Pages/AboutPage"));
 const ContentPage = lazy(() => import("./Pages/ContentPage"));
@@ -19,12 +17,21 @@ const LoginPage = lazy(() => import("./Pages/LoginPage"));
 const GeneratePasswordPage = lazy(() => import("./Pages/GeneratePasswordPage"));
 const PageNotFound = lazy(() => import("./Pages/PageNotFound"));
 
-type State = "loading" | "login" | "valid";
+/**
+ * @typedef {"loading" | "login" | "valid"} State
+ */
 
 function App() {
-  const [state, setState] = useState<State>("loading");
-  const dispatch = useDispatch<Dispatch<ImageActions>>();
-  const token = useSelector((state: ImageState) => state.token);
+  /**
+   * @type {[State, (state: State) => void]}
+   */
+  const [state, setState] = useState("loading");
+  const dispatch = useDispatch();
+
+  /**
+   * @type {string}
+   */
+  const token = useSelector((state) => state.token);
   const [serverFound, setServerFound] = useState(true);
 
   useEffect(() => {

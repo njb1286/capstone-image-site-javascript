@@ -5,11 +5,16 @@ import { configureStore } from "@reduxjs/toolkit";
  */
 export const categories = ["Animals", "Architecture", "Food", "Nature", "Other", "People", "Sports", "Technology", "Travel"];
 
-/**
- * @type {Category}
- */
-
 export class ImageItem {
+  /**
+   * 
+   * @param {string} title 
+   * @param {string} description 
+   * @param {number} id 
+   * @param {string} date 
+   * @param {Category} category 
+   */
+
   constructor(title, description, id, date, category) {
     this.title = title;
     this.description = description;

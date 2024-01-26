@@ -29,6 +29,8 @@ declare global {
 
 
   type Category = typeof categories[number];
+  type SearchBarCategory = Category | "All";
+  type SearchBarSort = "Date" | "Title" | "Category";
 
   type ImageState = {
     imageItems: ImageItem[],

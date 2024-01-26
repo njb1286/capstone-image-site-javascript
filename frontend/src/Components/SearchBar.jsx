@@ -4,19 +4,22 @@ import { InputGroup, Spinner } from "react-bootstrap";
 import DropDown from "./DropDown";
 import { ChangeEvent, useEffect, useState } from "react";
 
-const searchBarCategories = ["All", ...categories] as const;
-export type SearchBarCategory = typeof searchBarCategories[number];
+import * as Category from "../types/category";
+import * as Sort from "../types/sortBy";
 
-const searchBarSorts = ["Date", "Title", "Category"] as const;
-export type SearchBarSort = typeof searchBarSorts[number];
+const searchBarCategories = [Category.ALL, ...categories];
 
-type SearchBarProps = {
-  onChange?: (value: string) => void;
-  onSelectCategory?: (category: SearchBarCategory) => void;
-  onSelectSort?: (sort: SearchBarSort) => void;
-}
+const searchBarSorts = [Sort.DATE, Sort.TITLE, Sort.CATEGORY];
 
-function SearchBar(props: Readonly<SearchBarProps>) {
+/**
+ * @param {{
+ *  onChange?: (value: string) => void;
+ * onSelectCategory?: (category: SearchBarCategory) => void;
+ * onSelectSort?: (sort: SearchBarSort) => void;
+ * }} props 
+ */
+
+function SearchBar(props) {
   const [isSearching, setIsSearching] = useState(false);
   const [value, setValue] = useState("");
 
@@ -35,15 +38,24 @@ function SearchBar(props: Readonly<SearchBarProps>) {
     }
   }, [value]);
 
-  const categoryHandler = (category: SearchBarCategory) => {
+  /**
+   * @param {Category} category 
+   */
+  const categoryHandler = (category) => {
     props.onSelectCategory?.(category);
   }
 
-  const sortHandler = (sort: SearchBarSort) => {
+  /**
+   * @param {SearchBarSort} sort 
+   */
+  const sortHandler = (sort) => {
     props.onSelectSort?.(sort);
   }
 
-  const inputHandler = (event: ChangeEvent<HTMLInputElement>) => {
+  /**
+   * @param {ChangeEvent<HTMLInputElement>} event 
+   */
+  const inputHandler = (event) => {
     setValue(event.target.value);
   }
 

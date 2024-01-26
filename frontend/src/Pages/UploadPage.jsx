@@ -13,7 +13,7 @@ function UploadPage() {
    * 
    * @param {string} title
    * @param {string} description 
-   * @param {File} image 
+   * @param {File | null} image 
    * @param {Category} category 
    */
   async function submitHandler (title, description, image, category) {

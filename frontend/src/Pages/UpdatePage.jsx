@@ -6,7 +6,6 @@ import { useGetImageItem } from "../hooks/useGetImageItem";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getRequestData } from "../helpers/token";
-import { ImageItem } from "../store/images-store";
 
 function UpdatePage() {
   const navigate = useNavigate();

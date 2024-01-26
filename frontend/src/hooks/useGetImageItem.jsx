@@ -1,30 +1,41 @@
 import { useDispatch, useSelector } from "react-redux"
 import { useEffect, useRef, useState } from "react";
-import { ImageActions, ImageItem, ImageState } from "../store/images-store";
+import { ImageItem, ImageState } from "../store/images-store";
 import { backendUrl } from "../store/backend-url";
-import { ActionCreator } from "../types";
 import LoadingPage from "../Components/LoadingPage";
-import { Dispatch } from "@reduxjs/toolkit";
 import { getRequestData } from "../helpers/token";
 import PageNotFound from "../Pages/PageNotFound";
 
-type ReturnType = ActionCreator<{
-  COMPONENT: JSX.Element;
-  IMAGE_ITEM: ImageItem;
-}>;
+/**
+ * @typedef {ActionCreator<{ COMPONENT: JSX.Element, IMAGE_ITEM: ImageItem }>} Returns
+ */
 
-export function useGetImageItem<T extends (string | number) | null>(id: T): ReturnType {
+/**
+ * @template T string or number or null
+ * @param {T} id 
+ * @returns {Returns}
+ */
+
+export function useGetImageItem(id) {
   const [isError, setIsError] = useState(false);
-  const [imageItemState, setImageItemState] = useState<ImageItem | null>(null);
-  const hasRun = useRef(false);
-  const dispatch = useDispatch<Dispatch<ImageActions>>();
 
-  const imageItems = useSelector((state: ImageState) => state.imageItems);
+  /**
+   * @type {[ImageItem | null, Dispatch<SetStateAction<ImageItem | null>>]}
+   */
+  const [imageItemState, setImageItemState] = useState(null);
+  const hasRun = useRef(false);
+
+  /**
+   * @type {Dispatch<ImageActions>}
+   */
+  const dispatch = useDispatch();
+
+  const imageItems = useSelector( /** @type {ImageState} */ (state) => state.imageItems);
 
   useEffect(() => {
     if (hasRun.current) return;
 
-    hasRun.current = true;     
+    hasRun.current = true;
 
     if (!id) {
       setIsError(true);
@@ -50,8 +61,9 @@ export function useGetImageItem<T extends (string | number) | null>(id: T): Retu
         return;
       }
 
-      const data = await response.json() as ImageItem;      
-      
+      /** @type {ImageItem} */
+      const data = await response.json();
+
       dispatch({
         type: "ADD_IMAGE_ITEM",
         payload: data,

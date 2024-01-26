@@ -1,8 +1,8 @@
 // Ignore this file, it is simply type definitions, and doesn't affect the runtime in any way
 
 import { ImageItem as _ImageItem, categories } from "./store/images-store";
-import { 
-  FormEvent as _FormEvent, 
+import {
+  FormEvent as _FormEvent,
   ChangeEvent as _ChangeEvent,
   MouseEvent as _MouseEvent,
   MutableRefObject as _MutableRefObject,
@@ -12,25 +12,24 @@ import {
 } from "react";
 import { Action, Dispatch as _Dispatch } from "@reduxjs/toolkit";
 
-// Utilities for this file
-type Optional<T extends object> = {
-  [K in keyof T]?: T[K];
-}
-
-type ActionCreator<T extends Record<string, any>> = {
-  [K in keyof T]: {
-    type: K;
-    payload: T[K];
-  }
-}[keyof T];
-
-type ActionCreatorNoPayload<T extends string[]> = {
-  type: T[number];
-};
-
-
-// Actual types
 declare global {
+  // Utilities for this file
+  type Optional<T extends object> = {
+    [K in keyof T]?: T[K];
+  }
+
+  type ActionCreator<T extends Record<string, any>> = {
+    [K in keyof T]: {
+      type: K;
+      payload: T[K];
+    }
+  }[keyof T];
+
+  type ActionCreatorNoPayload<T extends string[]> = {
+    type: T[number];
+  };
+
+
   // Declaring native types as global
   type ImageItem = _ImageItem;
   type FormEvent = _FormEvent;
@@ -43,6 +42,7 @@ declare global {
   type ReactPortal = _ReactPortal;
 
 
+  // Types
   type Category = typeof categories[number];
   type SearchBarCategory = Category | "All";
   type SearchBarSort = "Date" | "Title" | "Category";
@@ -63,13 +63,13 @@ declare global {
     ADD_IMAGE_ITEMS: ImageItem[];
     UPDATE_IMAGE_ITEM: Optional<Omit<ImageItem, "date">> & { id: number };
     DELETE_IMAGE_ITEM: number;
-  
+
     SET_MODAL_VISIBLE: boolean;
     ADD_LOADED_CATEGORY: Category;
     SET_TOKEN: string | null,
-  
+
     SET_TEMP_PASSWORD: string;
-  
+
   }> | ActionCreatorNoPayload<[
     "HAS_NO_MORE_ITEMS",
     "INITIAL_RENDER"

@@ -3,26 +3,25 @@ import { useState, useRef } from 'react';
 import { backendUrl } from '../store/backend-url';
 import { getRequestData } from '../helpers/token';
 import { useDispatch, useSelector } from 'react-redux';
-import { Dispatch } from '@reduxjs/toolkit';
-import { ImageActions, ImageState } from '../store/images-store';
 import { Alert, Spinner, Overlay, Tooltip } from 'react-bootstrap';
 import classes from "./GeneratePasswordPage.module.scss";
 import { FaCopy } from 'react-icons/fa';
 
-type Response = {
-  message: string;
-} | {
-  password: string;
-}
+/**
+ * @typedef {{ message: string } | { password: string }} Response
+ */
 
 const GeneratePasswordPage = () => {
-  const dispatch = useDispatch<Dispatch<ImageActions>>();
-  const password = useSelector((state: ImageState) => state.tempPassword);
+  const dispatch = useDispatch();
+  /**
+   * @type {string}
+   */
+  const password = useSelector((state) => state.tempPassword);
   const [fetching, setFetching] = useState(false);
-  const [error, setError] = useState<null | string>(null);
+  const [error, setError] = useState(null);
   const [showTooltip, setShowTooltip] = useState(false);
-  const copyButtonRef = useRef<HTMLButtonElement>(null);
-  const textAreaRef = useRef<HTMLTextAreaElement>(null);
+  const copyButtonRef = useRef(null);
+  const textAreaRef = useRef(null);
 
   const generatePasswordHandler = async () => {
     const response = await fetch(`${backendUrl}/generate-password`, getRequestData("GET"));
@@ -32,7 +31,10 @@ const GeneratePasswordPage = () => {
       return;
     }
 
-    const data = await response.json() as Response;
+    /**
+     * @type {Response}
+     */
+    const data = await response.json();
 
     if ("message" in data) {
       setError(data.message);

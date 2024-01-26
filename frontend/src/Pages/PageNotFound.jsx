@@ -2,12 +2,12 @@ import { NavLink } from "react-router-dom";
 import classes from "./PageNotFound.module.scss";
 import { FaSearch } from "react-icons/fa";
 
-type PageNotFoundProps = {
-  message: string;
-  hasLink?: boolean;
-}
-
-const PageNotFound = (props: Readonly<PageNotFoundProps>) => {
+/**
+ * 
+ * @param {{ message: string, hasLink?: boolean }} props 
+ * @returns 
+ */
+const PageNotFound = (props) => {
   return (
     <div className={classes.container}>
       <div className={classes.content}>

@@ -5,11 +5,6 @@ import { CardFooter, CardHeader, CardText } from "react-bootstrap";
 import { useLazyImage } from "../hooks/useLazyImage";
 import { useEffect } from "react";
 
-type CardProps<T> = ImageItem & {
-  itemIndex?: number;
-  stateToListenTo: T;
-}
-
 /**
  * @template T
  * @typedef {Object} CardProps

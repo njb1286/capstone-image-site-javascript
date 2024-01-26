@@ -9,10 +9,17 @@ function UploadPage() {
   const navigate = useNavigate();
   const addImageItem = useAddImageItem();
 
-  async function submitHandler (title: string, description: string, image: File | null, category: Category) {
+  /**
+   * 
+   * @param {string} title
+   * @param {string} description 
+   * @param {File} image 
+   * @param {Category} category 
+   */
+  async function submitHandler (title, description, image, category) {
     const formData = new FormData();
 
-    formData.append("image", image!);
+    formData.append("image", image);
     formData.append("title", title);
     formData.append("description", description);
     formData.append("category", category);

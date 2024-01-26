@@ -1,31 +1,41 @@
 import { FormEvent, useEffect, useState } from "react";
 import classes from "./UploadForm.module.scss";
 import { Button, ButtonGroup, Form, FormControl, FormGroup, Spinner } from "react-bootstrap";
-import { useFormField } from "../hooks/useFormField";
+import { useFormField } from "./useFormField";
 import { useNavigate } from "react-router";
 import { Category, categories } from "../store/images-store";
 import DropDown from "../Components/DropDown";
 
-export type UploadFormSubmitEvent = (title: string, description: string, image: File | null, category: Category) => Promise<void>;
+/**
+ * @typedef {(title: string, description: string, image: File | null, category: Category) => Promise<void>} UploadFormSubmitEvent
+ */
 
-type UploadFormProps = {
-  title?: string;
-  description?: string;
-  updating?: boolean;
-  id?: number
-  onSubmit: UploadFormSubmitEvent;
-  category?: Category;
-}
+/**
+ * @typedef {{
+ *  title?: string;
+ *  description?: string;
+ *  updating?: boolean;
+ *  id?: number
+ *  onSubmit: UploadFormSubmitEvent;
+ *  category?: Category;
+ * }} UploadFormProps
+ */
+
+/**
+ * @param {UploadFormProps} props
+ * @returns {[JSX.Element, () => void, (title: string, description: string, category: Category) => void]}
+ */
 
 // Do not mistake this for a component, it was converted from a component to a hook
-export function useUploadForm(props: Readonly<UploadFormProps>) {
+export function useUploadForm(props) {
   const [submitting, setSubmitting] = useState(false);
-  const [category, setCategory] = useState<Category>(props.category ?? "Other");
+  const [category, setCategory] = useState < Category > (props.category ?? "Other");
   const [isError, setIsError] = useState(false);
 
   const navigate = useNavigate();
 
-  const submitHandler = (event: FormEvent<HTMLFormElement>) => {
+  /** @param {FormEvent<HTMLFormElement>} event */
+  const submitHandler = (event) => {
     event.preventDefault();
 
     // Note: this is just in case the user manually changes the button's disabled tag to false
@@ -43,12 +53,17 @@ export function useUploadForm(props: Readonly<UploadFormProps>) {
     props.onSubmit(title, description, image, category);
   };
 
-  function makeInitialState<T>(value: T): {
-    touched: boolean;
-    isValid: boolean;
-    value: T;
-    errorMessage: string | undefined;
-  } {
+  /**
+   * @template T
+   * @param {T} value
+   * @returns {{
+   *  touched: boolean;
+   *  isValid: boolean;
+   *  value: T;
+   *  errorMessage: string | undefined;
+   * }}
+   */
+  function makeInitialState(value) {
     return {
       touched: false,
       isValid: false,
@@ -92,7 +107,7 @@ export function useUploadForm(props: Readonly<UploadFormProps>) {
     FormControl,
     { type: "file", accept: "image/png, image/jpeg, image/jpg" },
     makeInitialState(null),
-    (event) => event.target.files![0],
+    (event) => event.target.files[0],
     (value) => {
       if (!value) {
         if (props.updating) return undefined;
@@ -131,7 +146,12 @@ export function useUploadForm(props: Readonly<UploadFormProps>) {
     setSubmitting(false);
   }
 
-  const setValues = (title: string, description: string, category: Category) => {
+  /**
+   * @param {string} title 
+   * @param {string} description 
+   * @param {Category} category 
+   */
+  const setValues = (title, description, category) => {
     setTitleValue(title);
     setDescriptionValue(description);
     setCategory(category);
@@ -164,29 +184,29 @@ export function useUploadForm(props: Readonly<UploadFormProps>) {
           </FormGroup>
         </div>
 
-          <Spinner className={`${classes.spinner} ${submitting ? classes.visible : ""}`} variant="primary" animation="border" />
+        <Spinner className={`${classes.spinner} ${submitting ? classes.visible : ""}`} variant="primary" animation="border" />
 
-          <ButtonGroup className={classes.buttons}>
-            <Button
-              disabled={
-                !titleValid ||
-                !descriptionValid ||
-                !imageValid ||
-                submitting
-              }
-              className={classes.btn}
-              type="submit"
-            >
-              Submit
-            </Button>
+        <ButtonGroup className={classes.buttons}>
+          <Button
+            disabled={
+              !titleValid ||
+              !descriptionValid ||
+              !imageValid ||
+              submitting
+            }
+            className={classes.btn}
+            type="submit"
+          >
+            Submit
+          </Button>
 
-            {props.updating && <Button className={`${classes.btn} btn-danger`} type="button" onClick={() => navigate(`/views?id=${props.id!}`)}>Cancel</Button>}
-          </ButtonGroup>
+          {props.updating && <Button className={`${classes.btn} btn-danger`} type="button" onClick={() => navigate(`/views?id=${props.id}`)}>Cancel</Button>}
+        </ButtonGroup>
       </Form>
 
       {isError && errorMessage}
     </div>
   )
 
-  return [component, errorHandler, setValues] as const;
+  return [component, errorHandler, setValues];
 }

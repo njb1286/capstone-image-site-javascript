@@ -1,31 +1,41 @@
-import { ChangeEvent, Reducer, useReducer } from "react"
-import { ActionCreator } from "../types";
+import { ChangeEvent, useReducer } from "react"
 import { Form, FormControl, FormControlProps } from "react-bootstrap";
 
-type Action<TFieldValue> = ActionCreator<{
-  SET_TOUCHED: boolean;
-  SET_IS_VALID: boolean;
-  SET_VALUE: TFieldValue;
-  SET_ERROR_MESSAGE: string | undefined;
-}>;
+/**
+  * @template TFieldValue
+   * @typedef {ActionCreator<{
+   *    SET_TOUCHED: boolean;
+   *    SET_IS_VALID: boolean;
+   *    SET_VALUE: TFieldValue;
+   *    SET_ERROR_MESSAGE: string | undefined;
+   * }>} Action
+*/
 
-type ValidInputElements = {
-  input: HTMLInputElement;
-  textarea: HTMLTextAreaElement;
-}
+/**
+ * @typedef {{
+ *    input: HTMLInputElement;
+ *    textarea: HTMLTextAreaElement;
+ *  }} ValidInputElements
+ */
 
-type State<TFieldValue> = ReturnType<typeof getInitialState<TFieldValue>>;
+/**
+ * @template TFieldValue
+ * @typedef {{
+ *  touched: boolean;
+ *  isValid: boolean;  
+ *  value: TFieldValue;
+ *  errorMessage: string | undefined;
+ * }} State
+ */
 
-function getInitialState<TFieldValue>(initialValue: TFieldValue) {
-  return {
-    touched: false,
-    isValid: false,
-    value: initialValue,
-    errorMessage: undefined as string | undefined,
-  }
-}
+/**
+ * @template TFieldValue
+ * @param {State<TFieldValue>} state 
+ * @param {Action<TFieldValue>} action 
+ * @returns 
+ */
 
-function formFieldReducer<TFieldValue>(state: State<TFieldValue>, action: Action<TFieldValue>) {
+function formFieldReducer(state, action) {
   switch (action.type) {
     case "SET_IS_VALID":
       return { ...state, isValid: action.payload };
@@ -43,29 +53,41 @@ function formFieldReducer<TFieldValue>(state: State<TFieldValue>, action: Action
 // Documentation for hovering over the useFormField hook
 
 /**
- * @param InputElement The component to use for the form field
- * @param inputProps The props to pass to the FormControl component
- * @param initialState Initial state
- * @param selectChangeableValue A function that picks the value from the change event
- * @param checkValidity Checks the validity of the value. Return undefined if valid, otherwise return an error message
- * @returns A tuple containing the component, a boolean indicating whether the field is valid, the value, a function to set the touched state, a function to set the valid state, and a function to set the value
+ * @typedef {{
+ *   touched: boolean;
+ *   isValid: boolean;
+ *   value: TFieldValue;
+ *   errorMessage: string | undefined;
+ * }} InitialState
+ */
+
+/**
+ * @typedef {ChangeEvent<ValidInputElements[TElementName]>} OnChangeEvent
+ */
+
+/**
+ * @template TFieldValue
+ * @template TElementName
+ * 
+ * @param {typeof FormControl} InputElement The component to use for the form field
+ * @param {FormControlProps & { as?: TElementName } & { [key: string]: any }} inputProps The props to pass to the FormControl component
+ * @param {InitialState} initialState Initial state
+ * @param {(event: OnChangeEvent) => TFieldValue} selectChangeableValue A function that picks the value from the change event
+ * @param {(value: TFieldValue) => string | undefined} checkValidity Checks the validity of the value. Return undefined if valid, otherwise return an error message
+ * @returns {[JSX.Element, boolean, TFieldValue, (touched: boolean) => void, (isValid: boolean) => void, (value: TFieldValue) => void]} A tuple containing the component, a boolean indicating whether the field is valid, the value, a function to set the touched state, a function to set the valid state, and a function to set the value
 */
 
-export function useFormField<TFieldValue, TElementName extends keyof ValidInputElements = "input">(
-  InputElement: typeof FormControl,
-  inputProps: FormControlProps & { as?: TElementName } & { [key: string]: any },
-  initialState: {
-    touched: boolean;
-    isValid: boolean;
-    value: TFieldValue;
-    errorMessage: string | undefined;
-  },
-  selectChangeableValue: (event: ChangeEvent<ValidInputElements[TElementName]>) => TFieldValue,
-  checkValidity: (value: TFieldValue) => string | undefined,
+export function useFormField(
+  InputElement,
+  inputProps,
+  initialState,
+  selectChangeableValue,
+  checkValidity
 ) {
-  const [state, dispatch] = useReducer<Reducer<State<TFieldValue>, Action<TFieldValue>>>(formFieldReducer, initialState);
+  const [state, dispatch] = useReducer(formFieldReducer, initialState);
 
-  const changeHandler = (event: ChangeEvent<ValidInputElements[TElementName]>) => {
+  /** @param {OnChangeEvent} event */
+  const changeHandler = (event) => {
     dispatch({
       type: "SET_VALUE",
       payload: selectChangeableValue(event),
@@ -100,26 +122,34 @@ export function useFormField<TFieldValue, TElementName extends keyof ValidInputE
     });
   }
 
-  const setTouched = (touched: boolean) => {
+  /** @param {boolean} touched */
+  const setTouched = (touched) => {
     dispatch({
       type: "SET_TOUCHED",
       payload: touched,
     });
   }
 
-  const setValid = (isValid: boolean) => {
+  /** @param {boolean} isValid */
+  const setValid = (isValid) => {
     dispatch({
       type: "SET_IS_VALID",
       payload: isValid,
     });
   }
 
-  const setValue = (value: TFieldValue) => {
+  /** @param {TFieldValue} value */
+  const setValue = (value) => {
     dispatch({
       type: "SET_VALUE",
       payload: value,
     });
   }
+
+  /**
+   * @type {keyof ValidInputElements}
+   */
+  const asProp = inputProps.as;
 
   const component = <>
     <InputElement
@@ -149,7 +179,7 @@ export function useFormField<TFieldValue, TElementName extends keyof ValidInputE
         T = HTMLInputElement, the type is HTMLInputElement
         T = HTMLTextAreaElement, the type is HTMLTextAreaElement
       */
-      as={inputProps.as as keyof ValidInputElements}
+      as={asProp}
     />
     <Form.Label style={{
       visibility: state.touched && !state.isValid ? "visible" : "hidden",
@@ -157,5 +187,5 @@ export function useFormField<TFieldValue, TElementName extends keyof ValidInputE
   </>;
 
 
-  return [component, !checkValidity(state.value), state.value, setTouched, setValid, setValue] as const;
+  return [component, !checkValidity(state.value), state.value, setTouched, setValid, setValue];
 }

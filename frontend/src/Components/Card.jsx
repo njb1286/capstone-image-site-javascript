@@ -10,24 +10,36 @@ type CardProps<T> = ImageItem & {
   stateToListenTo: T;
 }
 
-function Card<T>({ title, id, category, stateToListenTo }: Readonly<CardProps<T>>) {
+/**
+ * @template T
+ * @typedef {Object} CardProps
+ * @property {number | undefined} itemIndex
+ * @property {T} stateToListenTo
+ */
 
-  const [lazyImageComponent, reobserve] = useLazyImage({title, id, size: "medium"});
+/**
+ * @template T
+ * @param {CardProps<T>} props
+ */
+
+function Card(props) {
+
+  const [lazyImageComponent, reobserve] = useLazyImage({title: props.title, id: props.id, size: "medium"});
 
   useEffect(() => {
     reobserve();
-  }, [stateToListenTo])
+  }, [props.stateToListenTo])
 
   return (
     <NavLink to={`/views?id=${id}`} className={`card text-center ${classes.card}`}>
       <CardHeader className={classes.header}>
-        <h2>{title}</h2>
+        <h2>{props.title}</h2>
       </CardHeader>
 
       {lazyImageComponent}
 
       <CardFooter className={classes.footer}>
-        <CardText className={classes.category}>Category: {category}</CardText>
+        <CardText className={classes.category}>Category: {props.category}</CardText>
       </CardFooter>
     </NavLink>
   );

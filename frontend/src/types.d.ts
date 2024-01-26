@@ -1,7 +1,11 @@
 // Ignore this file, it is simply type definitions, and doesn't affect the runtime in any way
 
 import { ImageItem as _ImageItem, categories } from "./store/images-store";
-import { FormEvent as _FormEvent, ChangeEvent as _ChangeEvent } from "react";
+import { 
+  FormEvent as _FormEvent, 
+  ChangeEvent as _ChangeEvent,
+  MutableRefObject as _MutableRefObject
+} from "react";
 
 // Utilities for this file
 type Optional<T extends object> = {
@@ -26,6 +30,7 @@ declare global {
   type ImageItem = _ImageItem;
   type FormEvent = _FormEvent;
   type ChangeEvent = _ChangeEvent;
+  type MutableRefObject<T extends HTMLElement> = _MutableRefObject<T>;
 
 
   type Category = typeof categories[number];

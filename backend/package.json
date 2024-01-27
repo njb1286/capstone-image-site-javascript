@@ -4,8 +4,8 @@
   "description": "",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "export SITE_PASSWORD=`cat ../password.txt` && export PORT=8080 && nodemon --exec ts-node ./src/index.ts",
-    "startHeroku": "ts-node ./src/index.ts"
+    "start": "export SITE_PASSWORD=`cat ../password.txt` && export PORT=8080 && nodemon ./src/index.js",
+    "startHeroku": "node ./src/index.js"
   },
   "keywords": [],
   "author": "",

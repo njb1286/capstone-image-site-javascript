@@ -1,12 +1,14 @@
 @import "../helper-styles.scss";
 
-.cards {
+.cards-wrapper {
   height: 100%;
+  overflow-y: scroll;
 
-  &.grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    overflow-y: scroll;
+  .cards {
+    &.grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+    }
   }
 }
 

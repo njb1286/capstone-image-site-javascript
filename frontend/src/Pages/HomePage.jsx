@@ -208,9 +208,11 @@ function HomePage() {
         onChange={setSearchValue}
         onSelectSort={setSelectedSort}
       />
-      <div className={`${classes.cards} ${hasNoImageItems ? "" : classes.grid}`} ref={cardsRef}>
-        {content}
-        <LoadingPage ref={loadingPageRef} fullScreen={false} className={`${classes["loading-images"]} ${hasMore && selectedCategory === "All" && !searchValue ? classes.visible : ""}`} />
+      <div className={classes["cards-wrapper"]}>
+        <div className={`${classes.cards} ${hasNoImageItems ? "" : classes.grid}`} ref={cardsRef}>
+          {content}
+          <LoadingPage ref={loadingPageRef} fullScreen={false} className={`${classes["loading-images"]} ${hasMore && selectedCategory === "All" && !searchValue ? classes.visible : ""}`} />
+        </div>
       </div>
     </>
   );

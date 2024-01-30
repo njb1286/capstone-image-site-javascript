@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-To start the frontend, run "npm run dev".
-To start the backend, run "npm start".
-=======
 To turn on the app, follow these steps:
 
 1. Open a terminal.
@@ -27,5 +23,3 @@ To turn on the app, follow these steps:
   ```
 
 Once both the frontend and backend are running, you should be able to access the app in your browser.
-
->>>>>>> 09f3246 (Added readme.md file)

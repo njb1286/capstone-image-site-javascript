@@ -26,6 +26,18 @@ class ImagesRow:
 
   def to_json(self):
     return vars(self)
+  
+# A string that represents a comma delimited list of items to exclude from the query
+def exclude_query(ids: str) -> tuple[str, list[str]]:
+  """
+  Returns a tuple with the string with "?"s and the list of values to replace them with
+  """
+  if ids == "":
+    return "", []
+
+  split_ids = ids.split(",")
+  exclude_vars = ", ".join(["?" for _ in split_ids])
+  return exclude_vars, split_ids
 
 @app.before_request
 def setup():
@@ -123,14 +135,8 @@ def get_slice():
 
   if not limit_param or not offset_param:
     return { "message": "Limit and offset are required!" }, 400
-  
-  split_loaded_items = loaded_items.split(",") if loaded_items != "" else []
 
-  exclude_vars = ""
-
-  # Create a of "?"s instead of their literal values to prevent SQL injection
-  if loaded_items:
-    exclude_vars = ", ".join(["?" for _ in split_loaded_items])
+  exclude_vars, split_loaded_items = exclude_query(loaded_items)
 
   query = f"SELECT {items_to_get} FROM images WHERE id NOT IN ({exclude_vars}) ORDER BY id ASC LIMIT ? OFFSET ?"
   query_params = (limit_param, offset_param)
@@ -206,6 +212,35 @@ def delete():
   cursor.close()
 
   return { "message": "Image deleted successfully!" }, 200
+
+@validate_token
+@app.route("/api/search", methods=["GET"])
+def search():
+  loaded_items = request.headers.get("loadedItems") or ""
+  search_value = request.args.get("q")
+
+  if not search_value:
+    return { "message": "Search value is required!" }, 400
+
+  exclude_query_vars, split_loaded_items = exclude_query(loaded_items)
+
+  db = get_db()
+
+  cursor = db.cursor()
+  query = f"SELECT {items_to_get} FROM images WHERE id NOT IN ({exclude_query_vars}) AND (LOWER(title) LIKE LOWER('%' || ? || '%')) ORDER BY id ASC"
+  query_values = (*split_loaded_items, search_value)
+
+  cursor.execute(query, query_values)
+
+  items = cursor.fetchall()
+
+  cursor.close()
+
+  new_items: list[ImagesRow] = []
+  for item in items:
+    new_items.append(ImagesRow(*item).to_json())
+
+  return new_items, 200
 
 @validate_token
 @app.route("/api/get", methods=["GET"])

@@ -195,7 +195,7 @@ function HomePage() {
   ) : (
     <>
       {filteredImageItems.map((item) => {
-        return <Card stateToListenTo={selectedSort} {...item} key={item.id} />;
+        return <Card stateToListenTo={selectedSort} key={item.id} {...item} />;
       })}
 
     </>

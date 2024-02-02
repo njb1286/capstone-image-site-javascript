@@ -295,7 +295,10 @@ app.post("/api/form", upload.single("image"), async (req, res) => {
       return;
     }
 
-    res.status(200).send("Data inserted successfully");
+    /** @type {number} */
+    const lastId = this.lastID;
+
+    res.status(200).send({message: "Data inserted successfully", id: lastId, date: new Date().toISOString()});
   });
 });
 

@@ -5,8 +5,19 @@ from werkzeug.utils import secure_filename
 from image_compression import compress_image
 from decorators import validate_token
 from db import get_db
+from datetime import datetime
 
 app = Flask(__name__, static_folder='../public')
+
+class ImagesRow:
+  id: int
+
+  def __init__(self, id: int, title: str, description: str, date: str, category: str):
+    self.id = id
+    self.title = title
+    self.description = description
+    self.date = date
+    self.category = category
 
 @app.before_request
 def setup():
@@ -47,24 +58,32 @@ def index():
 
 @app.route("/api/form", methods=["POST"])
 @validate_token
-def login():
+def form():
   title = request.form['title']
   description = request.form['description']
   category = request.form['category']
 
   image = request.files["file"]
 
-  large_image = None
-  medium_image = None
-  small_image = None
+  if not title or not description or not category or not image:
+    return { "message": "All fields are required! (title, description, category, image)" }
 
-  if not title or not description or not category:
-    return { "message": "All fields are required!" }
+  large_image = compress_image(image.read(), quality=60)
+  medium_image = compress_image(large_image, width=384, quality=40)
+  small_image = compress_image(medium_image, width=16, quality=40)
 
-  if image:
-    large_image = compress_image(image.read(), quality=60)
-    medium_image = compress_image(large_image, width=384, quality=40)
-    small_image = compress_image(medium_image, width=16, quality=40)
+  db = get_db()
+
+  cursor = db.cursor()
+
+  cursor.execute("INSERT INTO images (title, description, category, largeImage, mediumImage, smallImage) VALUES (?, ?, ?, ?, ?, ?)", (title, description, category, large_image, medium_image, small_image))
+  last_row_id = cursor.lastrowid
+
+  db.commit()
+  cursor.close()
+
+  return { "message": "Image uploaded successfully!", "id": last_row_id, "date": datetime.now().isoformat() }, 200
+
 
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')

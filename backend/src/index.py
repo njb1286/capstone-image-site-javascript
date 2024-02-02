@@ -1,4 +1,4 @@
-from flask import Flask, send_from_directory, g, request
+from flask import Flask, send_from_directory, g, request, jsonify
 import sqlite3
 import os
 from werkzeug.utils import secure_filename
@@ -16,6 +16,9 @@ class ImagesRow:
     self.description = description
     self.date = date
     self.category = category
+
+  def to_json(self):
+    return vars(self)
 
 @app.before_request
 def setup():
@@ -48,6 +51,38 @@ def close_connection(exception: Exception):
 
   if db is not None:
     db.close()
+
+@app.route("/api/get", methods=["GET"])
+def get():
+  id_param = request.args.get("id")
+
+  items_to_get = "id, title, description, date, category"
+
+  db = get_db()
+  cursor = db.cursor()
+  
+  if id_param:
+    cursor.execute(f"SELECT {items_to_get} FROM images WHERE id = ?", (id_param,))
+
+    items = cursor.fetchone()
+
+    cursor.close()
+
+    return ImagesRow(*items).to_json(), 200
+  
+  cursor.execute(f"SELECT {items_to_get} FROM images")
+
+  items = cursor.fetchall()
+
+  cursor.close()
+
+  returned_items = []
+
+  for item in items:
+    returned_items.append(ImagesRow(*item).to_json())
+
+  return returned_items, 200
+  
 
 @app.route("/api/validate-token", methods=["GET"])
 @validate_token

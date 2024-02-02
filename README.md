@@ -27,4 +27,18 @@ To turn on the app, follow these steps:
   python3 index.py
   ```
 
+  Please note that if you use the Python server, you will have to set the environment variable "SITE_PASSWORD" in order to set the password to login
+
+  Linux:
+  ```bash
+  export SITE_PASSWORD=*Your password of choice*
+  python3 index.py
+  ```
+
+  Windows:
+  ```cmd
+  set SITE_PASSWORD=*Your password of choice*
+  python3 index.py
+  ```
+
 Once both the frontend and backend are running, you should be able to access the app in your browser.

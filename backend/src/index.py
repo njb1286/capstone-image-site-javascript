@@ -90,7 +90,7 @@ def login():
     cursor.execute("SELECT token FROM tokens WHERE token = ?", (token_header,))
     token: tuple[str] | None = cursor.fetchone()
 
-    if not token:
+    if token:
       return { "message": "Token already valid!" }, 400
 
   if is_single_use == "true":
@@ -289,7 +289,6 @@ def form():
     return { "message": "No image part!" }, 400
 
   image = request.files["image"]
-  print("HI")
 
   if not title or not description or not category:
     return { "message": "All fields are required! (title, description, category, image)" }

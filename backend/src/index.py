@@ -285,12 +285,6 @@ def form():
   description = request.form['description']
   category = request.form['category']
 
-  # print("Title", title)
-  # print("Description", description)
-  # print("Category", category)
-  # print("File", request.files["image"])
-  # return { "message": "Image uploaded successfully!" }, 400
-
   if "image" not in request.files:
     return { "message": "No image part!" }, 400
 
@@ -315,6 +309,13 @@ def form():
   cursor.close()
 
   return { "message": "Image uploaded successfully!", "id": last_row_id, "date": datetime.now().isoformat() }, 200
+
+@validate_token
+@app.route("/api/generate-password", methods=["GET"])
+def generate_password_route():
+  password = generate_password()
+
+  return { "password": password }, 200
 
 
 @app.route('/', defaults={'path': ''})

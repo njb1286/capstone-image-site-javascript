@@ -24,7 +24,7 @@ def date_is_valid(date: str):
   return days_from(date) >= 10
 
 def generate_password():
-  random_bytes = secrets.token_bytes(64)
+  random_bytes = secrets.token_bytes(16)
   password = base64.b64encode(random_bytes).decode("utf-8")
 
   db = get_db()

@@ -47,9 +47,7 @@ export const getImageSlice = (offset, count, doneLoading, loadedItems) => {
      * @type {{ data: ImageItem[], hasMore: boolean }}
      */
     const responseData = await response.json();
-
-    console.log("Response data", responseData);
-
+    
     dispatch({
       type: "ADD_IMAGE_ITEMS",
       payload: responseData.data,

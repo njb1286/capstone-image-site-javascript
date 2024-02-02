@@ -1,11 +1,10 @@
-from flask import Flask, send_from_directory, g, request, jsonify
-import sqlite3
+from flask import Flask, send_from_directory, g, request, send_file
 import os
-from werkzeug.utils import secure_filename
 from image_compression import compress_image
 from decorators import validate_token
 from db import get_db
 from datetime import datetime
+import io
 
 app = Flask(__name__, static_folder='../public')
 
@@ -62,6 +61,7 @@ def close_connection(exception: Exception):
     db.close()
 
 @app.route("/api/get-slice", methods=["GET"])
+@validate_token
 def get_slice():
   limit_param = request.args.get("limit")
   offset_param = request.args.get("offset")
@@ -104,6 +104,33 @@ def get_slice():
     returned_items.append(ImagesRow(*item).to_json())
 
   return {"data": returned_items, "hasMore": has_more}, 200
+
+
+@app.route("/api/get-image", methods=["GET"])
+def get_image():
+  valid_sizes = ("large", "medium", "small")
+
+  size_param = request.args.get("size") or "large"
+
+  if size_param not in valid_sizes:
+    return { "message": "Invalid size!" }, 400
+
+  db = get_db()
+
+  cursor = db.cursor()
+
+  cursor.execute(f"SELECT {size_param}Image FROM images WHERE id = ?", (request.args.get("id"),))
+
+  image: tuple[bytes | None] = cursor.fetchone()
+
+  cursor.close()
+
+  if not image[0]:
+    return { "message": "Image not found!" }, 404
+
+  image_io = io.BytesIO(image[0])
+
+  return send_file(image_io, mimetype="image/jpeg"), 200
 
 @validate_token
 @app.route("/api/get", methods=["GET"])

@@ -41,4 +41,9 @@ To turn on the app, follow these steps:
   python3 index.py
   ```
 
+  If you want to run the Python server as production, make sure you have waitress installed, then you can run the command:
+  ```bash
+  waitress-serve index:app
+  ```
+
 Once both the frontend and backend are running, you should be able to access the app in your browser.

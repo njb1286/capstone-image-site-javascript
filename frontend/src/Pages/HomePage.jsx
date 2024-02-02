@@ -129,6 +129,8 @@ function HomePage() {
 
   // Reobserve
   useEffect(() => {
+    
+
     if (loadingPageRef.current) {
       observer.current.unobserve(loadingPageRef.current);
       observer.current.observe(loadingPageRef.current);

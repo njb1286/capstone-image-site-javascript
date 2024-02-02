@@ -2,7 +2,7 @@ import { useNavigate } from "react-router";
 import { backendUrl } from "../store/backend-url";
 import { useUploadForm } from "../hooks/useUploadForm";
 import { useAddImageItem } from "../hooks/useAddImageItem";
-import { getRequestData } from "../helpers/token";
+import { getRequestData, getToken } from "../helpers/token";
 import { useDispatch } from "react-redux";
 
 function UploadPage() {
@@ -28,7 +28,7 @@ function UploadPage() {
 
     const response = await fetch(`${backendUrl}/form`, {
       body: formData,
-      ...getRequestData("POST"),
+      ...getRequestData("POST")
     });
 
     if (response.status > 299) {

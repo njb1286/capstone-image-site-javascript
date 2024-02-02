@@ -5,6 +5,7 @@ from decorators import validate_token
 from db import get_db
 from datetime import datetime
 import io
+from tokens import generate_token, generate_password
 
 app = Flask(__name__, static_folder='../public')
 
@@ -60,6 +61,59 @@ def close_connection(exception: Exception):
   if db is not None:
     db.close()
 
+@app.route("/api/login", methods=["POST"])
+def login():
+  password_header = request.headers.get("password")
+  token_header = request.headers.get("token") or ""
+
+  is_single_use = request.headers.get("singleUse")
+
+  if not password_header:
+    return { "message": "Password is required!" }, 400
+
+  db = get_db()
+  cursor = db.cursor()
+
+  if token_header:
+    cursor.execute("SELECT token FROM tokens WHERE token = ?", (token_header,))
+    token: tuple[str] | None = cursor.fetchone()
+
+    if not token:
+      return { "message": "Token already valid!" }, 400
+
+  if is_single_use == "true":
+    cursor.execute("SELECT * FROM tempPasswords WHERE password = ?", (password_header,))
+
+    result: tuple[str] | None = cursor.fetchone()
+
+    if not result:
+      cursor.close()
+      return { "message": "Invalid password!" }, 401
+
+    new_token = generate_token()
+    cursor.execute("INSERT INTO tokens (token) VALUES (?)", (new_token,))
+    cursor.execute("DELETE FROM tempPasswords WHERE password = ?", (password_header,))
+    
+    db.commit()
+    cursor.close()
+
+    return { "token": new_token }, 200
+  
+  
+  password: str = os.getenv("SITE_PASSWORD")
+
+  if password_header != password:
+    cursor.close()
+    return { "message": "Invalid password!" }, 401
+
+  new_token = generate_token()
+  cursor.execute("INSERT INTO tokens (token) VALUES (?)", (new_token,))
+  db.commit()
+
+  cursor.close()
+
+  return { "token": new_token }, 200
+
 @app.route("/api/get-slice", methods=["GET"])
 @validate_token
 def get_slice():
@@ -70,7 +124,7 @@ def get_slice():
   if not limit_param or not offset_param:
     return { "message": "Limit and offset are required!" }, 400
   
-  split_loaded_items = loaded_items.split(",")
+  split_loaded_items = loaded_items.split(",") if loaded_items != "" else []
 
   exclude_vars = ""
 
@@ -81,7 +135,7 @@ def get_slice():
   query = f"SELECT {items_to_get} FROM images WHERE id NOT IN ({exclude_vars}) ORDER BY id ASC LIMIT ? OFFSET ?"
   query_params = (limit_param, offset_param)
 
-  if len(split_loaded_items) == 0:
+  if len(split_loaded_items) > 0:
     query_params = (*split_loaded_items, *query_params)
 
   db = get_db()
@@ -106,6 +160,7 @@ def get_slice():
   return {"data": returned_items, "hasMore": has_more}, 200
 
 
+@validate_token
 @app.route("/api/get-image", methods=["GET"])
 def get_image():
   valid_sizes = ("large", "medium", "small")
@@ -121,16 +176,36 @@ def get_image():
 
   cursor.execute(f"SELECT {size_param}Image FROM images WHERE id = ?", (request.args.get("id"),))
 
-  image: tuple[bytes | None] = cursor.fetchone()
+  image: tuple[bytes] | None = cursor.fetchone()
 
   cursor.close()
 
-  if not image[0]:
+  if not image:
     return { "message": "Image not found!" }, 404
 
   image_io = io.BytesIO(image[0])
 
   return send_file(image_io, mimetype="image/jpeg"), 200
+
+@validate_token
+@app.route("/api/delete", methods=["DELETE"])
+def delete():
+  item_id = request.args.get("id")
+
+  if not item_id:
+    return { "message": "ID is required!" }, 400
+  
+  db = get_db()
+
+  cursor = db.cursor()
+
+  cursor.execute("DELETE FROM images WHERE id = ?", (item_id,))
+
+  db.commit()
+
+  cursor.close()
+
+  return { "message": "Image deleted successfully!" }, 200
 
 @validate_token
 @app.route("/api/get", methods=["GET"])
@@ -175,9 +250,19 @@ def form():
   description = request.form['description']
   category = request.form['category']
 
-  image = request.files["file"]
+  # print("Title", title)
+  # print("Description", description)
+  # print("Category", category)
+  # print("File", request.files["image"])
+  # return { "message": "Image uploaded successfully!" }, 400
 
-  if not title or not description or not category or not image:
+  if "image" not in request.files:
+    return { "message": "No image part!" }, 400
+
+  image = request.files["image"]
+  print("HI")
+
+  if not title or not description or not category:
     return { "message": "All fields are required! (title, description, category, image)" }
 
   large_image = compress_image(image.read(), quality=60)

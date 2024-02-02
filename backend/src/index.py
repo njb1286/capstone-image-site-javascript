@@ -10,8 +10,6 @@ from datetime import datetime
 app = Flask(__name__, static_folder='../public')
 
 class ImagesRow:
-  id: int
-
   def __init__(self, id: int, title: str, description: str, date: str, category: str):
     self.id = id
     self.title = title
@@ -51,10 +49,10 @@ def close_connection(exception: Exception):
   if db is not None:
     db.close()
 
-@app.route("/api/toast", methods=["GET"])
+@app.route("/api/validate-token", methods=["GET"])
 @validate_token
-def index():
-  return { "message": "Hello, World!" }, 200
+def validate_token_route():
+  return { "tokenIsValid": True }
 
 @app.route("/api/form", methods=["POST"])
 @validate_token

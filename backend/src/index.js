@@ -99,7 +99,7 @@ const compressImage = async (image) => {
 
 /**
  * @param {Request} req 
- * @param {Response} res 
+ * @param {Response | undefined} res 
  */
 const validateToken = async (req, res) => {
   const token = req.get("token");

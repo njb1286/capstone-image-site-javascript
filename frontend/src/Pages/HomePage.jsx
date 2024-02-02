@@ -11,6 +11,9 @@ import { getCategoryItems, getImageSlice } from "../store/images-actions";
 import LoadingPage from "../Components/LoadingPage";
 import PageNotFound from "./PageNotFound";
 
+import { backendUrl } from "../store/backend-url";
+import { getToken } from "../helpers/token";
+
 const cardHeight = 600;
 
 function HomePage() {
@@ -20,6 +23,7 @@ function HomePage() {
   const hasMore = useSelector(/** @param {ImageState} state */(state) => state.hasMoreItems);
   const imageItems = useSelector(/** @param {ImageState} state */(state) => state.imageItems);
   const loadedCategories = useSelector(/** @param {ImageState} state */(state) => state.loadedCategories);
+  /** @type {Dispatch<ImageActions>} */
   const dispatch = useDispatch();
   const [loadingImages, setLoadingImages] = useState(false);
   const [searchValue, setSearchValue] = useState("");
@@ -129,12 +133,40 @@ function HomePage() {
 
   // Reobserve
   useEffect(() => {
-    
+    const func = async () => {
+      if (searchValue) {
+        try {
+          const loadedIds = imageItems.map(item => item.id).join(",");
 
-    if (loadingPageRef.current) {
-      observer.current.unobserve(loadingPageRef.current);
-      observer.current.observe(loadingPageRef.current);
+          const response = await fetch(`${backendUrl}/search?q=${searchValue}`, {
+            method: "GET",
+            headers: {
+              token: getToken() ?? "",
+              loadedItems: loadedIds,
+            }
+          });
+
+          /** @type {ImageItem[]} */
+          const data = await response.json();
+
+          if (data.length) {
+            dispatch({
+              type: "ADD_IMAGE_ITEMS",
+              payload: data,
+            })
+          }
+        } catch {
+          // Do nothing
+        }
+      }
+
+      if (loadingPageRef.current) {
+        observer.current.unobserve(loadingPageRef.current);
+        observer.current.observe(loadingPageRef.current);
+      }
     }
+
+    func();
   }, [searchValue]);
 
   useEffect(() => {

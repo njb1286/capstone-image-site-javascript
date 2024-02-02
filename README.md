@@ -22,4 +22,9 @@ To turn on the app, follow these steps:
   npm start
   ```
 
+  Or to start the Python backend, navigate to the backend/src directory, and run:
+  ```bash
+  python3 index.py
+  ```
+
 Once both the frontend and backend are running, you should be able to access the app in your browser.

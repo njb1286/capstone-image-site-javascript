@@ -311,6 +311,45 @@ def form():
   return { "message": "Image uploaded successfully!", "id": last_row_id, "date": datetime.now().isoformat() }, 200
 
 @validate_token
+@app.route("/api/update", methods=["POST"])
+def update():
+  id_param = request.form.get("id")
+  title = request.form.get("title")
+  description = request.form.get("description")
+  category = request.form.get("category")
+  image = request.files.get("image")
+
+  small_image = None
+  medium_image = None
+  large_image = None
+
+  if image:
+    large_image = compress_image(image.read(), quality=60)
+    medium_image = compress_image(large_image, width=384, quality=40)
+    small_image = compress_image(medium_image, width=16, quality=40)
+
+  if not id_param:
+    return { "message": "ID is required!" }, 400
+
+  if not title or not description or not category or not id_param:
+    return { "message": "All fields are required! (title, description, category)" }, 400
+
+  db = get_db()
+
+  cursor = db.cursor()
+
+  if image:
+    cursor.execute("UPDATE images SET title = ?, description = ?, category = ?, largeImage = ?, mediumImage = ?, smallImage = ? WHERE id = ?", (title, description, category, large_image, medium_image, small_image, id_param))
+  else:
+    cursor.execute("UPDATE images SET title = ?, description = ?, category = ? WHERE id = ?", (title, description, category, id_param))
+
+  db.commit()
+
+  cursor.close()
+
+  return { "message": "Image updated successfully!" }, 200
+
+@validate_token
 @app.route("/api/generate-password", methods=["GET"])
 def generate_password_route():
   password = generate_password()

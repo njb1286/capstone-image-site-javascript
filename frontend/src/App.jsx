@@ -115,6 +115,9 @@ function App() {
 
   return (
     <BrowserRouter>
+      {fieldComponent}
+      <p style={{ fontSize: "3rem" }}>Input Value = {fieldValue}</p>
+      <p style={{ fontSize: "3rem" }}>Input is valid = {fieldIsValid.toString()}</p>
       {returnedComponent}
     </BrowserRouter>
   )

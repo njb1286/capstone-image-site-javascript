@@ -1,0 +1,67 @@
+@import "../helper-styles.scss";
+
+.form-items {
+  margin-bottom: 5rem;
+}
+
+.upload-form {
+  font-size: 3rem; 
+
+  input, textarea {
+    font-size: 2rem;
+  }
+
+  .btn {
+    font-size: 2rem;
+    width: 15rem;
+  }
+}
+
+.buttons {
+  display: block;
+}
+
+.spinner {
+  visibility: hidden;
+
+  &.visible {
+    visibility: visible;
+  }
+}
+
+@media (max-width: $media-width) {
+  .upload-form {
+    padding: 2rem;
+
+    label {
+      font-size: 2rem;
+    }
+
+    .submit {
+      width: 100%;
+    }
+  }
+
+  .buttons {
+    width: 100%;
+    margin-bottom: 3rem;
+  }
+
+  .dropdown {
+    width: 100%;
+
+    & > button {
+      width: 100%;
+    }
+  }
+}
+
+.categories {
+  font-size: 2rem;
+  width: 25%;
+}
+
+
+.category-item {
+  font-size: 2rem;
+}

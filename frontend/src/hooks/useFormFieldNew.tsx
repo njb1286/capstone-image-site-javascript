@@ -3,59 +3,72 @@ import { Form, FormControl, FormControlProps, FormGroup } from "react-bootstrap"
 
 type ErrorMessage = string | null | undefined;
 
-// All the optional data for the hook
-const defaultOptions = {
-  /**
-  * If true, the input will show the error message if it is invalid on initial render.
-  * You can set the default value of the input by passing in the "defaultValue" prop in
-  * the @var componentProps object defined above. This argument is optional
-  */
-  showInitialValidity: false,
+export function useFormFieldNew<T extends "input" | "textarea", U extends keyof HTMLElementTagNameMap[T]>(
 
-  // The class name of the Bootstrap FormGroup that surrounds the input and labels (optional)
-  className: undefined as string | undefined,
-
-  // The default value of this field
-  defaultValue: undefined,
-}
-
-
-
-export function useFormFieldNew<T extends "input" | "textarea", U extends string | number>(
-  // The element type (as a string, must be "input" or "textarea")
-  elementType: T,
-
-  // The placeholder for the input
+  // The label of the input
   title: string,
 
-  // The props that get used for the FormControl component (constrained to what you can pass in to the FormControl component)
-  componentProps: FormControlProps,
+  /**
+   * The element property that is on the element, that gets used as the value. For example,
+   * if this gets passed in as "value", it will get the "InputElement.value" prop. If it
+   * gets passed in as "files", it gets the "InputElement.files" prop. Very important: this
+   * value must be a prop on the element that gets defined above (in the @var elementType),
+   * which is either an input element, or a textarea element.
+   */
+  elementPropToUseAsValue: U,
 
   /**
-   * A callback function that gives the hook access to the desired property of the element
-   * provided by the user of this hook. Usage examples:
-   * (element) => element.value
-   * (element) => element.checked
-   * (element) => element.files
+   * A callback function that takes in the value on the element (which is chosen by the user
+   * via the @var elementPropToUseAsValue argument), and uses the return type to determine
+   * if the input is valid or not. If it returns a string, then the input field is invalid and
+   * the string is used as the error message. If the value is undefined or null, then the
+   * input field is valid.
    */
-  getElementValue: (elementPointer: HTMLElementTagNameMap[T]) => U,
+  isValidCallback: (value: HTMLElementTagNameMap[T][U]) => ErrorMessage,
 
   /**
-   * A callback function that takes in a reference to the element that gets used in this hook,
-   * and returns a string or null. If it returns a string, that string is used as the error
-   * message, and if it returns null, the input is considered valid. This function gets called
-   * on each key stroke to keep it updated.
+   * The default value of this field. The reason I don't put this in the optional options object
+   * is because of an issue related to an "uncontrolled input" warning that React gives. The 
+   * warning is given because when a state type starts out as undefined, and then gets set to another
+   * value, React thinks the state is uncontrolled.
    */
-  isValidCallback: (value: U) => ErrorMessage,
+  defaultValue: HTMLElementTagNameMap[T][U],
 
-  options = defaultOptions,
+  // All the optional data for the hook
+  options: {
+    showInitialValidity?: boolean,
+    className?: string,
+    props?: FormControlProps | Record<string, any>,
+    elementType: T,
+  } = {
+      /**
+      * If true, the input will show the error message if it is invalid on initial render.
+      * You can set the default value of the input by passing in the "defaultValue" prop in
+      * the @var componentProps object defined above.
+      */
+      showInitialValidity: false,
+
+      // The class name of the Bootstrap FormGroup that surrounds the input and labels
+      className: undefined as string | undefined,
+
+      /**
+       * The props that get used for the FormControl component (constrained to what you can pass in to the FormControl component)
+       * The reason I put the props in the optional options is to keep the arguments lean.
+       */
+      props: {},
+
+      // The element type (as a string, must be "input" or "textarea")
+      elementType: "input" as T
+    },
 ) {
   type InputElementType = HTMLElementTagNameMap[T];
+  type InputValueType = InputElementType[U];
 
   const [errorMessage, setErrorMessage] = useState<ErrorMessage>(null);
   const [isTouched, setIsTouched] = useState(false);
-  const [inputValue, setInputValue] = useState<U | undefined>(options.defaultValue);
+  const [inputValue, setInputValue] = useState<InputValueType>(defaultValue);
   const fieldElementRef = useRef<InputElementType>(null);
+
 
   /**
    * Runs on initial render. If the showInitialValidity is true, it will set the isTouched to true and
@@ -66,13 +79,14 @@ export function useFormFieldNew<T extends "input" | "textarea", U extends string
     if (options.showInitialValidity) {
       setIsTouched(true);
 
-      const value = getElementValue(fieldElementRef.current!);
+      const value = fieldElementRef.current![elementPropToUseAsValue];
       setErrorMessage(isValidCallback(value));
     }
   }, []);
 
   const changeHandler = (event: ChangeEvent<InputElementType>) => {
-    const value = getElementValue(event.target);
+    // Get the prop that was passed in by the user
+    const value = event.target[elementPropToUseAsValue];
 
     setErrorMessage(isValidCallback(value));
 
@@ -86,7 +100,8 @@ export function useFormFieldNew<T extends "input" | "textarea", U extends string
   const blurHandler = (event: FocusEvent<InputElementType>) => {
     setIsTouched(true);
 
-    const value = getElementValue(event.target);
+    // Get the prop that was passed in by the user, and check using it as context
+    const value = event.target[elementPropToUseAsValue];
     setErrorMessage(isValidCallback(value));
   }
 
@@ -100,15 +115,22 @@ export function useFormFieldNew<T extends "input" | "textarea", U extends string
    */
   const isValid = !errorMessage;
 
+  /**
+   * 
+   */
+  const propToSelect = {
+    [elementPropToUseAsValue]: inputValue,
+  }
+
   const component = (
     <FormGroup className={options.className}>
       <Form.Label>{title}</Form.Label>
       <FormControl
-        /** Each prop passed in to the @var componentProps argument */
-        {...componentProps}
+        /** Each prop passed in to the props in the options */
+        {...options.props}
 
         /** The "as" prop takes in a string that represents an HTML element, and renders as that element */
-        as={elementType as ElementType}
+        as={options.elementType as ElementType}
         onChange={changeHandler}
         onFocus={focusHandler}
         onBlur={blurHandler}
@@ -117,7 +139,21 @@ export function useFormFieldNew<T extends "input" | "textarea", U extends string
         isValid={isTouched && isValid}
         isInvalid={isTouched && !isValid}
 
-        value={inputValue}
+        /**
+         * The value prop is a single-key object that has the same key as the @var elementPropToUseAsValue
+         * passed in by the user. The reason for this is so we can get a dynamic prop value from the field
+         * element. For example, if we assume that the input element is an object with the props being keys:
+         * 
+         * InputElement = {
+         *  value: *string value*,
+         *  onClick: *Function value for on click event*,
+         *  [elementPropToUseAsValue]: *Default value passed in by the user (@var defaultValue)*
+         * }
+         * 
+         * This allows us to dynamically set a prop selected by the user on the input element.
+         */
+        {...propToSelect}
+
         ref={fieldElementRef}
       />
 
@@ -131,6 +167,14 @@ export function useFormFieldNew<T extends "input" | "textarea", U extends string
     </FormGroup>
   )
 
-  // Returns the component, the (updated) validity state, the input value, and a function to set the input value
-  return [component, isValid, inputValue, setInputValue] as const;
+  /**
+   * @var component - The component to use
+   * @var isValid - (updated on each key stroke) Whether the input is valid or not
+   * @var setInputValue - A setState function that sets the input value
+   * 
+   * The reason I don't include the @var inputValue in the return statement is to
+   * keep this hook lean. You can just use the values from the form in the submit
+   * event handler using the default HTML form data that gets passed in.
+   */
+  return [component, isValid, setInputValue] as const;
 }

@@ -1,6 +1,6 @@
 // Ignore this file, it is simply type definitions, and doesn't affect the runtime in any way
 
-import { ImageItem as _ImageItem, categories } from "./store/images-store";
+import { ImageItem as _ImageItem } from "./store/images-store";
 import {
   FormEvent as _FormEvent,
   ChangeEvent as _ChangeEvent,
@@ -12,6 +12,9 @@ import {
 } from "react";
 import { Action, Dispatch as _Dispatch } from "@reduxjs/toolkit";
 import { FormControlProps as _FormControlProps } from "react-bootstrap";
+
+const categories = ["Animals", "Architecture", "Food", "Nature", "Other", "People", "Sports", "Technology", "Travel"] as const;
+export type Category = typeof categories[number];
 
 declare global {
   // Utilities for this file
@@ -33,7 +36,7 @@ declare global {
 
   // Declaring native types as global
   type ImageItem = _ImageItem;
-  type FormEvent = _FormEvent;
+  type FormEvent<T extends HTMLElement = HTMLFormElement> = _FormEvent;
   type ChangeEvent = _ChangeEvent;
   type ReactMouseEvent<T = Element, U = MouseEvent> = _MouseEvent<T, U>;
   type MutableRefObject<T extends HTMLElement> = _MutableRefObject<T>;
@@ -45,7 +48,7 @@ declare global {
 
 
   // Types
-  type Category = typeof categories[number];
+  
   type SearchBarCategory = Category | "All";
   type SearchBarSort = "Date" | "Title" | "Category";
 

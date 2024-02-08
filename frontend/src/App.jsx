@@ -7,6 +7,7 @@ import LoadingPage from "./Components/LoadingPage";
 import { validateToken } from "./helpers/validateToken";
 import { getToken } from "./helpers/token";
 import { useDispatch, useSelector } from "react-redux";
+import UploadForm from "./Components/UploadForm";
 
 const AboutPage = lazy(() => import("./Pages/AboutPage"));
 const ContentPage = lazy(() => import("./Pages/ContentPage"));
@@ -100,6 +101,7 @@ function App() {
             <Route element={<Suspense fallback={loadingPage}><UpdatePage /></Suspense>} path="/update" />
             <Route element={<Suspense fallback={loadingPage}><GeneratePasswordPage /></Suspense>} path="/generate-password" />
             <Route element={<Suspense fallback={loadingPage}><PageNotFound hasLink message="Hmmm... we couldn't find that page" /></Suspense>} path="/*" />
+            <Route element={<UploadForm />} path="/upload-form" />
           </Routes>
         </div>
 
@@ -115,9 +117,6 @@ function App() {
 
   return (
     <BrowserRouter>
-      {fieldComponent}
-      <p style={{ fontSize: "3rem" }}>Input Value = {fieldValue}</p>
-      <p style={{ fontSize: "3rem" }}>Input is valid = {fieldIsValid.toString()}</p>
       {returnedComponent}
     </BrowserRouter>
   )

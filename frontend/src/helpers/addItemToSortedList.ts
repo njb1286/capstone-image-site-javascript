@@ -3,7 +3,7 @@
  * @param {T[]} array The sorted input array
  * @param {T} item The item to add to the sorted array
  * @param {(item: T) => number} selector A callback function to select the property of each item on the array to compare. Note that each item in the array should have this property
- * @returns A new array with the item added to the sorted array
+ * @returns A new array with the item added to the sorted array, or null if the item is already in the array
  * 
  * This function iterates over the input sorted array, finds the sorted index, and
  * inserts the item there instead of adding the item and resorting the array. This is more efficient.
@@ -25,9 +25,14 @@ export const addItemToSortedList = <T>(array: T[], item: T, selector: (item: T) 
   };
 
   for (let i = 0; i < array.length; i++) {
+    const newItemId = selector(item);
+    const currentItemId = selector(array[i]);
+    
+    // Return null if the item is already in the array
+    if (newItemId === currentItemId) return null;
 
     // If the current index is at the correct sorted position, add the item there
-    if (selector(item) < selector(array[i])) {
+    if (newItemId < currentItemId) {
       arrayCopy.splice(i, 0, item);
       return arrayCopy;
     }

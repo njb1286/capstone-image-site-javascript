@@ -62,7 +62,7 @@ declare global {
     tempPassword: string
   }
 
-  type ImageActions = ActionCreator<{
+  export type ImageActions = ActionCreator<{
     SET_IMAGE_ITEMS: ImageItem[];
     ADD_IMAGE_ITEM: ImageItem;
     ADD_IMAGE_ITEMS: ImageItem[];

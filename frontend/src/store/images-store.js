@@ -1,4 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
+import { addItemToSortedList, addItemsToSortedList } from "../helpers/addItemToSortedList";
 
 /**
  * @type {["Animals", "Architecture", "Food", "Nature", "Other", "People", "Sports", "Technology", "Travel"]}
@@ -6,8 +7,13 @@ import { configureStore } from "@reduxjs/toolkit";
 export const categories = ["Animals", "Architecture", "Food", "Nature", "Other", "People", "Sports", "Technology", "Travel"];
 
 export class ImageItem {
+  title;
+  description;
+  id;
+  date;
+  category;
+  
   /**
-   * 
    * @param {string} title 
    * @param {string} description 
    * @param {number} id 
@@ -24,11 +30,8 @@ export class ImageItem {
   }
 }
 
-/**
- * @type {ImageState}
- */
-
 const initialState = {
+  /** @type {ImageItem[]} */
   imageItems: [],
 
   modalIsVisible: false,
@@ -49,75 +52,6 @@ const initialState = {
 */
 
 /**
- * @param {ImageState} state 
- * @param {ImageItem} item 
- */
-const insertImageItem = (state, item) => {
-  const imageItemsCopy = [...state.imageItems];
-
-  let insertionIndex = -1;
-
-  for (let i = 0; i < imageItemsCopy.length; i++) {
-    if (item.id < imageItemsCopy[i].id && insertionIndex === -1) {
-      insertionIndex = i;
-      continue;
-    }
-
-    if (insertionIndex !== -1 && imageItemsCopy[i].id === item.id) {
-      return null;
-    }
-  }
-
-  if (insertionIndex !== -1) {
-    imageItemsCopy.splice(insertionIndex, 0, item);
-    return imageItemsCopy;
-  }
-
-  imageItemsCopy.push(item);
-  return imageItemsCopy;
-}
-
-/**
- * @param {ImageState} state 
- * @param {ImageItem[]} items 
- */
-// The reason I used a for loop instead of a forEach method is so that I could break out of the loop for efficiency
-const insertImageItems = (state, items) => {
-  const imageItemsCopy = [...state.imageItems];
-
-  for (const item of items) {
-    let insertionIndex = -1;
-    let hasCopy = false;
-
-    for (let i = 0; i < imageItemsCopy.length; i++) {
-      if (hasCopy) break;
-
-      if (item.id === imageItemsCopy[i].id) {
-        hasCopy = true;
-        break;
-      };
-
-      if (insertionIndex !== -1) continue;
-
-      if (item.id < imageItemsCopy[i].id) {
-        insertionIndex = i;
-      }
-    }
-
-    if (hasCopy) continue;
-
-    if (insertionIndex === -1) {
-      imageItemsCopy.push(item);
-      continue;
-    };
-
-    imageItemsCopy.splice(insertionIndex, 0, item);
-  }
-
-  return imageItemsCopy;
-}
-
-/**
  * @param {ImageActions} action 
  */
 const imagesReducer = (state = initialState, action) => {
@@ -134,7 +68,7 @@ const imagesReducer = (state = initialState, action) => {
     }
 
     case "ADD_IMAGE_ITEM": {
-      const newImageItems = insertImageItem(state, action.payload);
+      const newImageItems = addItemToSortedList(state.imageItems, action.payload, (item) => item.id);
 
       if (!newImageItems) return state;
 
@@ -145,7 +79,7 @@ const imagesReducer = (state = initialState, action) => {
     }
 
     case "ADD_IMAGE_ITEMS": {
-      const newImageItems = insertImageItems(state, action.payload);
+      const newImageItems = addItemsToSortedList(state.imageItems, action.payload, (item) => item.id);
 
       return {
         ...state,

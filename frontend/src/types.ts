@@ -1,4 +1,6 @@
-import { Category } from "./types.d";
+import { categories } from "./types/category";
+
+export type Category = typeof categories[number];
 
 export type ActionCreator<T extends Record<string, any>> = {
   [K in keyof T]: {
@@ -28,3 +30,4 @@ export type ImageActions = ActionCreator<{
   "HAS_NO_MORE_ITEMS",
   "INITIAL_RENDER"
 ]>;
+

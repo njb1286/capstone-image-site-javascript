@@ -7,7 +7,11 @@ import LoadingPage from "./Components/LoadingPage";
 import { validateToken } from "./helpers/validateToken";
 import { getToken } from "./helpers/token";
 import { useDispatch, useSelector } from "react-redux";
+
+// TODO: Remove these imports
 import UploadForm from "./Components/UploadForm";
+import NewHomePage from "./Pages/NewHomePage";
+
 
 const AboutPage = lazy(() => import("./Pages/AboutPage"));
 const ContentPage = lazy(() => import("./Pages/ContentPage"));
@@ -102,6 +106,7 @@ function App() {
             <Route element={<Suspense fallback={loadingPage}><GeneratePasswordPage /></Suspense>} path="/generate-password" />
             <Route element={<Suspense fallback={loadingPage}><PageNotFound hasLink message="Hmmm... we couldn't find that page" /></Suspense>} path="/*" />
             <Route element={<UploadForm />} path="/upload-form" />
+            <Route element={<NewHomePage />} path="/homepage" />
           </Routes>
         </div>
 

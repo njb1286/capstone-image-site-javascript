@@ -4,7 +4,6 @@ import { addItemToSortedList, addItemsToSortedList } from "../helpers/addItemToS
 /**
  * @type {["Animals", "Architecture", "Food", "Nature", "Other", "People", "Sports", "Technology", "Travel"]}
  */
-export const categories = ["Animals", "Architecture", "Food", "Nature", "Other", "People", "Sports", "Technology", "Travel"];
 
 export class ImageItem {
   title;

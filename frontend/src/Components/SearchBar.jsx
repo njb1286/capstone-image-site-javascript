@@ -1,5 +1,5 @@
 import classes from "./SearchBar.module.scss";
-import { categories } from "../store/images-store";
+import { categories } from "../types/category";
 import { InputGroup, Spinner } from "react-bootstrap";
 import DropDown from "./DropDown";
 import { ChangeEvent, useEffect, useState } from "react";

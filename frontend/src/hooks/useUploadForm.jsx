@@ -3,7 +3,7 @@ import classes from "./UploadForm.module.scss";
 import { Button, ButtonGroup, Form, FormControl, FormGroup, Spinner } from "react-bootstrap";
 import { useFormField } from "./useFormField";
 import { useNavigate } from "react-router";
-import { categories } from "../store/images-store";
+import { categories } from "../types/category";
 import DropDown from "../Components/DropDown";
 
 /**

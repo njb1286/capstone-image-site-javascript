@@ -20,36 +20,35 @@ import { useState } from "react";
  * @param {DropDownProps<T, U>} props 
  */
 
-function DropDown(props) {
-  /**
-   * @type {[T[number], (category: T[number]) => void}
-   */
-  const [category, setCategory] = useState(props.default);
+type DropDownProps<T extends readonly string[], U extends T[number]> = {
+  categories: T;
+  defaultValue: U;
+  onSelect?: (category: T[number]) => void;
+  title?: string;
+  className?: string;
+}
 
-  /**
-   * @param {ReactMouseEvent<HTMLButtonElement>} event 
-   */
-  const selectCategory = (event) => {
+function DropDown<T extends readonly string[], U extends T[number]>({ categories, defaultValue, onSelect, title, className }: Readonly<DropDownProps<T, U>>) {
+  const [category, setCategory] = useState<T[number]>(defaultValue);
+
+  const selectCategory = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     event.preventDefault();
 
-    /**
-     * @type {HTMLButtonElement}
-     */
-    const element = event.target;
+    const element = event.target as HTMLButtonElement;
 
-    setCategory(element.textContent);
+    setCategory(element.textContent as T[number]);
 
-    props.onSelect?.(element.textContent);
+    onSelect?.(element.textContent as T[number]);
   }
 
   return (
-    <Dropdown className={`${classes.dropdown} ${props.className ?? ""}`}>
+    <Dropdown className={`${classes.dropdown} ${className ?? ""}`}>
       <Dropdown.Toggle className={classes.categories}>
-        {props.title && `${props.title}: `}{category}
+        {title && `${title}: `}{category}
       </Dropdown.Toggle>
 
       <Dropdown.Menu className={`dropdown-menu ${classes.menu}`}>
-        {props.categories.map(categoryItem => {
+        {categories.map(categoryItem => {
           return <Dropdown.Item className={`${classes["category-item"]} ${category.toLowerCase() === categoryItem.toLowerCase() ? classes.active : ""}`} as={"button"} onClick={selectCategory} key={`category_${categoryItem}`}>{categoryItem}</Dropdown.Item>
         })}
       </Dropdown.Menu>

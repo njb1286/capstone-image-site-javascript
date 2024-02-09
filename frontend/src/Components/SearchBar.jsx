@@ -63,8 +63,8 @@ function SearchBar(props) {
     <div className={classes["search-bar-wrapper"]}>
       <InputGroup className={classes["search-section"]}>
         <input onChange={inputHandler} type="text" className={`form-control ${classes["search-input"]}`} placeholder="Search..." />
-        <DropDown title="Sort by" onSelect={sortHandler} categories={searchBarSorts} default="Date" />
-        <DropDown title="Filter" onSelect={categoryHandler} categories={searchBarCategories} default="All" />
+        <DropDown title="Sort by" onSelect={sortHandler} categories={searchBarSorts} defaultValue="Date" />
+        <DropDown title="Filter" onSelect={categoryHandler} categories={searchBarCategories} defaultValue="All" />
       </InputGroup>
       {isSearching && <div className={classes["spinner-wrapper"]}><Spinner animation="border" variant="primary" /></div>}
     </div>

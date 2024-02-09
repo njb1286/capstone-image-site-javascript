@@ -181,7 +181,7 @@ function HomePage() {
     if (cardsRef.current) {
       const cardCount = getCardsInView(cardsRef.current);
 
-      if (!isInitialRender) initialRender(cardCount);
+      if (!isInitialRender && mounted) initialRender(cardCount);
 
       updateCardData();
 

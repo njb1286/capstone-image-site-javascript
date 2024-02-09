@@ -9,4 +9,4 @@ export const TECHNOLOGY = "Technology";
 export const TRAVEL = "Travel";
 export const ALL = "All";
 
-export const categories = ["Animals", "Architecture", "Food", "Nature", "Other", "People", "Sports", "Technology", "Travel"];
+export const categories = ["Animals", "Architecture", "Food", "Nature", "Other", "People", "Sports", "Technology", "Travel"] as const;

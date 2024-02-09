@@ -180,7 +180,7 @@ export function useUploadForm(props) {
 
           <FormGroup>
             <Form.Label>Category</Form.Label>
-            <DropDown className={classes.dropdown} onSelect={setCategory} categories={categories} default={category} />
+            <DropDown className={classes.dropdown} onSelect={setCategory} categories={categories} defaultValue={category} />
           </FormGroup>
         </div>
 

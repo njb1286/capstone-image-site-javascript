@@ -1,8 +1,9 @@
-import { Form, FormGroup, Spinner, ButtonGroup, Button } from "react-bootstrap";
+import { Form, ButtonGroup, Button } from "react-bootstrap";
 import { useFormFieldNew } from "../hooks/useFormFieldNew";
-import { Category, categories } from "../types.d";
+import { Category } from "../types.d";
 import classes from "./UploadForm.module.scss";
-import { useSelector } from "react-redux";
+import DropDown from "./DropDown";
+import { categories } from "../types/category";
 import { useState } from "react";
 
 type UploadFormProps = {
@@ -14,6 +15,8 @@ type UploadFormProps = {
 }
 
 const UploadForm = (props: UploadFormProps) => {
+  const [category, setCategory] = useState<Category>("Other");
+
   const [titleComponent, titleIsValid] = useFormFieldNew(
     "Title",
     "value",
@@ -62,35 +65,22 @@ const UploadForm = (props: UploadFormProps) => {
     }
   )
 
-  const [sampleComponent, isSampleValid, setSampleValue] = useFormFieldNew(
-    "Some field",
-    "value",
-    (currentValue) => {
-      if (currentValue.length < 5) {
-        return "Must be at least 5 characters long"
-      }
-    },
-    "",
-    {
-      props: {
-        name: "sample"
-      },
-      elementType: "input",
-    }
-  )
-
   const submitHandler = (event: FormEvent) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget as HTMLFormElement);
     const title = formData.get("title");
     const description = formData.get("description");
-    const category = formData.get("category");
     const image = formData.get("image");
-    const sample = formData.get("sample");
 
+    
 
     console.log("Title", title);
-    console.log("Sample", sample);
+    console.log("Category", category);
+    
+  }
+
+  const categorySelectHandler = (category: Category) => {
+    setCategory(category);
   }
 
   return <div className={classes["upload-form"]}>
@@ -98,7 +88,7 @@ const UploadForm = (props: UploadFormProps) => {
     <div className={classes["form-items"]}>
       {titleComponent}
       {descriptionComponent}
-      {sampleComponent}
+      <DropDown onSelect={categorySelectHandler} categories={categories} defaultValue="Other" />
 
       {/* <FormGroup>
         <Form.Label>Image</Form.Label>

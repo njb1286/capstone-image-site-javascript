@@ -1,6 +1,6 @@
 // Ignore this file, it is simply type definitions, and doesn't affect the runtime in any way
 
-import { ImageItem as _ImageItem } from "./store/images-store";
+// import { ImageItem as _ImageItem } from "./store/images-store";
 import {
   FormEvent as _FormEvent,
   ChangeEvent as _ChangeEvent,
@@ -35,7 +35,7 @@ declare global {
 
 
   // Declaring native types as global
-  type ImageItem = _ImageItem;
+  // type ImageItem = _ImageItem;
   type FormEvent<T extends HTMLElement = HTMLFormElement> = _FormEvent;
   type ChangeEvent = _ChangeEvent;
   type ReactMouseEvent<T = Element, U = MouseEvent> = _MouseEvent<T, U>;

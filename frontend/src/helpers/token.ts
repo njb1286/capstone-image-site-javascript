@@ -3,7 +3,7 @@ const location = "_token";
 /**
  * @param {string} token 
  */
-export const setToken = (token) => {
+export const setToken = (token: string) => {
   localStorage.setItem(location, token);
 }
 
@@ -14,7 +14,7 @@ export const getToken = () => {
 /**
  * @param {string} method 
  */
-export const getRequestData = (method) => {
+export const getRequestData = (method: string) => {
   return {
     method,
     headers: {

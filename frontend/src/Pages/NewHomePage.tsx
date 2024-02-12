@@ -12,7 +12,7 @@ import { ImageItem } from "../store/images-store";
 const NewHomePage = () => {
   const loadingElementRef = useRef<HTMLDivElement>(null);
 
-  const { items, renderNext } = useInfiniteLoad(async (offset, limit) => {
+  const fetchRequest = async (offset: number, limit: number) => {
     const response = await fetch(`${backendUrl}/get-slice?offset=${offset}&limit=${limit}`, {
       method: "GET",
       headers: {
@@ -20,11 +20,19 @@ const NewHomePage = () => {
       }
     });
 
-    const data = await response.json() as {hasMore: boolean, data: ImageItem[]};
+    const data = await response.json() as { hasMore: boolean, data: ImageItem[] };
 
     return data;
-  },
-  (item) => item.id);
+  }
+
+  const { items, renderNext } = useInfiniteLoad(
+    fetchRequest,
+    (item) => item.id,
+    {
+      initialItemCount: 10,
+      nextItemCount: 2
+    }
+  );
 
   useEffect(() => {
     console.log("Items", items);

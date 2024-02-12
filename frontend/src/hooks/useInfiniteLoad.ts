@@ -9,7 +9,7 @@ type InfiniteLoadOptions<T> = {
 
 const defaultInfiniteLoadOptions: InfiniteLoadOptions<any> = {
   initialItemCount: 10,
-  nextItemCount: 6,
+  nextItemCount: 10,
   initialItems: [],
 }
 
@@ -126,6 +126,7 @@ export const useInfiniteLoad = <T>(fetchRequestCallback: FetchRequest<T>, select
 
   async function renderNext() {
     if (!state.hasMore) return;
+    if (state.loadingItems) return;
 
     dispatch({
       type: "SET_LOADING_ITEMS",

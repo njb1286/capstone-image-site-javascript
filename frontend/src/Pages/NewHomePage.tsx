@@ -8,15 +8,19 @@ import { getToken } from "../helpers/token";
 import { ImageItem } from "../store/images-store";
 import Card from "../Components/Card";
 
+const cardHeight = 600;
+
 const NewHomePage = () => {
   const loadingElementRef = useRef<HTMLDivElement>(null);
+  const cardsElementRef = useRef<HTMLDivElement>(null);
+  const [cardRenderCount, setCardRenderCount] = useState(9);
   const [mounted, setMounted] = useState(false);
 
   const { items, renderNext, hasMore } = useInfiniteLoad(
     fetchRequest,
     (item) => item.id,
     {
-      renderCount: 10,
+      renderCount: cardRenderCount,
     }
   );
 
@@ -37,6 +41,15 @@ const NewHomePage = () => {
     if (!mounted) return;
     if (loadingElementRef.current) {
       observer.current.observe(loadingElementRef.current);
+    }
+
+    if (cardsElementRef.current) {
+      const cardsElement = cardsElementRef.current;
+      const elementHeight = cardsElement.clientHeight;
+      
+
+      console.log("Cards Height", elementHeight);
+      console.log("Cards Element", cardsElement);
     }
   }, [mounted]);
 
@@ -60,71 +73,16 @@ const NewHomePage = () => {
     return data;
   }
 
-  // // const [initialRendered, setInitialRendered] = useState(false);
-  // const [dummy, setDummy] = useState<number[]>([]);
-
-  // // Use a ref instead of state because state doesn't change in the intersection observer
-  // const initialRendered = useRef(false);
-
-  // const isRenderingCards = useRef(false);
-
-  // const observer = useRef(new IntersectionObserver(([entry]) => {    
-  //   if (isRenderingCards.current) return;
-
-  //   if (!entry.isIntersecting) return;    
-
-  //   if (!initialRendered.current) {
-  //     initialRender();
-  //     return;
-  //   }
-
-  //   renderNext();
-  // },
-  // {
-  //   rootMargin: "0px",
-  //   threshold: 0.1
-  // }))
-
-  // function initialRender() {
-  //   isRenderingCards.current = true;
-  //   initialRendered.current = true; 
-  //   console.log("Initial Render"); 
-  //   isRenderingCards.current = false;
-  // }
-
-  // function renderNext() {
-  //   // setIsRenderingCards(true);
-  //   isRenderingCards.current = true;
-  //   console.log("Render next");
-  // }
-
-  // useEffect(() => {
-  //   observer.current.observe(loadingElementRef.current!);
-
-  //   setTimeout(() => {
-  //     const arr: number[] = [];
-  //     for (let i = 0; i < 200; i++) {
-  //       arr.push(i);
-  //     }
-  //     setDummy(arr);
-  //   }, 1000);
-  // }, []);
-
   return (
     <>
       <SearchBar />
-      <div className={classes["cards-wrapper"]}>
-        {/* 
-        <div className={`${classes.cards}`}>
-          {dummy.map((_, index) => <h1 key={index}>{index}</h1>)}
-          </div>
-        */}
-        <div className={classes.cards}>
+      <div className={classes["cards-wrapper"]} ref={cardsElementRef}>
+        <div className={`${classes.cards} ${classes.grid}`}>
           {items.map((item, index) => {
-            return <Card {...item} itemIndex={index} stateToListenTo={null} key={`card_${index}`} />
+            return <Card {...item} itemIndex={index} stateToListenTo={items} key={`card_${index}`} />
           })}
         </div>
-        <LoadingPage ref={loadingElementRef} fullScreen={false} className={`${classes["loading-images"]} ${classes.visible}`} />
+        <LoadingPage ref={loadingElementRef} fullScreen={false} className={`${classes["loading-images"]} ${hasMore ? classes.visible : ""}`} />
       </div>
     </>
   )

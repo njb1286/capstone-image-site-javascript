@@ -4,9 +4,11 @@
   height: 100%;
   overflow-y: scroll;
 
-  .cards.grid {
+  .cards {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
   }
 }
 
@@ -30,10 +32,10 @@
   .cards-wrapper {
     overflow-y: unset;
 
-    .cards.grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      overflow-y: unset;
-    }
+    // .cards.grid {
+    //   display: grid;
+    //   grid-template-columns: 1fr;
+    //   overflow-y: unset;
+    // }
   }
 }

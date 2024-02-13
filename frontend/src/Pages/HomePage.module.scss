@@ -8,7 +8,6 @@
     display: grid;
     display: flex;
     flex-wrap: wrap;
-    justify-content: center;
   }
 }
 
@@ -31,11 +30,5 @@
 @media (max-width: $media-width) {
   .cards-wrapper {
     overflow-y: unset;
-
-    // .cards.grid {
-    //   display: grid;
-    //   grid-template-columns: 1fr;
-    //   overflow-y: unset;
-    // }
   }
 }

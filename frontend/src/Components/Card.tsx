@@ -3,6 +3,7 @@ import classes from "./Card.module.scss";
 import { CardFooter, CardHeader, CardText } from "react-bootstrap";
 import { useLazyImage } from "../hooks/useLazyImage";
 import { useEffect } from "react";
+import { ImageItem } from "../store/images-store";
 
 /**
  * @template T
@@ -16,7 +17,12 @@ import { useEffect } from "react";
  * @param {CardProps<T> & ImageItem} props
  */
 
-function Card(props) {
+type CardProps<T> = {
+  itemIndex: number | undefined;
+  stateToListenTo: T;
+} & ImageItem;
+
+function Card<T>(props: CardProps<T>) {
   const { title, id } = props;
 
   const [lazyImageComponent, reobserve] = useLazyImage({title, id, size: "medium"});

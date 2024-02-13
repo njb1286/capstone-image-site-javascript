@@ -6,18 +6,46 @@ import { useInfiniteLoad } from "../hooks/useInfiniteLoad";
 import { backendUrl } from "../store/backend-url";
 import { getToken } from "../helpers/token";
 import { ImageItem } from "../store/images-store";
-
-// const cardHeight = 600;
+import Card from "../Components/Card";
 
 const NewHomePage = () => {
   const loadingElementRef = useRef<HTMLDivElement>(null);
+  const [mounted, setMounted] = useState(false);
 
-  async function fetchRequest(offset: number, limit: number) {  
+  const { items, renderNext, hasMore } = useInfiniteLoad(
+    fetchRequest,
+    (item) => item.id,
+    {
+      renderCount: 10,
+    }
+  );
+
+  const observer = useRef(new IntersectionObserver(([entry]) => {
+    if (!entry.isIntersecting) return;
+    renderNext();
+  }, {
+    rootMargin: "0px",
+    threshold: 0.1
+  }));
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Make sure the component is mounted before observing the loading element
+  useEffect(() => {
+    if (!mounted) return;
+    if (loadingElementRef.current) {
+      observer.current.observe(loadingElementRef.current);
+    }
+  }, [mounted]);
+
+  async function fetchRequest(offset: number, limit: number) {
     const loadedItems = items
       .map(item => item.id)
       // Ensure that the scope of the loaded items is within the offset and limit
       .filter(id => id >= offset && id <= offset + limit)
-      .join(",");  
+      .join(",");
 
     const response = await fetch(`${backendUrl}/get-slice?offset=${offset}&limit=${limit}`, {
       method: "GET",
@@ -31,26 +59,6 @@ const NewHomePage = () => {
 
     return data;
   }
-
-  const { items, renderNext } = useInfiniteLoad(
-    fetchRequest,
-    (item) => item.id,
-    {
-      initialItemCount: 10,
-      nextItemCount: 2,
-      initialItems: [{
-        id: 15,
-        category: "Animals",
-        date: "2021-01-01",
-        title: "Dog",
-        description: "A dog",
-      }]
-    }
-  );
-
-  useEffect(() => {
-    console.log("Items", items);
-  }, [items])
 
   // // const [initialRendered, setInitialRendered] = useState(false);
   // const [dummy, setDummy] = useState<number[]>([]);
@@ -106,12 +114,16 @@ const NewHomePage = () => {
     <>
       <SearchBar />
       <div className={classes["cards-wrapper"]}>
-        <button onClick={renderNext}>Render more</button>
         {/* 
         <div className={`${classes.cards}`}>
           {dummy.map((_, index) => <h1 key={index}>{index}</h1>)}
           </div>
         */}
+        <div className={classes.cards}>
+          {items.map((item, index) => {
+            return <Card {...item} itemIndex={index} stateToListenTo={null} key={`card_${index}`} />
+          })}
+        </div>
         <LoadingPage ref={loadingElementRef} fullScreen={false} className={`${classes["loading-images"]} ${classes.visible}`} />
       </div>
     </>

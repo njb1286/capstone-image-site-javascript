@@ -2,8 +2,7 @@ import { useEffect, useReducer, useRef } from "react";
 import { addItemsToSortedList } from "../helpers/addItemToSortedList";
 
 type InfiniteLoadOptions<T> = {
-  initialItemCount?: number;
-  nextItemCount?: number;
+  renderCount?: number;
   initialItems?: T[];
 }
 
@@ -24,6 +23,7 @@ type InfiniteLoadStateAction<T> = ActionCreator<{
   }
   SET_LOADING_ITEMS: boolean;
   SET_ERROR: boolean;
+  SET_ITEMS: T[];
 }>
 
 const initialState: InfiniteLoadState<any> = {
@@ -59,6 +59,12 @@ function infiniteLoadReducer<T>(state: InfiniteLoadState<T> = initialState, acti
         error: action.payload,
       }
 
+    case "SET_ITEMS":      
+      return {
+        ...state,
+        items: action.payload,
+      }
+
     default:
       return state;
   }
@@ -74,18 +80,25 @@ function infiniteLoadReducer<T>(state: InfiniteLoadState<T> = initialState, acti
  */
 
 export const useInfiniteLoad = <T>(fetchRequestCallback: FetchRequest<T>, selector: (item: T) => number, options: InfiniteLoadOptions<T> = {
-  initialItemCount: 10,
+  renderCount: 10,
   initialItems: undefined,
-  nextItemCount: 10,
 }) => {
-  
+
   const [state, dispatch] = useReducer(infiniteLoadReducer<T>, {
     ...initialState,
     items: options.initialItems ?? [],
   });
 
-  const loaded = useRef(false);
+  /* 
+    The reason for using a ref instead of state is because the state doesn't change on update
+    inside the renderNext function, so we update the value in a ref instead
+  */
+  const loadedItems = useRef(0);
 
+  useEffect(() => {
+    loadedItems.current = state.items.length;
+  }, [state.items]);
+  
   // The point of this is for safety in case the fetchRequestCallback provided by the consumer of this hook throws an error
   async function fetchRequestWrapper(offset: number, limit: number) {
     try {
@@ -99,43 +112,15 @@ export const useInfiniteLoad = <T>(fetchRequestCallback: FetchRequest<T>, select
     }
   }
 
-  useEffect(() => {
-    if (loaded.current) return;
-
-    initialRender();
-    loaded.current = true;
-  }, []);
-
-  async function initialRender() {
-    const itemsToRenderCount = options?.initialItemCount ?? 10;
-
-    dispatch({
-      type: "SET_LOADING_ITEMS",
-      payload: true
-    });
-
-    const data = await fetchRequestWrapper(0, itemsToRenderCount);
-
-    dispatch({
-      type: "LOAD_NEXT",
-      payload: {
-        items: data.data,
-        hasMore: data.hasMore,
-        selector
-      }
-    });
-  }
-
   async function renderNext() {
-    if (!state.hasMore) return;
-    if (state.loadingItems) return;
+    if (!state.hasMore && !state.loadingItems) return;
 
     dispatch({
       type: "SET_LOADING_ITEMS",
       payload: true,
-    });
+    });    
 
-    const data = await fetchRequestWrapper(state.items.length, options?.nextItemCount ?? 10);
+    const data = await fetchRequestWrapper(loadedItems.current, options?.renderCount ?? 10);        
 
     dispatch({
       type: "LOAD_NEXT",

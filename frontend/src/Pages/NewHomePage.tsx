@@ -12,11 +12,18 @@ import { ImageItem } from "../store/images-store";
 const NewHomePage = () => {
   const loadingElementRef = useRef<HTMLDivElement>(null);
 
-  const fetchRequest = async (offset: number, limit: number) => {
+  async function fetchRequest(offset: number, limit: number) {  
+    const loadedItems = items
+      .map(item => item.id)
+      // Ensure that the scope of the loaded items is within the offset and limit
+      .filter(id => id >= offset && id <= offset + limit)
+      .join(",");  
+
     const response = await fetch(`${backendUrl}/get-slice?offset=${offset}&limit=${limit}`, {
       method: "GET",
       headers: {
         token: getToken() ?? "",
+        loadedItems,
       }
     });
 
@@ -30,7 +37,14 @@ const NewHomePage = () => {
     (item) => item.id,
     {
       initialItemCount: 10,
-      nextItemCount: 2
+      nextItemCount: 2,
+      initialItems: [{
+        id: 15,
+        category: "Animals",
+        date: "2021-01-01",
+        title: "Dog",
+        description: "A dog",
+      }]
     }
   );
 

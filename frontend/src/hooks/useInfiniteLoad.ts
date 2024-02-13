@@ -7,12 +7,6 @@ type InfiniteLoadOptions<T> = {
   initialItems?: T[];
 }
 
-const defaultInfiniteLoadOptions: InfiniteLoadOptions<any> = {
-  initialItemCount: 10,
-  nextItemCount: 10,
-  initialItems: [],
-}
-
 type InfiniteLoadState<T> = {
   items: T[];
   hasMore: boolean;
@@ -79,8 +73,16 @@ function infiniteLoadReducer<T>(state: InfiniteLoadState<T> = initialState, acti
  * API requirement: The API endpoint must return an object with a data property that is an array of items and a hasMore property that is a boolean
  */
 
-export const useInfiniteLoad = <T>(fetchRequestCallback: FetchRequest<T>, selector: (item: T) => number, options: InfiniteLoadOptions<T> = defaultInfiniteLoadOptions) => {
-  const [state, dispatch] = useReducer(infiniteLoadReducer<T>, initialState);
+export const useInfiniteLoad = <T>(fetchRequestCallback: FetchRequest<T>, selector: (item: T) => number, options: InfiniteLoadOptions<T> = {
+  initialItemCount: 10,
+  initialItems: undefined,
+  nextItemCount: 10,
+}) => {
+  
+  const [state, dispatch] = useReducer(infiniteLoadReducer<T>, {
+    ...initialState,
+    items: options.initialItems ?? [],
+  });
 
   const loaded = useRef(false);
 

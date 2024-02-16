@@ -152,8 +152,6 @@ def get_slice():
   base_params = (limit_param, offset_param)
   query_params = ()
 
-  print("Query", query)
-
   if len(split_loaded_items) > 0:
     query_params = (*split_loaded_items, *query_params)
 

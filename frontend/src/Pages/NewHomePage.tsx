@@ -9,18 +9,18 @@ import { ImageItem } from "../store/images-store";
 import Card from "../Components/Card";
 
 const cardHeight = 600;
+const cardWidth = 455;
 
 const NewHomePage = () => {
   const loadingElementRef = useRef<HTMLDivElement>(null);
   const cardsElementRef = useRef<HTMLDivElement>(null);
-  const [cardRenderCount, setCardRenderCount] = useState(9);
   const [mounted, setMounted] = useState(false);
 
-  const { items, renderNext, hasMore } = useInfiniteLoad(
+  const { items, renderNext, hasMore, setCardRenderCount, initialRender } = useInfiniteLoad(
     fetchRequest,
     (item) => item.id,
     {
-      renderCount: cardRenderCount,
+      renderCount: 9,
     }
   );
 
@@ -46,11 +46,15 @@ const NewHomePage = () => {
     if (cardsElementRef.current) {
       const cardsElement = cardsElementRef.current;
       const elementHeight = cardsElement.clientHeight;
-      
+      const cardsInWidth = Math.floor(cardsElement.clientWidth / cardWidth);
+      const cardsInHeight = Math.floor(elementHeight / cardHeight) + 3;
 
-      console.log("Cards Height", elementHeight);
-      console.log("Cards Element", cardsElement);
+      const cardsToRender = cardsInWidth * cardsInHeight;
+      
+      setCardRenderCount(cardsToRender);
+      initialRender(cardsToRender);
     }
+
   }, [mounted]);
 
   async function fetchRequest(offset: number, limit: number) {

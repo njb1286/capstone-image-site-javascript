@@ -131,6 +131,8 @@ def login():
 def get_slice():
   limit_param = request.args.get("limit")
   offset_param = request.args.get("offset")
+  category_param = request.args.get("category")
+  search_param = request.args.get("search")
   loaded_items = request.headers.get("loadedItems") or ""
 
   if not limit_param or not offset_param:
@@ -138,11 +140,30 @@ def get_slice():
 
   exclude_vars, split_loaded_items = exclude_query(loaded_items)
 
-  query = f"SELECT {items_to_get} FROM images WHERE id NOT IN ({exclude_vars}) ORDER BY id ASC LIMIT ? OFFSET ?"
-  query_params = (limit_param, offset_param)
+  category_query = ""
+  search_query = ""
+  if category_param:
+    category_query = " AND LOWER(category) = LOWER(?)"
+  
+  if search_param:
+    search_query = " AND (LOWER(title) LIKE LOWER('%' || ? || '%'))"
+
+  query = f"SELECT {items_to_get} FROM images WHERE id NOT IN ({exclude_vars}){category_query}{search_query} ORDER BY id ASC LIMIT ? OFFSET ?"
+  base_params = (limit_param, offset_param)
+  query_params = ()
+
+  print("Query", query)
 
   if len(split_loaded_items) > 0:
     query_params = (*split_loaded_items, *query_params)
+
+  if category_param:
+    query_params = (*query_params, category_param)
+  
+  if search_param:
+    query_params = (*query_params, search_param)
+
+  query_params = (*query_params, *base_params)
 
   db = get_db()
 

@@ -129,14 +129,17 @@ def login():
 @app.route("/api/get-slice", methods=["GET"])
 @validate_token
 def get_slice():
-  limit_param = request.args.get("limit")
-  offset_param = request.args.get("offset")
-  category_param = request.args.get("category")
-  search_param = request.args.get("search")
-  loaded_items = request.headers.get("loadedItems") or ""
+  limit_param = request.headers.get("limit")
+  # offset_param = request.args.get("offset")
+  category_param = request.headers.get("category")
+  search_param = request.headers.get("search")
+  loaded_items = request.headers.get("loadedItems")
 
-  if not limit_param or not offset_param:
-    return { "message": "Limit and offset are required!" }, 400
+  if loaded_items == None:
+    return { "message": "Loaded items are required!" }, 400
+
+  if limit_param == None:
+    return { "message": "Limit is required!" }, 400
 
   exclude_vars, split_loaded_items = exclude_query(loaded_items)
 
@@ -148,20 +151,16 @@ def get_slice():
   if search_param:
     search_query = " AND (LOWER(title) LIKE LOWER('%' || ? || '%'))"
 
-  query = f"SELECT {items_to_get} FROM images WHERE id NOT IN ({exclude_vars}){category_query}{search_query} ORDER BY id ASC LIMIT ? OFFSET ?"
-  base_params = (limit_param, offset_param)
-  query_params = ()
-
-  if len(split_loaded_items) > 0:
-    query_params = (*split_loaded_items, *query_params)
+  query = f"SELECT {items_to_get} FROM images WHERE id NOT IN ({exclude_vars}){category_query}{search_query} ORDER BY id ASC LIMIT ?"
+  query_params = split_loaded_items
 
   if category_param:
-    query_params = (*query_params, category_param)
-  
-  if search_param:
-    query_params = (*query_params, search_param)
+    query_params.append(category_param)
 
-  query_params = (*query_params, *base_params)
+  if search_param:
+    query_params.append(search_param)
+
+  query_params.append(limit_param)
 
   db = get_db()
 
@@ -172,10 +171,9 @@ def get_slice():
   items = cursor.fetchall()
 
   cursor.execute("SELECT COUNT(*) AS count FROM images")
-  total_items: tuple[str] = cursor.fetchone()
   cursor.close()
 
-  has_more: bool = int(offset_param) + int(limit_param) <= total_items[0]
+  has_more: bool = len(items) == int(limit_param)
 
   returned_items: list[ImagesRow] = []
 

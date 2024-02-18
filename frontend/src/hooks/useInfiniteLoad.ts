@@ -6,15 +6,18 @@ type InfiniteLoadOptions<T> = {
   initialItems?: T[];
 }
 
-type FilterItem<T> = {
-  renderedCount: number;
-
+type FilteredItems<T extends string> = {
+  [_ in T]: {
+    hasMore: boolean;
+    renderedCount: number;
+  }
 }
 
 // useInfiniteLoad(fetchRequest, fetchCallback, { renderCount, initialItems, <T>(filterItem) => T })
 
-type InfiniteLoadState<T> = {
+type InfiniteLoadState<T = any, U extends string = any> = {
   items: T[];
+  filteredItemData: FilteredItems<U>;
   hasMore: boolean;
   loadingItems: boolean;
   error: boolean;
@@ -33,14 +36,15 @@ type InfiniteLoadStateAction<T> = ActionCreator<{
   SET_ITEMS: T[];
 }>
 
-const initialState: InfiniteLoadState<any> = {
+const initialState: InfiniteLoadState = {
   items: [],
+  filteredItemData: {},
   hasMore: true,
   loadingItems: false,
   error: false,
 };
 
-function infiniteLoadReducer<T>(state: InfiniteLoadState<T> = initialState, action: InfiniteLoadStateAction<T>): InfiniteLoadState<T> {
+function infiniteLoadReducer<T, U extends string>(state: InfiniteLoadState<T, U> = initialState, action: InfiniteLoadStateAction<T>): InfiniteLoadState<T, U> {
   switch (action.type) {
     case "LOAD_NEXT": {
       const { items, selector, hasMore } = action.payload;
@@ -86,12 +90,12 @@ function infiniteLoadReducer<T>(state: InfiniteLoadState<T> = initialState, acti
  * API requirement: The API endpoint must return an object with a data property that is an array of items and a hasMore property that is a boolean
  */
 
-export const useInfiniteLoad = <T>(fetchRequestCallback: FetchRequest<T>, selector: (item: T) => number, options: InfiniteLoadOptions<T> = {
+export const useInfiniteLoad = <T, U extends string>(fetchRequestCallback: FetchRequest<T>, selector: (item: T) => number, options: InfiniteLoadOptions<T> = {
   renderCount: 10,
   initialItems: undefined,
 }) => {
 
-  const [state, dispatch] = useReducer(infiniteLoadReducer<T>, {
+  const [state, dispatch] = useReducer(infiniteLoadReducer<T, U>, {
     ...initialState,
     items: options.initialItems ?? [],
   });

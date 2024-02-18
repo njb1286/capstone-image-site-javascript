@@ -15,8 +15,16 @@ export class ImageItem {
   ) { }
 }
 
+type FilteredData = {
+  [_ in Category]?: {
+    hasMore: boolean;
+    renderedCount: number;
+  }
+}
+
 const initialState = {
   imageItems: [] as ImageItem[],
+  filteredData: {} as FilteredData,
 
   modalIsVisible: false,
   hasMoreItems: true,
@@ -46,6 +54,11 @@ export type ImageActions = ActionCreator<{
   SET_TOKEN: string | null,
 
   SET_TEMP_PASSWORD: string;
+  SET_FILTERED_ITEM: {
+    category: Category;
+    hasMore: boolean;
+    renderedCount: number;
+  }
 
 }> | ActionCreatorNoPayload<[
   "HAS_NO_MORE_ITEMS",
@@ -143,6 +156,18 @@ const imagesReducer: Reducer<ImageState, ImageActions> = (state = initialState, 
       return {
         ...state,
         tempPassword: action.payload,
+      }
+
+    case "SET_FILTERED_ITEM":
+      return {
+        ...state,
+        filteredData: {
+          ...state.filteredData,
+          [action.payload.category]: {
+            hasMore: action.payload.hasMore,
+            renderedCount: action.payload.renderedCount,
+          }
+        }
       }
 
     default:

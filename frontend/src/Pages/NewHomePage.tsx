@@ -7,6 +7,7 @@ import { backendUrl } from "../store/backend-url";
 import { getToken } from "../helpers/token";
 import { ImageItem } from "../store/images-store";
 import Card from "../Components/Card";
+import { useConsecutiveLoad } from "../hooks/useConsecutiveLoad";
 
 const cardHeight = 600;
 const cardWidth = 455;
@@ -16,16 +17,18 @@ const NewHomePage = () => {
   const cardsElementRef = useRef<HTMLDivElement>(null);
   const [mounted, setMounted] = useState(false);
 
-  const { items, renderNext, hasMore, setCardRenderCount, initialRender } = useInfiniteLoad(
-    fetchRequest,
-    (item) => item.id,
-    {
-      renderCount: 9,
-    }
-  );
+  // const { items, renderNext, hasMore, setCardRenderCount, initialRender } = useInfiniteLoad(
+  //   fetchRequest,
+  //   (item) => item.id,
+  //   {
+  //     renderCount: 9,
+  //   }
+  // );
+
+  const { items, renderNext, hasMore } = useConsecutiveLoad({ defaultCategory: "All" });
 
   const observer = useRef(new IntersectionObserver(([entry]) => {
-    if (!entry.isIntersecting) return;
+    if (!entry.isIntersecting) return;    
     renderNext();
   }, {
     rootMargin: "0px",
@@ -50,32 +53,13 @@ const NewHomePage = () => {
       const cardsInHeight = Math.floor(elementHeight / cardHeight) + 3;
 
       const cardsToRender = cardsInWidth * cardsInHeight;
-      
-      setCardRenderCount(cardsToRender);
-      initialRender(cardsToRender);
+
+      // setCardRenderCount(cardsToRender);
+      // initialRender(cardsToRender);
+      // renderNext(cardsToRender);
     }
 
   }, [mounted]);
-
-  async function fetchRequest(offset: number, limit: number) {
-    const loadedItems = items
-      .map(item => item.id)
-      // Ensure that the scope of the loaded items is within the offset and limit
-      .filter(id => id >= offset && id <= offset + limit)
-      .join(",");
-
-    const response = await fetch(`${backendUrl}/get-slice?offset=${offset}&limit=${limit}`, {
-      method: "GET",
-      headers: {
-        token: getToken() ?? "",
-        loadedItems,
-      }
-    });
-
-    const data = await response.json() as { hasMore: boolean, data: ImageItem[] };
-
-    return data;
-  }
 
   return (
     <>

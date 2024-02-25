@@ -4,6 +4,7 @@ import { addItemToSortedList, addItemsToSortedList } from "../helpers/addItemToS
 
 export const categories = ["Animals", "Architecture", "Food", "Nature", "Other", "People", "Sports", "Technology", "Travel"] as const;
 export type Category = typeof categories[number];
+export type AllCategories = "All" | Category;
 
 export class ImageItem {
   constructor(
@@ -15,16 +16,13 @@ export class ImageItem {
   ) { }
 }
 
-type FilteredData = {
-  [_ in Category]?: {
-    hasMore: boolean;
-    renderedCount: number;
-  }
+type HasMore = {
+  [_ in AllCategories]?: boolean;
 }
 
 const initialState = {
   imageItems: [] as ImageItem[],
-  filteredData: {} as FilteredData,
+  hasMore: {} as HasMore,
 
   modalIsVisible: false,
   hasMoreItems: true,
@@ -44,6 +42,10 @@ type Optional<T extends object> = {
 
 export type ImageActions = ActionCreator<{
   SET_IMAGE_ITEMS: ImageItem[];
+  SET_HAS_MORE: {
+    category: AllCategories;
+    hasMore: boolean;
+  }
   ADD_IMAGE_ITEM: ImageItem;
   ADD_IMAGE_ITEMS: ImageItem[];
   UPDATE_IMAGE_ITEM: Optional<Omit<ImageItem, "date">> & { id: number };
@@ -161,14 +163,27 @@ const imagesReducer: Reducer<ImageState, ImageActions> = (state = initialState, 
     case "SET_FILTERED_ITEM":
       return {
         ...state,
-        filteredData: {
-          ...state.filteredData,
+        hasMore: {
+          ...state.hasMore,
           [action.payload.category]: {
             hasMore: action.payload.hasMore,
             renderedCount: action.payload.renderedCount,
           }
         }
       }
+
+    case "SET_HAS_MORE": {
+      const category = action.payload.category;
+      const hasMore = action.payload.hasMore;
+
+      return {
+        ...state,
+        hasMore: {
+          ...state.hasMore,
+          [category]: hasMore,
+        }
+      }
+    }
 
     default:
       return state;

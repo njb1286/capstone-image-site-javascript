@@ -130,37 +130,45 @@ def login():
 @validate_token
 def get_slice():
   limit_param = request.headers.get("limit")
-  # offset_param = request.args.get("offset")
   category_param = request.headers.get("category")
   search_param = request.headers.get("search")
   loaded_items = request.headers.get("loadedItems")
 
+  def validate_header(header: str):
+    return header != None and header != "" and header != "null" and header != "undefined"
+
+  has_search_param = validate_header(search_param)
+  has_category_param = validate_header(category_param) and category_param.lower() != "all"
+
   if loaded_items == None:
-    return { "message": "Loaded items are required!" }, 400
+    return { "message": "`loadedItems` header is required!" }, 400
 
   if limit_param == None:
-    return { "message": "Limit is required!" }, 400
+    return { "message": "`limit` header is required!" }, 400
 
   exclude_vars, split_loaded_items = exclude_query(loaded_items)
 
   category_query = ""
   search_query = ""
-  if category_param:
+  if has_category_param:
     category_query = " AND LOWER(category) = LOWER(?)"
   
-  if search_param:
+  if has_search_param:
     search_query = " AND (LOWER(title) LIKE LOWER('%' || ? || '%'))"
 
   query = f"SELECT {items_to_get} FROM images WHERE id NOT IN ({exclude_vars}){category_query}{search_query} ORDER BY id ASC LIMIT ?"
   query_params = split_loaded_items
 
-  if category_param:
+  if has_category_param:
     query_params.append(category_param)
 
-  if search_param:
+  if has_search_param:
     query_params.append(search_param)
 
   query_params.append(limit_param)
+
+  print("QUERY:", query)
+  print("QUERY PARAMS:", query_params)
 
   db = get_db()
 

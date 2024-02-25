@@ -52,31 +52,31 @@ declare global {
   type SearchBarCategory = Category | "All";
   type SearchBarSort = "Date" | "Title" | "Category";
 
-  type ImageState = {
-    imageItems: ImageItem[],
-    modalIsVisible: boolean,
-    hasMoreItems: boolean,
-    loadedCategories: Category[],
-    token: string | null,
-    initialRender: boolean,
-    tempPassword: string
-  }
+  // type ImageState = {
+  //   imageItems: ImageItem[],
+  //   modalIsVisible: boolean,
+  //   hasMoreItems: boolean,
+  //   loadedCategories: Category[],
+  //   token: string | null,
+  //   initialRender: boolean,
+  //   tempPassword: string
+  // }
 
-  export type ImageActions = ActionCreator<{
-    SET_IMAGE_ITEMS: ImageItem[];
-    ADD_IMAGE_ITEM: ImageItem;
-    ADD_IMAGE_ITEMS: ImageItem[];
-    UPDATE_IMAGE_ITEM: Optional<Omit<ImageItem, "date">> & { id: number };
-    DELETE_IMAGE_ITEM: number;
+  // export type ImageActions = ActionCreator<{
+  //   SET_IMAGE_ITEMS: ImageItem[];
+  //   ADD_IMAGE_ITEM: ImageItem;
+  //   ADD_IMAGE_ITEMS: ImageItem[];
+  //   UPDATE_IMAGE_ITEM: Optional<Omit<ImageItem, "date">> & { id: number };
+  //   DELETE_IMAGE_ITEM: number;
 
-    SET_MODAL_VISIBLE: boolean;
-    ADD_LOADED_CATEGORY: Category;
-    SET_TOKEN: string | null,
+  //   SET_MODAL_VISIBLE: boolean;
+  //   ADD_LOADED_CATEGORY: Category;
+  //   SET_TOKEN: string | null,
 
-    SET_TEMP_PASSWORD: string;
+  //   SET_TEMP_PASSWORD: string;
 
-  }> | ActionCreatorNoPayload<[
-    "HAS_NO_MORE_ITEMS",
-    "INITIAL_RENDER"
-  ]>;
+  // }> | ActionCreatorNoPayload<[
+  //   "HAS_NO_MORE_ITEMS",
+  //   "INITIAL_RENDER"
+  // ]>;
 }

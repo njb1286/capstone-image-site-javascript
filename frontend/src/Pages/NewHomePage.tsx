@@ -33,7 +33,7 @@ const NewHomePage = () => {
       <div className={classes["cards-wrapper"]} ref={cardsElementRef}>
         <div className={`${classes.cards} ${classes.grid}`}>
           {items.map((item, index) => {
-            return <Card {...item} itemIndex={index} stateToListenTo={items} key={`card_${index}`} />
+            return <Card {...item} stateToListenTo={items} key={`card_${index}`} />
           })}
         </div>
         <LoadingPage ref={loadingElementRef} fullScreen={false} className={`${classes["loading-images"]} ${hasMore ? classes.visible : ""}`} />

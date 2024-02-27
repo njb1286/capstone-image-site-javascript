@@ -5,27 +5,14 @@ import { useLazyImage } from "../hooks/useLazyImage";
 import { useEffect } from "react";
 import { ImageItem } from "../store/images-store";
 
-/**
- * @template T
- * @typedef {Object} CardProps
- * @property {number | undefined} itemIndex
- * @property {T} stateToListenTo
- */
-
-/**
- * @template T
- * @param {CardProps<T> & ImageItem} props
- */
-
 type CardProps<T> = {
-  itemIndex: number | undefined;
   stateToListenTo: T;
 } & ImageItem;
 
 function Card<T>(props: CardProps<T>) {
   const { title, id } = props;
 
-  const [lazyImageComponent, reobserve] = useLazyImage({title, id, size: "medium"});
+  const [lazyImageComponent, reobserve] = useLazyImage(id, title, { size: "medium" });
 
   useEffect(() => {
     reobserve();

@@ -31,9 +31,7 @@ function ContentPage() {
 
   });
 
-  const [component] = useLazyImage({
-    id,
-    title: imageItem ? imageItem.title : "",
+  const [component] = useLazyImage(id, imageItem ? imageItem.title : "", {
     wrapperClassName: `card-img ${classes["image-wrapper"]}`,
     defaultImageShouldLoad: true,
     imageClassName: classes.image,

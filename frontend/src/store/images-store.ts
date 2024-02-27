@@ -174,7 +174,7 @@ const imagesReducer: Reducer<ImageState, ImageActions> = (state = initialState, 
 
     case "SET_HAS_MORE": {
       const category = action.payload.category;
-      const hasMore = action.payload.hasMore;
+      const hasMore = action.payload.hasMore;      
 
       return {
         ...state,

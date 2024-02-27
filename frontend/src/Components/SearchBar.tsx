@@ -33,23 +33,14 @@ function SearchBar({ onChange, onSelectCategory, onSelectSort }: Readonly<Search
   // Use a ref so I can clear the timeout on each keystroke
   const timeout = useRef<number | undefined>(undefined);
 
-  /**
-   * @param {Category} category 
-   */
   const categorySelectHandler = (category: SearchBarCategory) => {
     onSelectCategory?.(category);
   }
 
-  /**
-   * @param {SearchBarSort} sort 
-   */
   const sortSelectHandler = (sort: SearchBarSort) => {
     onSelectSort?.(sort);
   }
 
-  /**
-   * @param {ChangeEvent<HTMLInputElement>} event 
-   */
   const inputHandler = (event: ChangeEvent<HTMLInputElement>) => {
     clearTimeout(timeout.current);
 

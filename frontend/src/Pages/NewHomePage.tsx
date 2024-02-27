@@ -5,7 +5,7 @@ import classes from "./HomePage.module.scss";
 import { useInfiniteLoad } from "../hooks/useInfiniteLoad";
 import { backendUrl } from "../store/backend-url";
 import { getToken } from "../helpers/token";
-import { ImageItem } from "../store/images-store";
+import { AllCategories, ImageItem } from "../store/images-store";
 import Card from "../Components/Card";
 import { useConsecutiveLoad } from "../hooks/useConsecutiveLoad";
 
@@ -15,55 +15,21 @@ const cardWidth = 455;
 const NewHomePage = () => {
   const loadingElementRef = useRef<HTMLDivElement>(null);
   const cardsElementRef = useRef<HTMLDivElement>(null);
-  const [mounted, setMounted] = useState(false);
+  // const [mounted, setMounted] = useState(false);
 
-  // const { items, renderNext, hasMore, setCardRenderCount, initialRender } = useInfiniteLoad(
-  //   fetchRequest,
-  //   (item) => item.id,
-  //   {
-  //     renderCount: 9,
-  //   }
-  // );
+  const { items, renderNext, hasMore, setSearch, setFilter } = useConsecutiveLoad(loadingElementRef, cardsElementRef, { defaultCategory: "All" });
 
-  const { items, renderNext, hasMore } = useConsecutiveLoad({ defaultCategory: "All" });
+  const searchBarChangeHandler = (value: string) => {
+    setSearch(value);
+  }
 
-  const observer = useRef(new IntersectionObserver(([entry]) => {
-    if (!entry.isIntersecting) return;    
-    renderNext();
-  }, {
-    rootMargin: "0px",
-    threshold: 0.1
-  }));
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  // Make sure the component is mounted before observing the loading element
-  useEffect(() => {
-    if (!mounted) return;
-    if (loadingElementRef.current) {
-      observer.current.observe(loadingElementRef.current);
-    }
-
-    if (cardsElementRef.current) {
-      const cardsElement = cardsElementRef.current;
-      const elementHeight = cardsElement.clientHeight;
-      const cardsInWidth = Math.floor(cardsElement.clientWidth / cardWidth);
-      const cardsInHeight = Math.floor(elementHeight / cardHeight) + 3;
-
-      const cardsToRender = cardsInWidth * cardsInHeight;
-
-      // setCardRenderCount(cardsToRender);
-      // initialRender(cardsToRender);
-      // renderNext(cardsToRender);
-    }
-
-  }, [mounted]);
+  const filterChangeHandler = (category: AllCategories) => {
+    setFilter(category);
+  }
 
   return (
     <>
-      <SearchBar />
+      <SearchBar onChange={searchBarChangeHandler} onSelectCategory={filterChangeHandler} />
       <div className={classes["cards-wrapper"]} ref={cardsElementRef}>
         <div className={`${classes.cards} ${classes.grid}`}>
           {items.map((item, index) => {

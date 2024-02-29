@@ -1,4 +1,4 @@
-import { Form, ButtonGroup, Button } from "react-bootstrap";
+import { Form, ButtonGroup, Button, Spinner } from "react-bootstrap";
 import { useFormFieldNew } from "../hooks/useFormFieldNew";
 import { Category } from "../types.d";
 import classes from "./UploadForm.module.scss";
@@ -6,7 +6,8 @@ import DropDown from "./DropDown";
 import { categories } from "../types/category";
 import { useState } from "react";
 
-type UploadFormProps = {
+export type UploadFormProps = {
+  onSubmit?: (formData: FormData) => Promise<boolean | void>;
   defaultTitle?: string;
   defaultDescription?: string;
   defaultCategory?: Category;
@@ -17,7 +18,10 @@ type UploadFormProps = {
 const UploadForm = (props: UploadFormProps) => {
   const showInitialValidity = props.validateFieldsOnMount ?? false;
 
-  const [category, setCategory] = useState<Category>("Other");
+  const [category, setCategory] = useState<Category>(props.defaultCategory ?? "Other");
+  const [image, setImage] = useState<File | null>(null);
+  const [isError, setIsError] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   const [titleComponent, titleIsValid] = useFormFieldNew(
     "Title",
@@ -53,6 +57,11 @@ const UploadForm = (props: UploadFormProps) => {
       },
       elementType: "input",
       showInitialValidity,
+      onChange: (event) => {
+        const files = event.target.files!;
+        const file = files[0];
+        setImage(file);
+      }
     }
   )
 
@@ -74,15 +83,29 @@ const UploadForm = (props: UploadFormProps) => {
     }
   )
 
-  const submitHandler = (event: FormEvent) => {
+  const submitHandler = async (event: FormEvent) => {
     event.preventDefault();
+    setSubmitting(true);
     const formData = new FormData(event.currentTarget as HTMLFormElement);
-    const title = formData.get("title");
-    const description = formData.get("description");
-    const image = formData.get("image");
+    formData.append("category", category);
+    formData.append("image", image!);
 
-    console.log("Title", title);
-    console.log("Category", category);
+    try {
+      const result = await props.onSubmit?.(formData);
+
+      // If the onSubmit returns true, it means that an error occurred
+      if (result === true) {
+        setIsError(true);
+        setSubmitting(false);
+        return;
+      }
+
+      setSubmitting(false);
+      setIsError(false);
+    } catch {
+      setSubmitting(false);
+      setIsError(true);
+    }
     
   }
 
@@ -116,7 +139,7 @@ const UploadForm = (props: UploadFormProps) => {
       </FormGroup> */}
     </div>
 
-    {/* <Spinner className={`${classes.spinner} ${submitting ? classes.visible : ""}`} variant="primary" animation="border" /> */}
+    <Spinner className={`${classes.spinner} ${submitting ? classes.visible : ""}`} variant="primary" animation="border" />
 
     <ButtonGroup className={classes.buttons}>
       <Button
@@ -127,6 +150,7 @@ const UploadForm = (props: UploadFormProps) => {
         Submit
       </Button>
 
+      {isError && <p className="text text-danger">An error occurred!</p>}
       {/* {props.updating && <Button className={`${classes.btn} btn-danger`} type="button" onClick={() => navigate(`/views?id=${props.id}`)}>Cancel</Button>} */}
     </ButtonGroup>
   </Form>

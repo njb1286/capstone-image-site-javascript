@@ -1,61 +1,67 @@
-import { useNavigate } from "react-router";
-import { backendUrl } from "../store/backend-url";
-import { useAddImageItem } from "../hooks/useAddImageItem";
-import { getRequestData, getToken } from "../helpers/token";
 import { useDispatch } from "react-redux";
-import { Category, ImageActions } from "../types";
+import { getToken } from "../helpers/token";
+import { backendUrl } from "../store/backend-url";
 import UploadForm from "../Components/UploadForm";
+import { ImageActions, Category } from "../types";
+import { useNavigate } from "react-router";
 
-function UploadPage() {
-  const navigate = useNavigate();
-  const addImageItem = useAddImageItem();
+type UploadPageProps = {
+  redirect?: string;
+}
+
+const UploadPage = (props: UploadPageProps) => {
   const dispatch = useDispatch<Dispatch<ImageActions>>();
+  const navigate = useNavigate();
 
-  async function submitHandler(title: string, description: string, image: File, category: Category) {
-    const formData = new FormData();
+  const submitHandler = async (formData: FormData) => {
+    const title = formData.get("title") as string;
+    const description = formData.get("description") as string;
+    const category = formData.get("category") as Category;
 
-    formData.append("image", image);
-    formData.append("title", title);
-    formData.append("description", description);
-    formData.append("category", category);
-
+    console.log("Title", title);
+    console.log("Description", description);
+    console.log("Category", category);
+    console.log("Image", formData.get("image"));
+    
+    
     const response = await fetch(`${backendUrl}/form`, {
+      method: "POST",
       body: formData,
-      ...getRequestData("POST")
+      headers: {
+        token: getToken() ?? ""
+      }
     });
 
     if (response.status > 299) {
-      errorHandler();
-      return;
+      return true;
     }
 
-    /** @type {{message: string, id: number, date: string}} */
-    const data = await response.json();
+    const data = await response.json() as { message: string, id?: number, date?: string };
 
-    /* While making this, I realized I could get the ID in the same request instead of using another request to get the last item */
-    // addImageItem();
+    if (!data.id || !data.date) {
+      return true;
+    }
 
+    const id = data.id;
+    const date = data.date;
 
     dispatch({
       type: "ADD_IMAGE_ITEM",
       payload: {
         title,
         description,
-        category,
-        id: data.id,
-        date: data.date
+        id,
+        date,
+        category
       }
-    })
-    navigate("/");
+    });
+
+    if (props.redirect) {
+      navigate(props.redirect);
+    }
   }
 
-  // const [uploadForm, errorHandler] = useUploadForm({
-  //   updating: false,
-  //   onSubmit: submitHandler,
-  // });
-
-  // return uploadForm;
-  return <UploadForm />
+  return <UploadForm onSubmit={submitHandler} />
 }
 
 export default UploadPage;

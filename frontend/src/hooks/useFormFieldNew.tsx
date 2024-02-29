@@ -36,11 +36,16 @@ export function useFormFieldNew<T extends "input" | "textarea", U extends keyof 
 
   // All the optional data for the hook
   options: {
+    elementType: T,
     showInitialValidity?: boolean,
     className?: string,
     props?: FormControlProps | Record<string, any>,
-    elementType: T,
+    onChange?: (event: ChangeEvent<HTMLElementTagNameMap[T]>) => void,
   } = {
+      // The element type (as a string, must be "input" or "textarea")
+      elementType: "input" as T,
+
+
       /**
       * If true, the input will show the error message if it is invalid on initial render.
       * You can set the default value of the input by passing in the "defaultValue" prop in
@@ -56,9 +61,6 @@ export function useFormFieldNew<T extends "input" | "textarea", U extends keyof 
        * The reason I put the props in the optional options is to keep the arguments lean.
        */
       props: {},
-
-      // The element type (as a string, must be "input" or "textarea")
-      elementType: "input" as T
     },
 ) {
   type InputElementType = HTMLElementTagNameMap[T];
@@ -95,6 +97,8 @@ export function useFormFieldNew<T extends "input" | "textarea", U extends keyof 
     setErrorMessage(isValidCallback(value));
 
     setInputValue(value);
+
+    options.onChange?.(event);
   }
 
   const focusHandler = () => {

@@ -10,6 +10,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 // TODO: Remove these imports
 import UploadForm from "./Components/UploadForm";
+import { ImageState } from "./store/images-store";
 
 
 const AboutPage = lazy(() => import("./Pages/AboutPage"));
@@ -29,7 +30,7 @@ function App() {
   const [state, setState] = useState("loading");
   const dispatch = useDispatch();
 
-  const token = useSelector((state) => state.token);
+  const token = useSelector((state: ImageState) => state.token);
   const [serverFound, setServerFound] = useState(true);
 
   useEffect(() => {
@@ -94,7 +95,7 @@ function App() {
 
             <Route element={<Suspense fallback={loadingPage}><AboutPage /></Suspense>} path="/about" />
             <Route element={<Suspense fallback={loadingPage}><ContentPage /></Suspense>} path="/views/*" />
-            <Route element={<Suspense fallback={loadingPage}><UploadPage /></Suspense>} path="/upload" />
+            <Route element={<Suspense fallback={loadingPage}><UploadPage redirect="/" /></Suspense>} path="/upload" />
             <Route element={<Suspense fallback={loadingPage}><UpdatePage /></Suspense>} path="/update" />
             <Route element={<Suspense fallback={loadingPage}><GeneratePasswordPage /></Suspense>} path="/generate-password" />
             <Route element={<Suspense fallback={loadingPage}><PageNotFound hasLink message="Hmmm... we couldn't find that page" /></Suspense>} path="/*" />

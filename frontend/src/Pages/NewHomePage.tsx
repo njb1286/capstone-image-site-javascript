@@ -1,42 +1,37 @@
-import { useEffect, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import LoadingPage from "../Components/LoadingPage";
 import SearchBar from "../Components/SearchBar";
 import classes from "./HomePage.module.scss";
-import { useInfiniteLoad } from "../hooks/useInfiniteLoad";
-import { backendUrl } from "../store/backend-url";
-import { getToken } from "../helpers/token";
-import { AllCategories, ImageItem } from "../store/images-store";
+import { AllCategories, ImageState } from "../store/images-store";
 import Card from "../Components/Card";
-import { useConsecutiveLoad } from "../hooks/useConsecutiveLoad";
-
-const cardHeight = 600;
-const cardWidth = 455;
+import { useSelector } from "react-redux";
+import { useGetAllItems } from "../hooks/useGetAllItems";
 
 const NewHomePage = () => {
-  const loadingElementRef = useRef<HTMLDivElement>(null);
-  const cardsElementRef = useRef<HTMLDivElement>(null);
-  // const [mounted, setMounted] = useState(false);
+  const items = useSelector((state: ImageState) => state.imageItems);
+  const loading = useGetAllItems();
+  
+  const [search, setSearch] = useState("");
+  const [filter, setFilter] = useState<AllCategories>("All");
 
-  const { items, renderNext, hasMore, setSearch, setFilter } = useConsecutiveLoad(loadingElementRef, cardsElementRef, { defaultCategory: "All" });
-
-  const searchBarChangeHandler = (value: string) => {
-    setSearch(value);
-  }
-
-  const filterChangeHandler = (category: AllCategories) => {
-    setFilter(category);
-  }
+  const filteredItems = useMemo(() => {
+    return items.filter(item => {
+      if (search && !item.title.toLowerCase().includes(search.toLowerCase())) return false;
+      if (filter === "All") return true;
+      return item.category === filter;
+    })
+  }, [search, filter, items]);
 
   return (
     <>
-      <SearchBar onChange={searchBarChangeHandler} onSelectCategory={filterChangeHandler} />
-      <div className={classes["cards-wrapper"]} ref={cardsElementRef}>
+      <SearchBar onChange={setSearch} onSelectCategory={setFilter} />
+      <div className={classes["cards-wrapper"]}>
         <div className={`${classes.cards} ${classes.grid}`}>
-          {items.map((item, index) => {
+          {filteredItems.map((item, index) => {
             return <Card {...item} stateToListenTo={items} key={`card_${index}`} />
           })}
         </div>
-        <LoadingPage ref={loadingElementRef} fullScreen={false} className={`${classes["loading-images"]} ${hasMore ? classes.visible : ""}`} />
+        <LoadingPage fullScreen={false} className={`${classes["loading-images"]} ${loading ? classes.visible : ""}`} />
       </div>
     </>
   )

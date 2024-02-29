@@ -1,15 +1,12 @@
 import { backendUrl } from "../store/backend-url";
 
-/**
- * @typedef {{message: string} | {tokenIsValid: boolean}} Response
- */
+type Response = {
+  message: string;
+} | {
+  tokenIsValid: boolean;
+}
 
-/**
- * @param {string | null} token 
- * @returns {Promise<Response>}
- */
-
-export const validateToken = async (token) => {
+export const validateToken = async (token: string | null): Promise<{ valid: boolean } | { status: number }> => {
 
   try {
     if (!token) return { valid: false };
@@ -23,8 +20,7 @@ export const validateToken = async (token) => {
 
     if (response.status === 500) return { status: response.status };
 
-    /** @type {Response} */
-    const data = await response.json();
+    const data = await response.json() as Response;
 
     if ("message" in data) {
       return { valid: false }

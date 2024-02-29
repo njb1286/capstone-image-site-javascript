@@ -6,22 +6,19 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Alert, Spinner, Overlay, Tooltip } from 'react-bootstrap';
 import classes from "./GeneratePasswordPage.module.scss";
 import { FaCopy } from 'react-icons/fa';
+import { ImageState } from '../store/images-store';
+import { ImageActions } from '../types';
 
-/**
- * @typedef {{ message: string } | { password: string }} Response
- */
+type Response = { message: string } | { password: string };
 
 const GeneratePasswordPage = () => {
-  const dispatch = useDispatch();
-  /**
-   * @type {string}
-   */
-  const password = useSelector((state) => state.tempPassword);
+  const dispatch = useDispatch<Dispatch<ImageActions>>();
+  const password = useSelector((state: ImageState) => state.tempPassword);
   const [fetching, setFetching] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
   const [showTooltip, setShowTooltip] = useState(false);
   const copyButtonRef = useRef(null);
-  const textAreaRef = useRef(null);
+  const textAreaRef = useRef<HTMLTextAreaElement>(null);
 
   const generatePasswordHandler = async () => {
     const response = await fetch(`${backendUrl}/generate-password`, getRequestData("GET"));
@@ -31,10 +28,7 @@ const GeneratePasswordPage = () => {
       return;
     }
 
-    /**
-     * @type {Response}
-     */
-    const data = await response.json();
+    const data = await response.json() as Response;
 
     if ("message" in data) {
       setError(data.message);

@@ -15,6 +15,8 @@ type UploadFormProps = {
 }
 
 const UploadForm = (props: UploadFormProps) => {
+  const showInitialValidity = props.validateFieldsOnMount ?? false;
+
   const [category, setCategory] = useState<Category>("Other");
 
   const [titleComponent, titleIsValid] = useFormFieldNew(
@@ -30,7 +32,8 @@ const UploadForm = (props: UploadFormProps) => {
       props: {
         name: "title",
       },
-      elementType: "input"
+      elementType: "input",
+      showInitialValidity,
     }
   );
 
@@ -38,13 +41,18 @@ const UploadForm = (props: UploadFormProps) => {
     "Image",
     "files",
     (currentValue) => {
-      if (!currentValue) {
+      if (!currentValue || currentValue.length === 0) {
         return "Image is required"
       }
     },
     null,
     {
-      elementType: "input"
+      props: {
+        type: "file",
+        accepts: "image/png, image/jpeg, image/jpg"
+      },
+      elementType: "input",
+      showInitialValidity,
     }
   )
 
@@ -62,6 +70,7 @@ const UploadForm = (props: UploadFormProps) => {
         name: "description",
       },
       elementType: "textarea",
+      showInitialValidity,
     }
   )
 
@@ -72,8 +81,6 @@ const UploadForm = (props: UploadFormProps) => {
     const description = formData.get("description");
     const image = formData.get("image");
 
-    
-
     console.log("Title", title);
     console.log("Category", category);
     
@@ -83,10 +90,13 @@ const UploadForm = (props: UploadFormProps) => {
     setCategory(category);
   }
 
+  const formIsValid = titleIsValid && imageIsValid && descriptionIsValid;
+
   return <div className={classes["upload-form"]}>
   <Form onSubmit={submitHandler}>
     <div className={classes["form-items"]}>
       {titleComponent}
+      {imageComponent}
       {descriptionComponent}
       <DropDown onSelect={categorySelectHandler} categories={categories} defaultValue="Other" />
 
@@ -110,29 +120,17 @@ const UploadForm = (props: UploadFormProps) => {
 
     <ButtonGroup className={classes.buttons}>
       <Button
-        // disabled={
-        //   !titleValid ||
-        //   !descriptionValid ||
-        //   !imageValid ||
-        //   submitting
-        // }
-        
+        disabled={!formIsValid}
         className={classes.btn}
         type="submit"
       >
         Submit
       </Button>
 
-      <Button onClick={() => {
-      }}>
-        Clear fields
-      </Button>
-
       {/* {props.updating && <Button className={`${classes.btn} btn-danger`} type="button" onClick={() => navigate(`/views?id=${props.id}`)}>Cancel</Button>} */}
     </ButtonGroup>
   </Form>
 
-  {/* {isError && errorMessage} */}
 </div>
 }
 

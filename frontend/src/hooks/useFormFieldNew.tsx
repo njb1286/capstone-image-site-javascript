@@ -64,11 +64,15 @@ export function useFormFieldNew<T extends "input" | "textarea", U extends keyof 
   type InputElementType = HTMLElementTagNameMap[T];
   type InputValueType = InputElementType[U];
 
-  const [errorMessage, setErrorMessage] = useState<ErrorMessage>(null);
+  /**
+   * Set the initial state of the input, because it uses the truthy value of the errorMessage to
+   * determine if it is valid or not. This makes the default value for the returned @var isValid
+   * false so that the form is initially invalid.
+   */
+  const [errorMessage, setErrorMessage] = useState<ErrorMessage>("invalid");
   const [isTouched, setIsTouched] = useState(false);
   const [inputValue, setInputValue] = useState<InputValueType>(defaultValue);
   const fieldElementRef = useRef<InputElementType>(null);
-
 
   /**
    * Runs on initial render. If the showInitialValidity is true, it will set the isTouched to true and

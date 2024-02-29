@@ -4,31 +4,22 @@ import { backendUrl } from "./backend-url";
 import { getRequestData, getToken } from "../helpers/token";
 
 // Redux thunk action creator
-export const getImageSlice = (offset: number, count: number, doneLoading?: () => void, loadedItems?: number[]) => {
-  return async function (dispatch: Dispatch<ImageActions>) {
-    const url = `${backendUrl}/get-slice?limit=${count}&offset=${offset}`;
-
-    const response = await fetch(url, {
-      method: "GET",
-      headers: {
-        loadedItems: loadedItems ? loadedItems.join(",") : "",
-        token: getToken() ?? "",
-      }
-    });
-    const responseData = await response.json() as { data: ImageItem[], hasMore: boolean };
+export const getAllImageItems = (setLoading?: (value: boolean) => void) => {
+  return async function (dispatch: Dispatch<ImageActions>) {    
+    const response = await fetch(`${backendUrl}/get`, getRequestData("GET"));
+    const responseData = await response.json() as ImageItem[];
 
     dispatch({
       type: "ADD_IMAGE_ITEMS",
-      payload: responseData.data,
+      payload: responseData,
     });
 
-    doneLoading?.();
+    dispatch({
+      type: "SET_LOADED_ITEMS",
+      payload: true,
+    })
 
-    if (!responseData.hasMore) {
-      dispatch({
-        type: "HAS_NO_MORE_ITEMS"
-      })
-    }
+    setLoading?.(false);
   }
 }
 

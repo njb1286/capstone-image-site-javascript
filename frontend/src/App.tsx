@@ -10,14 +10,13 @@ import { useDispatch, useSelector } from "react-redux";
 
 // TODO: Remove these imports
 import UploadForm from "./Components/UploadForm";
-import NewHomePage from "./Pages/NewHomePage";
 
 
 const AboutPage = lazy(() => import("./Pages/AboutPage"));
 const ContentPage = lazy(() => import("./Pages/ContentPage"));
 const UploadPage = lazy(() => import("./Pages/UploadPage"));
 const UpdatePage = lazy(() => import("./Pages/UpdatePage"));
-const HomePage = lazy(() => import("./Pages/HomePage"));
+const HomePage = lazy(() => import("./Pages/NewHomePage"));
 const LoginPage = lazy(() => import("./Pages/LoginPage"));
 const GeneratePasswordPage = lazy(() => import("./Pages/GeneratePasswordPage"));
 const PageNotFound = lazy(() => import("./Pages/PageNotFound"));
@@ -27,15 +26,9 @@ const PageNotFound = lazy(() => import("./Pages/PageNotFound"));
  */
 
 function App() {
-  /**
-   * @type {[State, (state: State) => void]}
-   */
   const [state, setState] = useState("loading");
   const dispatch = useDispatch();
 
-  /**
-   * @type {string}
-   */
   const token = useSelector((state) => state.token);
   const [serverFound, setServerFound] = useState(true);
 
@@ -106,7 +99,6 @@ function App() {
             <Route element={<Suspense fallback={loadingPage}><GeneratePasswordPage /></Suspense>} path="/generate-password" />
             <Route element={<Suspense fallback={loadingPage}><PageNotFound hasLink message="Hmmm... we couldn't find that page" /></Suspense>} path="/*" />
             <Route element={<UploadForm />} path="/upload-form" />
-            <Route element={<NewHomePage />} path="/homepage" />
           </Routes>
         </div>
 

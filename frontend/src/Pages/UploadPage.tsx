@@ -1,24 +1,17 @@
 import { useNavigate } from "react-router";
 import { backendUrl } from "../store/backend-url";
-import { useUploadForm } from "../hooks/useUploadForm";
 import { useAddImageItem } from "../hooks/useAddImageItem";
 import { getRequestData, getToken } from "../helpers/token";
 import { useDispatch } from "react-redux";
+import { Category, ImageActions } from "../types";
+import UploadForm from "../Components/UploadForm";
 
 function UploadPage() {
   const navigate = useNavigate();
   const addImageItem = useAddImageItem();
-  /** @type {Dispatch<ImageActions>} */
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<Dispatch<ImageActions>>();
 
-  /**
-   * 
-   * @param {string} title
-   * @param {string} description 
-   * @param {File | null} image 
-   * @param {Category} category 
-   */
-  async function submitHandler(title, description, image, category) {
+  async function submitHandler(title: string, description: string, image: File, category: Category) {
     const formData = new FormData();
 
     formData.append("image", image);
@@ -56,12 +49,13 @@ function UploadPage() {
     navigate("/");
   }
 
-  const [uploadForm, errorHandler] = useUploadForm({
-    updating: false,
-    onSubmit: submitHandler,
-  });
+  // const [uploadForm, errorHandler] = useUploadForm({
+  //   updating: false,
+  //   onSubmit: submitHandler,
+  // });
 
-  return uploadForm;
+  // return uploadForm;
+  return <UploadForm />
 }
 
 export default UploadPage;

@@ -1,5 +1,5 @@
 import classes from "./Header.module.scss";
-import HeaderLink from "./HeaderLink";
+import HeaderLink from "./HeaderLink.tsx";
 
 function Header() {
   return <div className={classes["header-wrapper"]}>

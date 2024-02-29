@@ -5,6 +5,7 @@ import { useFormField } from "./useFormField";
 import { useNavigate } from "react-router";
 import { categories } from "../types/category";
 import DropDown from "../Components/DropDown";
+import { Category } from "../types";
 
 /**
  * @typedef {(title: string, description: string, image: File | null, category: Category) => Promise<void>} UploadFormSubmitEvent
@@ -26,16 +27,25 @@ import DropDown from "../Components/DropDown";
  * @returns {[JSX.Element, () => void, (title: string, description: string, category: Category) => void]}
  */
 
+type UploadFormProps = {
+  title?: string;
+  description?: string;
+  updating?: boolean;
+  id?: number;
+  onSubmit: (title: string, description: string, image: File, category: Category) => Promise<void>;
+  category?: Category;
+
+}
+
 // Do not mistake this for a component, it was converted from a component to a hook
-export function useUploadForm(props) {
+export function useUploadForm(props: UploadFormProps) {
   const [submitting, setSubmitting] = useState(false);
   const [category, setCategory] = useState(props.category ?? "Other");
   const [isError, setIsError] = useState(false);
 
   const navigate = useNavigate();
 
-  /** @param {FormEvent<HTMLFormElement>} event */
-  const submitHandler = (event) => {
+  const submitHandler = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     // Note: this is just in case the user manually changes the button's disabled tag to false

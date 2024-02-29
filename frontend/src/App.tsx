@@ -17,14 +17,10 @@ const AboutPage = lazy(() => import("./Pages/AboutPage"));
 const ContentPage = lazy(() => import("./Pages/ContentPage"));
 const UploadPage = lazy(() => import("./Pages/UploadPage"));
 const UpdatePage = lazy(() => import("./Pages/UpdatePage"));
-const HomePage = lazy(() => import("./Pages/NewHomePage"));
+const HomePage = lazy(() => import("./Pages/HomePage"));
 const LoginPage = lazy(() => import("./Pages/LoginPage"));
 const GeneratePasswordPage = lazy(() => import("./Pages/GeneratePasswordPage"));
 const PageNotFound = lazy(() => import("./Pages/PageNotFound"));
-
-/**
- * @typedef {"loading" | "login" | "valid"} State
- */
 
 function App() {
   const [state, setState] = useState("loading");

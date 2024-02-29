@@ -150,6 +150,8 @@ const UploadForm = (props: UploadFormProps) => {
         Submit
       </Button>
 
+      {/* TODO: add a return/cancel button */}
+
       {isError && <p className="text text-danger">An error occurred!</p>}
       {/* {props.updating && <Button className={`${classes.btn} btn-danger`} type="button" onClick={() => navigate(`/views?id=${props.id}`)}>Cancel</Button>} */}
     </ButtonGroup>

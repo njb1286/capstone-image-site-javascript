@@ -4,21 +4,35 @@ import { backendUrl } from "../store/backend-url";
 import UploadForm from "../Components/UploadForm";
 import { ImageActions, Category } from "../types";
 import { useNavigate } from "react-router";
+import PageNotFound from "./PageNotFound";
+import { useGetImageItem } from "../hooks/useGetImageItem";
 
 type UploadPageProps = {
   redirect?: string;
 }
 
-const UploadPage = (props: UploadPageProps) => {
+const UpdatePage = (props: UploadPageProps) => {
+  const query = new URLSearchParams(window.location.search);
+  const idStr = query.get("id");
+  const id = parseInt(idStr ?? "-1");
+
+  const { imageItem } = useGetImageItem(id);
+
   const dispatch = useDispatch<Dispatch<ImageActions>>();
   const navigate = useNavigate();
+
+  if (!imageItem) {
+    return <PageNotFound message={"Sorry, we couldn't find that item!"} hasLink />
+  }
+  
+  const { title, description, category } = imageItem;
 
   const submitHandler = async (formData: FormData) => {
     const title = formData.get("title") as string;
     const description = formData.get("description") as string;
     const category = formData.get("category") as Category;    
     
-    const response = await fetch(`${backendUrl}/form`, {
+    const response = await fetch(`${backendUrl}/update`, {
       method: "POST",
       body: formData,
       headers: {
@@ -30,32 +44,22 @@ const UploadPage = (props: UploadPageProps) => {
       return true;
     }
 
-    const data = await response.json() as { message: string, id?: number, date?: string };
-
-    if (!data.id || !data.date) {
-      return true;
-    }
-
-    const id = data.id;
-    const date = data.date;
-
     dispatch({
-      type: "ADD_IMAGE_ITEM",
+      type: "UPDATE_IMAGE_ITEM",
       payload: {
         title,
         description,
         id,
-        date,
         category
       }
-    });
+    })
 
     if (props.redirect) {
       navigate(props.redirect);
     }
   }
 
-  return <UploadForm onSubmit={submitHandler} />
+  return <UploadForm onSubmit={submitHandler} defaultTitle={title} defaultDescription={description} defaultCategory={category} validateFieldsOnMount />
 }
 
-export default UploadPage;
+export default UpdatePage;

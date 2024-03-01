@@ -8,6 +8,7 @@ import { useState } from "react";
 
 export type UploadFormProps = {
   onSubmit?: (formData: FormData) => Promise<boolean | void>;
+  onCancel?: () => void;
   defaultTitle?: string;
   defaultDescription?: string;
   defaultCategory?: Category;
@@ -149,6 +150,8 @@ const UploadForm = (props: UploadFormProps) => {
       >
         Submit
       </Button>
+
+      {props.onCancel && <Button className={`btn btn-danger ${classes.btn}`} type="button" onClick={props.onCancel}>Cancel</Button>}
 
       {/* TODO: add a return/cancel button */}
 

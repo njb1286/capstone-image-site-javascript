@@ -6,15 +6,13 @@ import { ImageActions, Category } from "../types";
 import { useNavigate } from "react-router";
 import PageNotFound from "./PageNotFound";
 import { useGetImageItem } from "../hooks/useGetImageItem";
+import { useMemo } from "react";
 
-type UploadPageProps = {
-  redirect?: string;
-}
-
-const UpdatePage = (props: UploadPageProps) => {
+const UpdatePage = () => {
   const query = new URLSearchParams(window.location.search);
   const idStr = query.get("id");
   const id = parseInt(idStr ?? "-1");
+  const redirectRoute = useMemo(() => `/views?id=${id}`, [id]);
 
   const { imageItem } = useGetImageItem(id);
 
@@ -54,12 +52,14 @@ const UpdatePage = (props: UploadPageProps) => {
       }
     })
 
-    if (props.redirect) {
-      navigate(props.redirect);
-    }
+    navigate(redirectRoute);
   }
 
-  return <UploadForm onSubmit={submitHandler} defaultTitle={title} defaultDescription={description} defaultCategory={category} validateFieldsOnMount />
+  const cancelHandler = () => {
+    navigate(redirectRoute);
+  }
+
+  return <UploadForm onCancel={cancelHandler} onSubmit={submitHandler} defaultTitle={title} defaultDescription={description} defaultCategory={category} validateFieldsOnMount />
 }
 
 export default UpdatePage;

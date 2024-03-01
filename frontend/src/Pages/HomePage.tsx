@@ -6,34 +6,36 @@ import { AllCategories, ImageState, imageStore } from "../store/images-store";
 import Card from "../Components/Card";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllImageItems } from "../store/images-actions";
+import { lowerCase } from "../helpers/case";
 
 const NewHomePage = () => {
   const items = useSelector((state: ImageState) => state.imageItems);
   const loadedItems = useSelector((state: ImageState) => state.loadedAllItems);
-  const dispatch = useDispatch<typeof imageStore.dispatch>(); 
+  const dispatch = useDispatch<typeof imageStore.dispatch>();
   const mounted = useRef(loadedItems);
+
+  const [search, setSearch] = useState("");
+  const [filter, setFilter] = useState<AllCategories>("All");
+  const [sortBy, setSortBy] = useState<SearchBarSort>("Date");
 
   useEffect(() => {
     if (loadedItems || mounted.current) return;
-    
-    mounted.current = true;    
+
+    mounted.current = true;
     dispatch(getAllImageItems());
   }, []);
-  
-  const [search, setSearch] = useState("");
-  const [filter, setFilter] = useState<AllCategories>("All");
 
   const filteredItems = useMemo(() => {
     return items.filter(item => {
       if (search && !item.title.toLowerCase().includes(search.toLowerCase())) return false;
       if (filter === "All") return true;
       return item.category === filter;
-    })
-  }, [search, filter, items]);
+    }).sort((a, b) => a[lowerCase(sortBy)].localeCompare(b[lowerCase(sortBy)]));
+  }, [search, filter, items, sortBy]);
 
   return (
     <>
-      <SearchBar onChange={setSearch} onSelectCategory={setFilter} />
+      <SearchBar onChange={setSearch} onSelectCategory={setFilter} onSelectSort={setSortBy} />
       <div className={classes["cards-wrapper"]}>
         <div className={`${classes.cards} ${classes.grid}`}>
           {filteredItems.map((item, index) => {

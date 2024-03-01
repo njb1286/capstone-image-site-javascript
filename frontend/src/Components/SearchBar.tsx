@@ -5,11 +5,10 @@ import DropDown from "./DropDown";
 import { ChangeEvent, useRef, useState } from "react";
 
 import * as Category from "../types/category";
-import * as Sort from "../types/sortBy";
 
 const searchBarCategories = [Category.ALL, ...categories] as const;
 
-const searchBarSorts = [Sort.DATE, Sort.TITLE, Sort.CATEGORY] as const;
+const searchBarSorts = ["Date", "Title", "Category"] as const;
 
 type SearchBarSort = typeof searchBarSorts[number];
 type SearchBarCategory = typeof searchBarCategories[number];

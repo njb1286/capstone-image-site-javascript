@@ -26,10 +26,8 @@ const UpdatePage = () => {
   const { title, description, category } = imageItem;
 
   const submitHandler = async (formData: FormData) => {
-    const title = formData.get("title") as string;
-    const description = formData.get("description") as string;
-    const category = formData.get("category") as Category;    
-    
+    formData.set("id", id.toString());
+
     const response = await fetch(`${backendUrl}/update`, {
       method: "POST",
       body: formData,
@@ -42,13 +40,17 @@ const UpdatePage = () => {
       return true;
     }
 
+    const newTitle = formData.get("title") as string;
+    const newDescription = formData.get("description") as string;
+    const newCategory = formData.get("category") as Category;
+
     dispatch({
       type: "UPDATE_IMAGE_ITEM",
       payload: {
-        title,
-        description,
+        title: newTitle,
+        description: newDescription,
         id,
-        category
+        category: newCategory
       }
     })
 
@@ -59,7 +61,17 @@ const UpdatePage = () => {
     navigate(redirectRoute);
   }
 
-  return <UploadForm onCancel={cancelHandler} onSubmit={submitHandler} defaultTitle={title} defaultDescription={description} defaultCategory={category} validateFieldsOnMount />
+  return (
+    <UploadForm 
+      onCancel={cancelHandler} 
+      onSubmit={submitHandler} 
+      defaultTitle={title} 
+      defaultDescription={description} 
+      defaultCategory={category} 
+      validateFieldsOnMount
+      shouldNotValidateImage
+    />
+  )
 }
 
 export default UpdatePage;

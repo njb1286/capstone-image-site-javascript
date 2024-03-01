@@ -14,6 +14,7 @@ export type UploadFormProps = {
   defaultCategory?: Category;
 
   validateFieldsOnMount?: boolean;
+  shouldNotValidateImage?: boolean;
 }
 
 const UploadForm = (props: UploadFormProps) => {
@@ -46,6 +47,7 @@ const UploadForm = (props: UploadFormProps) => {
     "Image",
     "files",
     (currentValue) => {
+      if (props.shouldNotValidateImage) return;
       if (!currentValue || currentValue.length === 0) {
         return "Image is required"
       }
@@ -123,28 +125,13 @@ const UploadForm = (props: UploadFormProps) => {
       {imageComponent}
       {descriptionComponent}
       <DropDown onSelect={categorySelectHandler} categories={categories} defaultValue="Other" />
-
-      {/* <FormGroup>
-        <Form.Label>Image</Form.Label>
-        {imageComponent}
-      </FormGroup>
-
-      <FormGroup>
-        <Form.Label>Description</Form.Label>
-        {descriptionComponent}
-      </FormGroup>
-
-      <FormGroup>
-        <Form.Label>Category</Form.Label>
-        <DropDown className={classes.dropdown} onSelect={setCategory} categories={categories} default={category} />
-      </FormGroup> */}
     </div>
 
     <Spinner className={`${classes.spinner} ${submitting ? classes.visible : ""}`} variant="primary" animation="border" />
 
     <ButtonGroup className={classes.buttons}>
       <Button
-        disabled={!formIsValid}
+        disabled={!formIsValid && !submitting}
         className={classes.btn}
         type="submit"
       >
@@ -153,10 +140,7 @@ const UploadForm = (props: UploadFormProps) => {
 
       {props.onCancel && <Button className={`btn btn-danger ${classes.btn}`} type="button" onClick={props.onCancel}>Cancel</Button>}
 
-      {/* TODO: add a return/cancel button */}
-
       {isError && <p className="text text-danger">An error occurred!</p>}
-      {/* {props.updating && <Button className={`${classes.btn} btn-danger`} type="button" onClick={() => navigate(`/views?id=${props.id}`)}>Cancel</Button>} */}
     </ButtonGroup>
   </Form>
 

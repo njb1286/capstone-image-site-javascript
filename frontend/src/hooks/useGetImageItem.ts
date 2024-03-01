@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { ImageActions } from "../types";
-import { ImageItem } from "../store/images-store";
+import { ImageItem, ImageState } from "../store/images-store";
 import { backendUrl } from "../store/backend-url";
 import { getRequestData } from "../helpers/token";
 
@@ -12,8 +12,12 @@ import { getRequestData } from "../helpers/token";
  * - imageItem: the image item that was fetched. If the item is still loading, this will be null
  */
 export function useGetImageItem(id: number) {
+  const imageItems = useSelector((state: ImageState) => state.imageItems);
+  const selectedItem = imageItems.find(item => item.id === id);
+  
   const [isError, setIsError] = useState(false);
-  const [imageItem, setImageItem] = useState<ImageItem | null>(null);
+  const [imageItem, setImageItem] = useState<ImageItem | null>(selectedItem ?? null);
+
 
   /**
    * The reason for a hasRun variable is so that this hook never runs more than once. React
@@ -47,7 +51,7 @@ export function useGetImageItem(id: number) {
   }
 
   useEffect(() => {
-    if (hasRun.current) return;
+    if (hasRun.current || selectedItem) return;
     hasRun.current = true;
 
     fetchRequest();

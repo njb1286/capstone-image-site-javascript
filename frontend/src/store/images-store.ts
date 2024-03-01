@@ -16,10 +16,6 @@ export class ImageItem {
   ) { }
 }
 
-type HasMore = {
-  [_ in AllCategories]?: boolean;
-}
-
 const initialState = {
   imageItems: [] as ImageItem[],
   loadedAllItems: false,
@@ -69,7 +65,7 @@ const imagesReducer: Reducer<ImageState, ImageActions> = (state = initialState, 
       }
     }
 
-    case "ADD_IMAGE_ITEM": {
+    case "ADD_IMAGE_ITEM": {      
       const newImageItems = addItemToSortedList(state.imageItems, action.payload, item => item.id);
 
       if (!newImageItems) return state;

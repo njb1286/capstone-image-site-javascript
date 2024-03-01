@@ -11,12 +11,12 @@ const NewHomePage = () => {
   const items = useSelector((state: ImageState) => state.imageItems);
   const loadedItems = useSelector((state: ImageState) => state.loadedAllItems);
   const dispatch = useDispatch<typeof imageStore.dispatch>(); 
-  const mounted = useRef(false);
+  const mounted = useRef(loadedItems);
 
   useEffect(() => {
     if (loadedItems || mounted.current) return;
     
-    mounted.current = true;
+    mounted.current = true;    
     dispatch(getAllImageItems());
   }, []);
   

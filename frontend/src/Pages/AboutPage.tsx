@@ -5,26 +5,72 @@ function AboutPage() {
   return (
     <Container>
       <Card.Body className={classes.content}>
-        <Card.Title className={`text-center ${classes.title}`}>About</Card.Title>
+        <h1 className={`text-center ${classes.title}`}>About this site</h1>
 
-        <Card.Text>
-          Ea aliquip mollit fugiat eiusmod Lorem consequat est. Cillum ut sint et deserunt esse occaecat nulla laboris proident. Magna ipsum eu commodo tempor mollit nulla eu ullamco.
-        </Card.Text>
+        <h1>Why I built this</h1>
 
-        <ul>
-          <li>Fugiat incididunt aliqua excepteur esse eiusmod.</li>
-          <li>Sunt cupidatat amet velit qui labore nulla dolor officia est eu.</li>
-          <li>Ut laboris esse minim sunt occaecat veniam elit laboris sit nisi aliqua sit adipisicing.</li>
-          <li>Laboris eiusmod reprehenderit reprehenderit irure amet velit occaecat.</li>
-        </ul>
+        <p>
+          This site is made for my DevCamp Capstone project. It is a simple image uploading site that stores 
+          images in a database and displays them on the home page. The images can be filtered by category and 
+          sorted by date or title. The images can also be searched by title.
+        </p>
 
-        <Card.Text>
-          Sint aliquip dolore fugiat consectetur nisi commodo ad nostrud amet cupidatat cupidatat est esse. Tempor consectetur anim mollit ex sit pariatur fugiat cupidatat veniam officia aliquip aliqua. Aute anim duis Lorem officia ea Lorem deserunt pariatur. Adipisicing proident irure pariatur id laborum officia.
-        </Card.Text>
+        <h1>The styling</h1>
 
-        <Card.Text>
-          Reprehenderit voluptate commodo culpa Lorem fugiat aliqua adipisicing voluptate enim non incididunt excepteur do aute. Consectetur sit non aliqua ullamco occaecat exercitation elit ipsum laboris ad et aute cillum duis. Non qui aute aute non exercitation adipisicing consequat aliqua exercitation cillum ut sint. Cillum et incididunt velit ipsum. Mollit sunt mollit consectetur voluptate aliqua. Labore labore proident ut pariatur reprehenderit nulla nostrud consectetur. Sunt fugiat ipsum tempor incididunt occaecat officia enim id ipsum irure nisi eu laboris culpa. Do tempor esse proident tempor laboris commodo veniam aliquip veniam eiusmod. Aliquip mollit cillum sunt dolor.
-        </Card.Text>
+        <p>
+          For the styling, instead of using the typical "px", I use "rem". This allows me to set the root size
+          of the app in the :root selector in the main style file. This way, if I need to make the size of
+          the whole app bigger, I need only change the root size and everything will scale accordingly. This
+          is super useful for website scalability.
+          <br />
+          I also used React Bootstrap to help with the styling. It is a great library that makes it easy to
+          create a responsive website.
+        </p>
+
+        <h1>Vite</h1>
+
+        <p>
+          I used Vite to build this site. Vite is a build tool that is super fast. It is much faster than
+          Create React App. It also has a lot of great features that make it a great choice for building
+          websites. Vite's dependency list is also much smaller than Create React App's, which allows the
+          bundle size to be smaller.
+
+          <br />
+          <br />
+
+          Vite's Hot Module Replacement is also super fast. It is so fast that it feels like the changes
+          are instant. This is super useful for development, as it allows for a much faster feedback loop.
+          Vite's Hot Module Replacement also doesn't lose the state of the app, which is super useful for
+          debugging.
+        </p>
+
+        <h1>Typescript</h1>
+
+        <p>
+          The version of this site you get may or may not be written in Typescript. However, this site was
+          originally written in Typescript. I find Typescript to be far superior to Javascript because of
+          the strict type checking. It makes it much easier to catch bugs before runtime, whereas with
+          normal Javascript, type errors only show up at runtime and can be super hard to track down as
+          a result. Furthermore, Typescript also allows the interpreter to give better suggestions for
+          autocompletion, which is super useful, and boosts productivity. I have been writing Javascript
+          for a long time now, but when I stumbled across Typescript, my entire world of coding changed,
+          as I unapologetically prefer static typing over dynamic typing now.
+
+          <br />
+          <br />
+          
+          However, with Vite + Typescript, Vite actually skips Type checking for the runtime. This makes
+          the compile step much faster. The type checking is simply done in the editor.
+        </p>
+
+        <h1>Hooks</h1>
+
+        <p>
+          In this site, I use a lot of hooks. One of the most complex hooks in this site is the useFormField
+          hook. This hook makes it easy to create a form field that has validation, error messages, and fancy
+          indicators. It also means that I can use the hook in multiple places, which makes the code more
+          scalable and maintainable.
+        </p>
       </Card.Body>
     </Container>
   );

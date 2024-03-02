@@ -7,7 +7,7 @@ type HeaderLinkProps = {
   path: string;
 }
 
-function HeaderLink(props: HeaderLinkProps) {
+function HeaderLink(props: Readonly<HeaderLinkProps>) {
   const linkClass = classes.link;
 
   return <div className={classes["link-wrapper"]}>

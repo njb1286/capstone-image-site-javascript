@@ -6,14 +6,6 @@ type LoadingPageProps = {
   fullScreen?: boolean;
 }
 const LoadingPage = forwardRef<HTMLDivElement, LoadingPageProps>(
-  /**
-   * @param {{
-   *  className?: string;
-   *  fullScreen?: boolean;
-   * }} props 
-   * @param {MutableRefObject<HTMLDivElement>} ref 
-   * @returns 
-   */
   (props, ref) => {
     const fullScreenProp = props.fullScreen ?? true;
 

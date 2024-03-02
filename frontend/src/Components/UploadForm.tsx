@@ -1,5 +1,5 @@
 import { Form, ButtonGroup, Button, Spinner } from "react-bootstrap";
-import { useFormFieldNew } from "../hooks/useFormFieldNew";
+import { useFormField } from "../hooks/useFormField";
 import { Category } from "../types.d";
 import classes from "./UploadForm.module.scss";
 import DropDown from "./DropDown";
@@ -25,7 +25,7 @@ const UploadForm = (props: UploadFormProps) => {
   const [isError, setIsError] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
-  const [titleComponent, titleIsValid] = useFormFieldNew(
+  const [titleComponent, titleIsValid] = useFormField(
     "Title",
     "value",
     (currentValue) => {
@@ -43,7 +43,7 @@ const UploadForm = (props: UploadFormProps) => {
     }
   );
 
-  const [imageComponent, imageIsValid] = useFormFieldNew(
+  const [imageComponent, imageIsValid] = useFormField(
     "Image",
     "files",
     (currentValue) => {
@@ -68,7 +68,7 @@ const UploadForm = (props: UploadFormProps) => {
     }
   )
 
-  const [descriptionComponent, descriptionIsValid] = useFormFieldNew(
+  const [descriptionComponent, descriptionIsValid] = useFormField(
     "Description",
     "value",
     (currentValue) => {

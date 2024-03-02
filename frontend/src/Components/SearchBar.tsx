@@ -53,7 +53,12 @@ function SearchBar({ onChange, onSelectCategory, onSelectSort }: Readonly<Search
   return (
     <div className={classes["search-bar-wrapper"]}>
       <InputGroup className={classes["search-section"]}>
-        <input onChange={inputHandler} type="text" className={`form-control ${classes["search-input"]}`} placeholder="Search..." />
+        <input 
+          onChange={inputHandler} 
+          type="text" 
+          className={`form-control ${classes["search-input"]}`} 
+          placeholder="Search..." 
+        />
         <DropDown title="Sort by" onSelect={sortSelectHandler} categories={searchBarSorts} defaultValue="Date" />
         <DropDown title="Filter" onSelect={categorySelectHandler} categories={searchBarCategories} defaultValue="All" />
       </InputGroup>

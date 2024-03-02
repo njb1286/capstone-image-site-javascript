@@ -1,191 +1,201 @@
-import { ChangeEvent, useReducer } from "react"
-import { Form, FormControl } from "react-bootstrap";
+import { ChangeEvent, ElementType, FocusEvent, useEffect, useRef, useState } from "react";
+import { Form, FormControl, FormControlProps, FormGroup } from "react-bootstrap";
+
+type ErrorMessage = string | null | undefined;
 
 /**
-  * @template TFieldValue
-   * @typedef {ActionCreator<{
-   *    SET_TOUCHED: boolean;
-   *    SET_IS_VALID: boolean;
-   *    SET_VALUE: TFieldValue;
-   *    SET_ERROR_MESSAGE: string | undefined;
-   * }>} Action
-*/
-
-/**
- * @typedef {{
- *    input: HTMLInputElement;
- *    textarea: HTMLTextAreaElement;
- *  }} ValidInputElements
- */
-
-/**
- * @template TFieldValue
- * @typedef {{
- *  touched: boolean;
- *  isValid: boolean;  
- *  value: TFieldValue;
- *  errorMessage: string | undefined;
- * }} State
- */
-
-/**
- * @template TFieldValue
- * @param {State<TFieldValue>} state 
- * @param {Action<TFieldValue>} action 
+ * 
+ * @param title The label of the input
+ * 
+ * @param elementPropToUseAsValue The element property that is on the element, that gets used as the value. For example,
+ * if this gets passed in as "value", it will get the "InputElement.value" prop. If it
+ * gets passed in as "files", it gets the "InputElement.files" prop. Very important: this
+ * value must be a prop on the element that gets defined above (in the @var elementType),
+ * which is either an input element, or a textarea element.
+ * 
+ * @param isValidCallback A callback function that takes in the value on the element (which is chosen by the user
+ * via the @var elementPropToUseAsValue argument), and uses the return type to determine
+ * if the input is valid or not. If it returns a string, then the input field is invalid and
+ * the string is used as the error message. If the value is undefined or null, then the
+ * input field is valid.
+ * 
+ * @param defaultValue The default value of this field. The reason I don't put this in the optional options object
+ * is because of an issue related to an "uncontrolled input" warning that React gives. The 
+ * warning is given because when a state type starts out as undefined, and then gets set to another
+ * value, React thinks the state is uncontrolled.
+ * 
+ * @param options All the optional data for the hook that has the following properties:
+ * - elementType: The element type (as a string, must be "input" or "textarea")
+ * 
+ * - showInitialValidity: If true, the input will show the error message if it is invalid on initial render.
+ * You can set the default value of the input by passing in the "defaultValue" prop in
+ * the @var componentProps object defined above.
+ * 
+ * - className: The class name of the Bootstrap FormGroup that surrounds the input and labels
+ * 
+ * - props: The props that get used for the FormControl component (constrained to what you can pass in to the 
+ * FormControl component) The reason I put the props in the optional options is to keep the arguments lean.
+ * 
+ * - onChange: A callback function that gets called when the input changes.
+ * 
  * @returns 
  */
+export function useFormField<T extends "input" | "textarea", U extends keyof HTMLElementTagNameMap[T]>(
+  title: string,
 
-function formFieldReducer(state, action) {
-  switch (action.type) {
-    case "SET_IS_VALID":
-      return { ...state, isValid: action.payload };
-    case "SET_TOUCHED":
-      return { ...state, touched: action.payload };
-    case "SET_VALUE":
-      return { ...state, value: action.payload };
-    case "SET_ERROR_MESSAGE":
-      return { ...state, errorMessage: action.payload };
-    default:
-      return state;
-  }
-}
+  elementPropToUseAsValue: U,
 
-// Documentation for hovering over the useFormField hook
+  isValidCallback: (value: HTMLElementTagNameMap[T][U]) => ErrorMessage,
 
-/**
- * @typedef {{
- *   touched: boolean;
- *   isValid: boolean;
- *   value: TFieldValue;
- *   errorMessage: string | undefined;
- * }} InitialState
- */
+  defaultValue: HTMLElementTagNameMap[T][U],
 
-/**
- * @typedef {ChangeEvent<ValidInputElements[TElementName]>} OnChangeEvent
- */
+  options: {
+    elementType: T,
 
-/**
- * @template TFieldValue
- * @template TElementName
- * 
- * @param {typeof FormControl} InputElement The component to use for the form field
- * @param {FormControlProps & { as?: TElementName } & { [key: string]: any }} inputProps The props to pass to the FormControl component
- * @param {InitialState} initialState Initial state
- * @param {(event: OnChangeEvent) => TFieldValue} selectChangeableValue A function that picks the value from the change event
- * @param {(value: TFieldValue) => string | undefined} checkValidity Checks the validity of the value. Return undefined if valid, otherwise return an error message
- * @returns {[JSX.Element, boolean, TFieldValue, (touched: boolean) => void, (isValid: boolean) => void, (value: TFieldValue) => void]} A tuple containing the component, a boolean indicating whether the field is valid, the value, a function to set the touched state, a function to set the valid state, and a function to set the value
-*/
+    showInitialValidity?: boolean,
 
-export function useFormField(
-  InputElement,
-  inputProps,
-  initialState,
-  selectChangeableValue,
-  checkValidity
+    className?: string,
+
+    props?: FormControlProps | Record<string, any>,
+
+    onChange?: (event: ChangeEvent<HTMLElementTagNameMap[T]>) => void,
+  } = {
+      // Default options
+      elementType: "input" as T,
+      showInitialValidity: false,
+      className: undefined as string | undefined,
+      props: {},
+    },
 ) {
-  const [state, dispatch] = useReducer(formFieldReducer, initialState);
+  type InputElementType = HTMLElementTagNameMap[T];
+  /**
+   * The type that gets used for the value provided by the user of this hook.
+   * The input element can either be an input or textarea element, and this
+   * type uses a selector in the form of a string to access a prop on the element.
+   * example:
+   * case -> element type = input and element prop to use = "value":
+   *  type = the type of inputElement.value, which is a string
+   */
+  type InputValueType = InputElementType[U];
 
-  /** @param {OnChangeEvent} event */
-  const changeHandler = (event) => {
-    dispatch({
-      type: "SET_VALUE",
-      payload: selectChangeableValue(event),
-    })
-  }
+  /**
+   * Set the initial state of the input, because it uses the truthy value of the errorMessage to
+   * determine if it is valid or not. This makes the default value for the returned @var isValid
+   * false so that the form is initially invalid.
+   */
+  const [errorMessage, setErrorMessage] = useState<ErrorMessage>("invalid");
+  const [isTouched, setIsTouched] = useState(false);
+  const [inputValue, setInputValue] = useState<InputValueType>(defaultValue);
+  const fieldElementRef = useRef<InputElementType>(null);
 
-  const blurHandler = () => {
-    dispatch({
-      type: "SET_TOUCHED",
-      payload: true,
-    });
+  /**
+   * Runs on initial render. If the showInitialValidity is true, it will set the isTouched to true and
+   * set the errorMessage to the result of the isValidCallback that gets passed in. Because it sets
+   * "isTouched" to true, the input will show the error message if it is invalid.
+   */
+  useEffect(() => {
+    if (options.showInitialValidity) {
+      setIsTouched(true);
 
-    const errorMessage = checkValidity(state.value);
-
-    dispatch({
-      type: "SET_IS_VALID",
-      payload: !errorMessage,
-    });
-
-    if (typeof errorMessage !== typeof state.errorMessage && errorMessage !== state.errorMessage) {
-      dispatch({
-        type: "SET_ERROR_MESSAGE",
-        payload: errorMessage,
-      });
+      const value = fieldElementRef.current![elementPropToUseAsValue];
+      setErrorMessage(isValidCallback(value));
     }
+  }, []);
+
+  const changeHandler = (event: ChangeEvent<InputElementType>) => {
+    // Get the prop that was passed in by the user
+    const value = event.target[elementPropToUseAsValue];
+
+    setErrorMessage(isValidCallback(value));
+
+    setInputValue(value);
+
+    options.onChange?.(event);
   }
 
   const focusHandler = () => {
-    dispatch({
-      type: "SET_TOUCHED",
-      payload: false,
-    });
+    setIsTouched(false);
   }
 
-  /** @param {boolean} touched */
-  const setTouched = (touched) => {
-    dispatch({
-      type: "SET_TOUCHED",
-      payload: touched,
-    });
-  }
+  const blurHandler = (event: FocusEvent<InputElementType>) => {
+    setIsTouched(true);
 
-  /** @param {boolean} isValid */
-  const setValid = (isValid) => {
-    dispatch({
-      type: "SET_IS_VALID",
-      payload: isValid,
-    });
-  }
-
-  /** @param {TFieldValue} value */
-  const setValue = (value) => {
-    dispatch({
-      type: "SET_VALUE",
-      payload: value,
-    });
+    // Get the prop that was passed in by the user, and check using it as context
+    const value = event.target[elementPropToUseAsValue];
+    setErrorMessage(isValidCallback(value));
   }
 
   /**
-   * @type {keyof ValidInputElements}
+   * @var isValid
+   * The errorMessage can be a string or null. This converts it into a boolean.
+   * It uses some Javascript properties to accomplish this:
+   * 
+   * 1. If errorMessage is null, it is falsy.
+   * 2. If errorMessage is a string, and is not empty, it is truthy.
    */
-  const asProp = inputProps.as;
+  const isValid = !errorMessage;
 
-  const component = <>
-    <InputElement
-      onBlur={blurHandler}
-      onFocus={focusHandler}
-      onChange={changeHandler}
-      isValid={state.isValid && state.touched}
-      isInvalid={!state.isValid && state.touched}
-      defaultValue={typeof state.value === "string" || typeof state.value === "number" ? state.value : undefined}
-      {...inputProps}
+  /**
+   * This is equivalent to a dynamically selected prop on a component:
+   * <MyComponent [propToSelect]={*value} />
+   */
+  const propToSelect = {
+    [elementPropToUseAsValue]: inputValue,
+  }
 
-      /*
-        With this cast, I kind of just gave up trying to satisfy the type checker.
-        I ground and ground and ground, but I couldn't get it to work. However, I
-        still managed to get the exact behavior I wanted, so ... yeah.
-        
-        My problem was that the as prop is a key of ValidInputElements, so it
-        should be a union of strings. However, the type checker seemed to think
-        it wasn't just a union of strings, but that is what it is.
-  
-        The as prop on the FormControl Bootstrap component is a union of string
-        literals that represent the valid HTML elements that can be used to get
-        the type of the element. I used generics so that I wouldn't have a union
-        (e.g. HTMLInputElement | HTMLTextAreaElement) and instead just have the
-        type of the element that was passed in as the generic parameter:
-  
-        T = HTMLInputElement, the type is HTMLInputElement
-        T = HTMLTextAreaElement, the type is HTMLTextAreaElement
-      */
-      as={asProp}
-    />
-    <Form.Label style={{
-      visibility: state.touched && !state.isValid ? "visible" : "hidden",
-    }} className="text-danger">{state.errorMessage ?? "valid"}</Form.Label>
-  </>;
+  const component = (
+    <FormGroup className={options.className}>
+      <Form.Label>{title}</Form.Label>
+      <FormControl
+        /** Each prop passed in to the props in the options */
+        {...options.props}
 
+        /** The "as" prop takes in a string that represents an HTML element, and renders as that element */
+        as={options.elementType as ElementType}
+        onChange={changeHandler}
+        onFocus={focusHandler}
+        onBlur={blurHandler}
 
-  return [component, !checkValidity(state.value), state.value, setTouched, setValid, setValue];
+        // Bootstrap's fancy validity styling (adds a green border if valid, and a red border if invalid)
+        isValid={isTouched && isValid}
+        isInvalid={isTouched && !isValid}
+
+        /**
+         * The value prop is a single-key object that has the same key as the @var elementPropToUseAsValue
+         * passed in by the user. The reason for this is so we can get a dynamic prop value from the field
+         * element. For example, if we assume that the input element is an object with the props being keys:
+         * 
+         * InputElement = {
+         *  value: *string value*,
+         *  onClick: *Function value for on click event*,
+         *  [elementPropToUseAsValue]: *Default value passed in by the user (@var defaultValue)*
+         * }
+         * 
+         * This allows us to dynamically set a prop selected by the user on the input element.
+         */
+        {...propToSelect}
+
+        ref={fieldElementRef}
+      />
+
+      <Form.Label style={{
+        /**
+         * Hide this label instead of removing it from the DOM or removing it's text content. The reason 
+         * for this is because if it gets removed from the DOM, it will shift the other elements.
+         */
+        visibility: isTouched && !isValid ? "visible" : "hidden",
+      }} className="text-danger">{isTouched && !isValid ? errorMessage : "valid"}</Form.Label>
+    </FormGroup>
+  )
+
+  /**
+   * @var component - The component to use
+   * @var isValid - (updated on each key stroke) Whether the input is valid or not
+   * @var setInputValue - A setState function that sets the input value
+   * 
+   * The reason I don't include the @var inputValue in the return statement is to
+   * keep this hook lean. You can just use the values from the form in the submit
+   * event handler using the default HTML form data that gets passed in.
+   */
+  return [component, isValid, setInputValue] as const;
 }

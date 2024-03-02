@@ -1,11 +1,11 @@
-export function lowerCase<T extends string>(str: T): Lowercase<T> {
-  return str.toLowerCase() as Lowercase<T>;
+export function lowerCase<T extends string, U extends Lowercase<T>>(str: T): U {
+  return str.toLowerCase() as U;
 }
 
-export function upperCase<T extends string>(str: T): Uppercase<T> {
-  return str.toUpperCase() as Uppercase<T>;
+export function upperCase<T extends string, U extends Uppercase<T>>(str: T): U {
+  return str.toUpperCase() as U;
 }
 
-export function capitalize<T extends string>(str: T): Capitalize<T> {
-  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase() as Capitalize<T>;
+export function capitalize<T extends string, U extends Capitalize<T>>(str: T): U {
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase() as U;
 }

@@ -3,23 +3,6 @@ import { Dropdown } from "react-bootstrap"
 import classes from "./DropDown.module.scss"
 import { useState } from "react";
 
-/**
- * @template T
- * @template U
- * @typedef DropDownProps
- * @property {T} categories
- * @property {U} default
- * @property {(category: T[number]) => void} [onSelect]
- * @property {string} [title]
- * @property {string} [className]
- */
-
-/**
- * @template T
- * @template U
- * @param {DropDownProps<T, U>} props 
- */
-
 type DropDownProps<T extends readonly string[], U extends T[number]> = {
   categories: T;
   defaultValue: U;

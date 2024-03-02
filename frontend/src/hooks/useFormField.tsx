@@ -38,7 +38,10 @@ type ErrorMessage = string | null | undefined;
  * 
  * - onChange: A callback function that gets called when the input changes.
  * 
- * @returns 
+ * @returns A tuple with the following properties:
+ * - The first element is the component to render
+ * - The second element is a boolean that determines if the input is valid or not
+ * - The third element is a function that sets the input value
  */
 export function useFormField<T extends "input" | "textarea", U extends keyof HTMLElementTagNameMap[T]>(
   title: string,

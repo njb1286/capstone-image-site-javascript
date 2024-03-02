@@ -11,6 +11,15 @@ type LazyImageOptions = {
   defaultImageShouldLoad?: boolean;
 }
 
+const loadImage = (src: string, onLoad?: () => void) => {
+  const image = new Image();
+  image.src = src;
+
+  if (onLoad) {
+    image.onload = onLoad;
+  }
+};
+
 /**
  * 
  * @param id - The id of the image
@@ -26,15 +35,6 @@ type LazyImageOptions = {
  * - The first element is the component to render
  * - The second element is a function that re-observes the image
  */
-
-const loadImage = (src: string, onLoad?: () => void) => {
-  const image = new Image();
-  image.src = src;
-
-  if (onLoad) {
-    image.onload = onLoad;
-  }
-};
 
 export const useLazyImage = (id: number, title: string, options: LazyImageOptions = {
   wrapperClassName: "",
@@ -57,7 +57,7 @@ export const useLazyImage = (id: number, title: string, options: LazyImageOption
     root: null,
     rootMargin: '0px',
     threshold: .1,
-  }))
+  }));
 
   useEffect(() => {
     if (imageRendered.current) return;

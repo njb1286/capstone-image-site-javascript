@@ -14,7 +14,7 @@ class CountRow:
     self.count = count
 
   def to_json(self):
-    return vars(self)
+    return vars(self)  
 
 class ImagesRow:
   def __init__(self, id: int, title: str, description: str, date: str, category: str):
@@ -125,71 +125,6 @@ def login():
   cursor.close()
 
   return { "token": new_token }, 200
-
-@app.route("/api/get-slice", methods=["GET"])
-@validate_token
-def get_slice():
-  limit_param = request.headers.get("limit")
-  category_param = request.headers.get("category")
-  search_param = request.headers.get("search")
-  loaded_items = request.headers.get("loadedItems")
-
-  def validate_header(header: str):
-    return header != None and header != "" and header != "null" and header != "undefined"
-
-  has_search_param = validate_header(search_param)
-  has_category_param = validate_header(category_param) and category_param.lower() != "all"
-
-  if loaded_items == None:
-    return { "message": "`loadedItems` header is required!" }, 400
-
-  if limit_param == None:
-    return { "message": "`limit` header is required!" }, 400
-
-  exclude_vars, split_loaded_items = exclude_query(loaded_items)
-
-  category_query = ""
-  search_query = ""
-  if has_category_param:
-    category_query = " AND LOWER(category) = LOWER(?)"
-  
-  if has_search_param:
-    search_query = " AND (LOWER(title) LIKE LOWER('%' || ? || '%'))"
-
-  query = f"SELECT {items_to_get} FROM images WHERE id NOT IN ({exclude_vars}){category_query}{search_query} ORDER BY id ASC LIMIT ?"
-  query_params = split_loaded_items
-
-  if has_category_param:
-    query_params.append(category_param)
-
-  if has_search_param:
-    query_params.append(search_param)
-
-  query_params.append(limit_param)
-
-  print("QUERY:", query)
-  print("QUERY PARAMS:", query_params)
-
-  db = get_db()
-
-  cursor = db.cursor()
-
-  cursor.execute(query, query_params)
-
-  items = cursor.fetchall()
-
-  cursor.execute("SELECT COUNT(*) AS count FROM images")
-  cursor.close()
-
-  has_more: bool = len(items) == int(limit_param)
-
-  returned_items: list[ImagesRow] = []
-
-  for item in items:
-    returned_items.append(ImagesRow(*item).to_json())
-
-  return {"data": returned_items, "hasMore": has_more}, 200
-
 
 @validate_token
 @app.route("/api/get-image", methods=["GET"])

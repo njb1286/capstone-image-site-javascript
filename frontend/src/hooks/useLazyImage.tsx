@@ -11,9 +11,14 @@ type LazyImageOptions = {
   defaultImageShouldLoad?: boolean;
 }
 
+// This keeps the images loaded in memory so they don't have to be re-fetched when this component un-renders
+const loadedImages = new Set<HTMLImageElement>();
+
 const loadImage = (src: string, onLoad?: () => void) => {
   const image = new Image();
   image.src = src;
+
+  loadedImages.add(image);
 
   if (onLoad) {
     image.onload = onLoad;

@@ -104,11 +104,15 @@ def login():
   
 
 @app.post("/api/form")
+@jwt_required()
 def post():
-  title = request.form["title"]
-  description = request.form["description"]
-  category = request.form["category"]
-  image = request.files["image"]
+  title = request.form.get("title")
+  description = request.form.get("description")
+  category = request.form.get("category")
+  image = request.files.get("image")
+
+  if not (title and description and category and image):
+    return jsonify({ "message": "All fields are required! (title, description, category, image)" }), 400
 
   large_image = compress_image(image.read(), quality=60)
   medium_image = compress_image(large_image, width=384, quality=40)

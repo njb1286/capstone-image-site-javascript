@@ -193,13 +193,28 @@ def edit():
     item.mediumImage = medium_image
     item.largeImage = large_image
 
-  print("New Item", item.to_string())
-
   db.session.commit()
 
   return jsonify({ "message": "Item updated successfully!" }), 200
 
 
+@app.delete("/api/delete")
+@jwt_required()
+def delete():
+  id_param = request.args.get("id")
+
+  if not id_param:
+    return jsonify({ "message": "ID is required" }), 400
+
+  item: ImagesRow | None = ImagesRow.query.get(id_param)
+
+  if item == None:
+    return jsonify({ "message": "Item not found" }), 404
+
+  print("Deleted item", item.to_string())
+
+  db.session.delete(item)
+  return jsonify({ "message": "Item deleted successfully!" }), 200
 
 
 if __name__ == "__main__":

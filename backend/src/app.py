@@ -24,6 +24,11 @@ jwt = JWTManager(app)
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
 
+messages = {
+  "not_found": "Item not found",
+  "id_required": "ID is required",
+}
+
 def get_compressed_images(image: FileStorage):
   large_image = compress_image(image.read(), quality=60)
   medium_image = compress_image(large_image, width=384, quality=40)
@@ -152,7 +157,7 @@ def get():
     item: ImagesRow | None = ImagesRow.query.get(id_param)
 
     if item == None:
-      return jsonify({ "message": "Item not found" }), 404
+      return jsonify({ "message": messages["not_found"] }), 404
 
     return image_schema.jsonify(item), 200
 
@@ -170,12 +175,12 @@ def edit():
   image = request.files.get("image")
 
   if not id_param:
-    return jsonify({ "message": "ID is required" }), 400
+    return jsonify({ "message": messages["id_required"] }), 400
 
   item: ImagesRow | None = ImagesRow.query.get(id_param)
 
   if item == None:
-    return jsonify({ "message": "Item not found" }), 404
+    return jsonify({ "message": messages["not_found"] }), 404
 
   if title:
     item.title = title
@@ -204,7 +209,7 @@ def delete():
   id_param = request.args.get("id")
 
   if not id_param:
-    return jsonify({ "message": "ID is required" }), 400
+    return jsonify({ "message": messages["id_required"] }), 400
 
   item: ImagesRow | None = ImagesRow.query.get(id_param)
 

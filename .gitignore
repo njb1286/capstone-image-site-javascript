@@ -7,3 +7,4 @@ backend/.vscode
 backend/.gitignore
 document.txt
 backend/src/__pycache__
+backend/public

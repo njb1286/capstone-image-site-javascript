@@ -1,3 +1,4 @@
+import { ImageItem } from "./store/images-store";
 import { categories } from "./types/category";
 
 export type Category = typeof categories[number];

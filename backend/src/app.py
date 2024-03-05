@@ -5,6 +5,7 @@ from typing import Callable
 import os
 from image_compression import compress_image
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity, decode_token
+from werkzeug.datastructures import FileStorage
 
 app = Flask(__name__, static_folder="../public")
 
@@ -22,6 +23,13 @@ jwt = JWTManager(app)
 
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
+
+def get_compressed_images(image: FileStorage):
+  large_image = compress_image(image.read(), quality=60)
+  medium_image = compress_image(large_image, width=384, quality=40)
+  small_image = compress_image(medium_image, width=16, quality=40)
+
+  return small_image, medium_image, large_image
 
 class Types:
   INTEGER: int = db.Integer
@@ -57,6 +65,19 @@ class ImagesRow(db.Model):
     self.mediumImage = medium_image
     self.description = description
     self.category = category
+
+  def to_string(self):
+    return (
+      f"""
+      {{
+        "id": {self.id},
+        "title": "{self.title}",
+        "description": "{self.description}",
+        "date": "{self.date}",
+        "category": "{self.category}"
+      }}
+      """
+    )
 
 class ImagesRowSchema(ma.Schema):
   class Meta:
@@ -113,9 +134,7 @@ def post():
   if not (title and description and category and image):
     return jsonify({ "message": "All fields are required! (title, description, category, image)" }), 400
 
-  large_image = compress_image(image.read(), quality=60)
-  medium_image = compress_image(large_image, width=384, quality=40)
-  small_image = compress_image(medium_image, width=16, quality=40)
+  small_image, medium_image, large_image = get_compressed_images(image)
 
   new_item = ImagesRow(title, description, category, small_image, medium_image, large_image)
 
@@ -139,10 +158,47 @@ def get():
 
   items = ImagesRow.query.all()
   return images_schema.jsonify(items), 200
-    
 
-  # if id_param:
-  #   item = 
+@app.put("/api/edit")
+@jwt_required()
+def edit():
+  id_param = request.args.get("id")
+
+  title = request.form.get("title")
+  description = request.form.get("description")
+  category = request.form.get("category")
+  image = request.files.get("image")
+
+  if not id_param:
+    return jsonify({ "message": "ID is required" }), 400
+
+  item: ImagesRow | None = ImagesRow.query.get(id_param)
+
+  if item == None:
+    return jsonify({ "message": "Item not found" }), 404
+
+  if title:
+    item.title = title
+
+  if description:
+    item.description = description
+
+  if category:
+    item.category = category
+
+  if image:
+    small_image, medium_image, large_image = get_compressed_images(image)
+
+    item.smallImage = small_image
+    item.mediumImage = medium_image
+    item.largeImage = large_image
+
+  print("New Item", item.to_string())
+
+  db.session.commit()
+
+  return jsonify({ "message": "Item updated successfully!" }), 200
+
 
 
 

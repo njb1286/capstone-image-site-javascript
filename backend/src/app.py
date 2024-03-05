@@ -102,7 +102,6 @@ def login():
   new_token = create_access_token(identity=global_password)
   return jsonify({ "token": new_token }), 200
   
-
 @app.post("/api/form")
 @jwt_required()
 def post():
@@ -124,6 +123,26 @@ def post():
   db.session.commit()
 
   return image_schema.jsonify(new_item)
+
+@app.get("/api/get")
+@jwt_required()
+def get():
+  id_param = request.args.get("id")
+
+  if id_param:
+    item: ImagesRow | None = ImagesRow.query.get(id_param)
+
+    if item == None:
+      return jsonify({ "message": "Item not found" }), 404
+
+    return image_schema.jsonify(item), 200
+
+  items = ImagesRow.query.all()
+  return images_schema.jsonify(items), 200
+    
+
+  # if id_param:
+  #   item = 
 
 
 

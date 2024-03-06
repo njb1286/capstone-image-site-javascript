@@ -165,8 +165,6 @@ def login():
 
   return success()
 
-
-  
 @app.post("/api/form")
 @jwt_required()
 def post():
@@ -203,9 +201,9 @@ def get():
   items = ImagesRow.query.all()
   return images_schema.jsonify(items), 200
 
-@app.put("/api/edit")
+@app.put("/api/update")
 @jwt_required()
-def edit():
+def update():
   id_param = request.args.get("id")
 
   title = request.form.get("title")
@@ -294,8 +292,6 @@ def get_image():
   image_io = BytesIO(image)
 
   return send_file(image_io, mimetype="image/jpeg"), 200
-  
-
 
 if __name__ == "__main__":
   app.run(debug=True, host="localhost", port=8080)

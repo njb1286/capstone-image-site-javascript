@@ -4,7 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from typing import Callable, Literal
 import os
 from image_compression import compress_image
-from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity, decode_token
+from flask_jwt_extended import JWTManager, jwt_required, create_access_token, decode_token
 from werkzeug.datastructures import FileStorage
 import secrets
 import base64
@@ -14,13 +14,11 @@ app = Flask(__name__, static_folder="../public")
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + os.path.join(basedir, "app.db")
-# app.config["JWT_SECRET_KEY"] = os.environ.get("TOKEN_KEY")
-app.config["JWT_SECRET_KEY"] = "key" # TODO: Remove this
+app.config["JWT_SECRET_KEY"] = os.environ.get("TOKEN_KEY")
 
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = 3600 * 24 * 30
 
-# global_password = os.environ.get("SITE_PASSWORD")
-global_password = "password" # TODO: Remove this
+global_password = os.environ.get("SITE_PASSWORD")
 
 jwt = JWTManager(app)
 

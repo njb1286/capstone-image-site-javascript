@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_file
 from flask_marshmallow import Marshmallow
 from flask_sqlalchemy import SQLAlchemy
 from typing import Callable, Literal
@@ -8,6 +8,7 @@ from flask_jwt_extended import JWTManager, jwt_required, create_access_token, ge
 from werkzeug.datastructures import FileStorage
 import secrets
 import base64
+from io import BytesIO
 
 app = Flask(__name__, static_folder="../public")
 
@@ -270,6 +271,30 @@ def generate_password():
   db.session.commit()
 
   return password_schema.jsonify(password_row), 200
+
+@app.get("/api/get-image")
+def get_image():
+  valid_sizes = ("large", "medium", "small")
+
+  size_param = request.args.get("size") or "large"
+  id_param = request.args.get("id")
+
+  if not id_param:
+    return jsonify({ "message": "ID is required!" }), 400
+
+  if size_param not in valid_sizes:
+    return jsonify({ "message": "Invalid size!" }), 400
+
+  item: ImagesRow | None = ImagesRow.query.get(id_param)
+
+  if not item:
+    return jsonify({ "message": "Item not found!" }), 404
+
+  image: bytes = getattr(item, f"{size_param}Image")
+  image_io = BytesIO(image)
+
+  return send_file(image_io, mimetype="image/jpeg"), 200
+  
 
 
 if __name__ == "__main__":

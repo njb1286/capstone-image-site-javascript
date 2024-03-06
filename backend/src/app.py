@@ -1,11 +1,13 @@
 from flask import Flask, request, jsonify
 from flask_marshmallow import Marshmallow
 from flask_sqlalchemy import SQLAlchemy
-from typing import Callable
+from typing import Callable, Literal
 import os
 from image_compression import compress_image
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity, decode_token
 from werkzeug.datastructures import FileStorage
+import secrets
+import base64
 
 app = Flask(__name__, static_folder="../public")
 
@@ -84,12 +86,25 @@ class ImagesRow(db.Model):
       """
     )
 
+class TempPassword(db.Model):
+  id = db.Column(Types.INTEGER, primary_key=True)
+  password = db.Column(Types.STRING(16), unique=True)
+
+  def __init__(self, password: str):
+    self.password = password
+
+
 class ImagesRowSchema(ma.Schema):
   class Meta:
     fields = ("id", "title", "description", "date", "category")
 
+class TempPasswordSchema(ma.Schema):
+  class Meta:
+    fields = ("password",)
+
 image_schema = ImagesRowSchema()
 images_schema = ImagesRowSchema(many=True)
+password_schema = TempPasswordSchema()
 
 @app.get("/api/validate-token")
 def validate_token():
@@ -110,12 +125,14 @@ def validate_token():
 def login():
   password = request.form.get("password")
   provided_token = request.form.get("token")
+  password_is_single_use: Literal["true"] | None = request.form.get("singleUse")
 
-  if password == None or password == "":
-    return jsonify({"message": "Password is required"}), 400
+  def invalid_password():
+    return jsonify({ "message": "Password is incorrect" }), 400
 
-  if password != global_password:
-    return jsonify({"message": "Password is incorrect"}), 400
+  def success():
+    new_token = create_access_token(identity=global_password)
+    return jsonify({ "token": new_token }), 200
 
   if provided_token:
     try:
@@ -125,8 +142,29 @@ def login():
     except:
       pass
 
-  new_token = create_access_token(identity=global_password)
-  return jsonify({ "token": new_token }), 200
+  if password == None or password == "":
+    return jsonify({"message": "Password is required"}), 400
+
+  if password_is_single_use == "true":
+    temp_password: str | None = TempPassword.query.filter(TempPassword.password == password).first()
+
+    print("Temp password", temp_password)
+    print("Password", password)
+
+    if not temp_password:
+      return invalid_password()
+
+    db.session.delete(temp_password)
+    db.session.commit()
+
+    return success()
+  
+  if password != global_password:
+    return jsonify({"message": "Password is incorrect"}), 400
+
+  return success()
+
+
   
 @app.post("/api/form")
 @jwt_required()
@@ -220,6 +258,18 @@ def delete():
 
   db.session.delete(item)
   return jsonify({ "message": "Item deleted successfully!" }), 200
+
+@app.get("/api/generate-password")
+@jwt_required()
+def generate_password():
+  random_bytes = secrets.token_bytes(16)
+  password = base64.b64encode(random_bytes).decode("utf-8")
+
+  password_row = TempPassword(password)
+  db.session.add(password_row)
+  db.session.commit()
+
+  return password_schema.jsonify(password_row), 200
 
 
 if __name__ == "__main__":

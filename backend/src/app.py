@@ -13,14 +13,12 @@ from io import BytesIO
 app = Flask(__name__, static_folder="../public")
 
 basedir = os.path.abspath(os.path.dirname(__file__))
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + os.path.join(basedir, "app.db")
-# app.config["JWT_SECRET_KEY"] = os.environ.get("TOKEN_KEY")
-app.config["JWT_SECRET_KEY"] = "secret"
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + os.path.join(basedir, "database.sqlite")
+app.config["JWT_SECRET_KEY"] = os.environ.get("TOKEN_KEY")
 
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = 3600 * 24 * 30
 
-# global_password = os.environ.get("SITE_PASSWORD")
-global_password = "password"
+global_password = os.environ.get("SITE_PASSWORD")
 
 jwt = JWTManager(app)
 

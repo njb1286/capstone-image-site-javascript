@@ -3,8 +3,8 @@ import { useFormField } from "../hooks/useFormField";
 import { Category } from "../types.d";
 import classes from "./UploadForm.module.scss";
 import DropDown from "./DropDown";
-import { categories } from "../types/category";
 import { useState } from "react";
+import { categories } from "../store/images-store";
 
 export type UploadFormProps = {
   onSubmit?: (formData: FormData) => Promise<boolean | void>;
@@ -80,6 +80,9 @@ const UploadForm = (props: UploadFormProps) => {
     {
       props: {
         name: "description",
+        style: {
+          height: "25rem"
+        }
       },
       elementType: "textarea",
       showInitialValidity,

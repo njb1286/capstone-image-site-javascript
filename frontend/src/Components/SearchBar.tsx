@@ -1,25 +1,15 @@
 import classes from "./SearchBar.module.scss";
-import { categories } from "../types/category";
 import { InputGroup, Spinner } from "react-bootstrap";
 import DropDown from "./DropDown";
 import { ChangeEvent, useRef, useState } from "react";
+import { categories } from "../store/images-store";
 
-import * as Category from "../types/category";
-
-const searchBarCategories = [Category.ALL, ...categories] as const;
+const searchBarCategories = ["All", ...categories] as const;
 
 const searchBarSorts = ["Date", "Title", "Category"] as const;
 
 type SearchBarSort = typeof searchBarSorts[number];
 type SearchBarCategory = typeof searchBarCategories[number];
-
-/**
- * @param {{
- *  onChange?: (value: string) => void;
- *  onSelectCategory?: (category: SearchBarCategory) => void;
- *  onSelectSort?: (sort: SearchBarSort) => void;
- * }} props 
- */
 
 type SearchBarProps = {
   onChange?: (value: string) => void;
@@ -27,17 +17,17 @@ type SearchBarProps = {
   onSelectSort?: (sort: SearchBarSort) => void;
 }
 
-function SearchBar({ onChange, onSelectCategory, onSelectSort }: Readonly<SearchBarProps>) {
+function SearchBar(props: Readonly<SearchBarProps>) {
   const [isSearching, setIsSearching] = useState(false);
   // Use a ref so I can clear the timeout on each keystroke
   const timeout = useRef<number | undefined>(undefined);
 
   const categorySelectHandler = (category: SearchBarCategory) => {
-    onSelectCategory?.(category);
+    props.onSelectCategory?.(category);
   }
 
   const sortSelectHandler = (sort: SearchBarSort) => {
-    onSelectSort?.(sort);
+    props.onSelectSort?.(sort);
   }
 
   const inputHandler = (event: ChangeEvent<HTMLInputElement>) => {
@@ -45,7 +35,7 @@ function SearchBar({ onChange, onSelectCategory, onSelectSort }: Readonly<Search
 
     setIsSearching(true);
     timeout.current = setTimeout(() => {
-      onChange?.(event.target.value);
+      props.onChange?.(event.target.value);
       setIsSearching(false);
     }, 350);
   }

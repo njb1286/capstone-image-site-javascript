@@ -5,13 +5,9 @@ import classes from "./App.module.scss";
 import Header from "./Components/Header";
 import LoadingPage from "./Components/LoadingPage";
 import { validateToken } from "./helpers/validateToken";
-import { getToken } from "./helpers/token";
-import { useDispatch, useSelector } from "react-redux";
 
 // TODO: Remove these imports
 import UploadForm from "./Components/UploadForm";
-import { ImageState } from "./store/images-store";
-
 
 const AboutPage = lazy(() => import("./Pages/AboutPage"));
 const ContentPage = lazy(() => import("./Pages/ContentPage"));
@@ -22,24 +18,26 @@ const LoginPage = lazy(() => import("./Pages/LoginPage"));
 const GeneratePasswordPage = lazy(() => import("./Pages/GeneratePasswordPage"));
 const PageNotFound = lazy(() => import("./Pages/PageNotFound"));
 
-function App() {
-  const [state, setState] = useState("loading");
-  const dispatch = useDispatch();
+type LoadingState = "loading" | "login" | "valid";
 
-  const token = useSelector((state: ImageState) => state.token);
+function App() {
+  const [state, setState] = useState<LoadingState>("loading");
+
   const [serverFound, setServerFound] = useState(true);
 
   useEffect(() => {
-    const getTokenIsValid = async () => {
-      const isValid = await validateToken(token);
+    const token = localStorage.getItem("_token");    
 
-      if ("status" in isValid) {
+    const getTokenIsValid = async () => {
+      const response = await validateToken(token);
+
+      if ("status" in response) {
         setServerFound(false);
         return;
       }
 
-      if (isValid.valid) {
-        setState("valid");
+      if (response.valid) {
+        setState("valid");        
         return;
       }
 
@@ -47,16 +45,16 @@ function App() {
     }
 
     getTokenIsValid();
-  }, [token]);
-
-  useEffect(() => {
-    const token = getToken();
-
-    dispatch({
-      type: "SET_TOKEN",
-      payload: token,
-    })
   }, []);
+
+  const loginPageSubmitHandler = (valid: boolean) => {
+    if (valid) {
+      setState("valid");
+      return;
+    }
+
+    setState("login");
+  }
 
   if (!serverFound) return (
     <div style={{
@@ -77,7 +75,7 @@ function App() {
   let component = loadingPage;
 
   if (state === "login") {
-    component = <Suspense fallback={loadingPage}><LoginPage /></Suspense>;
+    component = <Suspense fallback={loadingPage}><LoginPage onSubmit={loginPageSubmitHandler} /></Suspense>;
   }
 
   if (state === "valid") {

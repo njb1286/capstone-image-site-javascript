@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, send_file
+from flask import Flask, request, jsonify, send_file, send_from_directory
 from flask_marshmallow import Marshmallow
 from flask_sqlalchemy import SQLAlchemy
 from typing import Callable, Literal
@@ -14,11 +14,13 @@ app = Flask(__name__, static_folder="../public")
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + os.path.join(basedir, "app.db")
-app.config["JWT_SECRET_KEY"] = os.environ.get("TOKEN_KEY")
+# app.config["JWT_SECRET_KEY"] = os.environ.get("TOKEN_KEY")
+app.config["JWT_SECRET_KEY"] = "secret"
 
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = 3600 * 24 * 30
 
-global_password = os.environ.get("SITE_PASSWORD")
+# global_password = os.environ.get("SITE_PASSWORD")
+global_password = "password"
 
 jwt = JWTManager(app)
 
@@ -107,7 +109,7 @@ password_schema = TempPasswordSchema()
 
 @app.get("/api/validate-token")
 def validate_token():
-  provided_token: str | None = request.form.get("token")
+  provided_token = request.headers.get("token")
 
   if provided_token == None:
     return jsonify({"message": "Token is required"}), 400
@@ -181,7 +183,7 @@ def post():
   db.session.add(new_item)
   db.session.commit()
 
-  return image_schema.jsonify(new_item)
+  return jsonify({ "id": new_item.id }), 200
 
 @app.get("/api/get")
 @jwt_required()
@@ -290,6 +292,14 @@ def get_image():
   image_io = BytesIO(image)
 
   return send_file(image_io, mimetype="image/jpeg"), 200
+
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def serve(path):
+    if path != "" and os.path.exists(os.path.join(app.static_folder, path)):
+        return send_from_directory(app.static_folder, path)
+
+    return send_from_directory(app.static_folder, 'index.html')
 
 if __name__ == "__main__":
   app.run(debug=True, host="localhost", port=8080)

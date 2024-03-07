@@ -26,13 +26,11 @@ const UpdatePage = () => {
   const { title, description, category } = imageItem;
 
   const submitHandler = async (formData: FormData) => {
-    formData.set("id", id.toString());
-
-    const response = await fetch(`${backendUrl}/update`, {
+    const response = await fetch(`${backendUrl}/update?id=${id}`, {
       method: "POST",
       body: formData,
       headers: {
-        token: getToken() ?? ""
+        "Authorization": getToken(),
       }
     });
 

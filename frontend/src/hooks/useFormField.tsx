@@ -4,7 +4,6 @@ import { Form, FormControl, FormControlProps, FormGroup } from "react-bootstrap"
 type ErrorMessage = string | null | undefined;
 
 /**
- * 
  * @param title The label of the input
  * 
  * @param elementPropToUseAsValue The element property that is on the element, that gets used as the value. For example,
@@ -70,6 +69,11 @@ export function useFormField<T extends "input" | "textarea", U extends keyof HTM
       props: {},
     },
 ) {
+  /**
+   * The HTML Element type that gets assigned based on the @var elementType provided
+   * by the user of this hook. It can either be an input or textarea element. That
+   * means this type gets assigned to either HTMLInputElement or HTMLTextAreaElement.
+   */
   type InputElementType = HTMLElementTagNameMap[T];
   /**
    * The type that gets used for the value provided by the user of this hook.

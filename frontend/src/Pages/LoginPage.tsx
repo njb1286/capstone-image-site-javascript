@@ -7,10 +7,13 @@ import { backendUrl } from '../store/backend-url';
 import { getToken, setToken } from '../helpers/token';
 import { useDispatch } from 'react-redux';
 
-const LoginPage = () => {
+type LoginPageProps = {
+  onSubmit?: (isValid: boolean) => void;
+}
+
+const LoginPage = (props: LoginPageProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isError, setIsError] = useState(false);
-  const dispatch = useDispatch();
   const [password, setPassword] = useState("");
   const [isSingleUse, setIsSingleUse] = useState(false);
 
@@ -20,13 +23,16 @@ const LoginPage = () => {
 
     setIsSubmitting(true);
 
+    const formData = new FormData();
+    formData.append("password", password);
+    formData.append("singleUse", isSingleUse.toString());
+
     const response = await fetch(`${backendUrl}/login`, {
       method: "POST",
       headers: {
-        password,
-        token: getToken() ?? "",
-        singleUse: isSingleUse.toString(),
-      }
+        "Authorization": getToken(),
+      },
+      body: formData,
     });
 
     const data = await response.json() as { message: string } | { token: string };
@@ -36,14 +42,12 @@ const LoginPage = () => {
 
     if ("token" in data) {
       setToken(data.token);
-      dispatch({
-        type: "SET_TOKEN",
-        payload: data.token,
-      })
+      props.onSubmit?.(true);
       return;
     }
 
     setIsError(true);
+    props.onSubmit?.(false);
   }
 
   const changeHandler = (event: ChangeEvent<HTMLInputElement>) => {

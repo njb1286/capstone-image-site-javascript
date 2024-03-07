@@ -22,7 +22,6 @@ const initialState = {
 
   modalIsVisible: false,
 
-  token: null as string | null,
   initialRender: false,
 
   tempPassword: "",
@@ -45,7 +44,6 @@ export type ImageActions = ActionCreator<{
 
   SET_MODAL_VISIBLE: boolean;
   ADD_LOADED_CATEGORY: Category;
-  SET_TOKEN: string | null,
 
   SET_TEMP_PASSWORD: string;
 
@@ -111,12 +109,6 @@ const imagesReducer: Reducer<ImageState, ImageActions> = (state = initialState, 
       return {
         ...state,
         modalIsVisible: action.payload,
-      }
-
-    case "SET_TOKEN":
-      return {
-        ...state,
-        token: action.payload,
       }
 
     case "INITIAL_RENDER":

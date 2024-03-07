@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { ImageActions } from "../types";
 import { ImageItem, ImageState } from "../store/images-store";
 import { backendUrl } from "../store/backend-url";
-import { getRequestData } from "../helpers/token";
+import { getToken } from "../helpers/token";
 
 /**
  * @param id The id of the image item to fetch
@@ -28,7 +28,12 @@ export function useGetImageItem(id: number) {
   const dispatch = useDispatch<Dispatch<ImageActions>>();
 
   async function fetchRequest() {
-    const response = await fetch(`${backendUrl}/get?id=${id}`, getRequestData("GET"));
+    const response = await fetch(`${backendUrl}/get?id=${id}`, {
+      method: "GET",
+      headers: {
+        "Authorization": getToken(),
+      }
+    });
 
     if (response.status > 299) {
       setIsError(true);

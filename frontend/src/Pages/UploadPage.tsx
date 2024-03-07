@@ -22,7 +22,7 @@ const UploadPage = (props: UploadPageProps) => {
       method: "POST",
       body: formData,
       headers: {
-        token: getToken() ?? ""
+        "Authorization": getToken(),
       }
     });
 
@@ -30,14 +30,10 @@ const UploadPage = (props: UploadPageProps) => {
       return true;
     }
 
-    const data = await response.json() as { message: string, id?: number, date?: string };
-
-    if (!data.id || !data.date) {
-      return true;
-    }
+    const data = await response.json() as { id: number }
 
     const id = data.id;
-    const date = data.date;
+    const date = new Date().toISOString();
 
     dispatch({
       type: "ADD_IMAGE_ITEM",

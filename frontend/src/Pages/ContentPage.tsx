@@ -4,7 +4,7 @@ import { Button, ButtonGroup, CardBody } from "react-bootstrap";
 import { useModal } from "../hooks/useModal";
 import { backendUrl } from "../store/backend-url";
 import classes from "./ContentPage.module.scss";
-import { getRequestData } from "../helpers/token";
+import { getToken } from "../helpers/token";
 import { useLazyImage } from "../hooks/useLazyImage";
 import { useGetImageItem } from "../hooks/useGetImageItem";
 import LoadingPage from "../Components/LoadingPage";
@@ -52,7 +52,12 @@ function ContentPage() {
   }
 
   const handleDeleteAction = async () => {
-    await fetch(`${backendUrl}/delete?id=${id}`, getRequestData("DELETE"));
+    await fetch(`${backendUrl}/delete?id=${id}`, {
+      method: "DELETE",
+      headers: {
+        "Authorization": getToken(),
+      }
+    });
 
     dispatch({
       type: "DELETE_IMAGE_ITEM",

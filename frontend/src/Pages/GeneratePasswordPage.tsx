@@ -1,7 +1,7 @@
 import Button from 'react-bootstrap/Button';
 import { useState, useRef } from 'react';
 import { backendUrl } from '../store/backend-url';
-import { getRequestData } from '../helpers/token';
+import { getToken } from '../helpers/token';
 import { useDispatch, useSelector } from 'react-redux';
 import { Alert, Spinner, Overlay, Tooltip } from 'react-bootstrap';
 import classes from "./GeneratePasswordPage.module.scss";
@@ -9,7 +9,7 @@ import { FaCopy } from 'react-icons/fa';
 import { ImageState } from '../store/images-store';
 import { ImageActions } from '../types';
 
-type Response = { message: string } | { password: string };
+type Response = { password: string };
 
 const GeneratePasswordPage = () => {
   const dispatch = useDispatch<Dispatch<ImageActions>>();
@@ -21,7 +21,13 @@ const GeneratePasswordPage = () => {
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
 
   const generatePasswordHandler = async () => {
-    const response = await fetch(`${backendUrl}/generate-password`, getRequestData("GET"));
+    const response = await fetch(`${backendUrl}/generate-password`, {
+      method: "GET",
+      headers: {
+        // token: getToken(),
+        "Authorization": getToken(),
+      }
+    });
 
     if (response.status !== 200) {
       setError("Something went wrong");
@@ -29,11 +35,6 @@ const GeneratePasswordPage = () => {
     }
 
     const data = await response.json() as Response;
-
-    if ("message" in data) {
-      setError(data.message);
-      return;
-    }
 
     dispatch({
       type: "SET_TEMP_PASSWORD",

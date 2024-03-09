@@ -9,3 +9,4 @@ document.txt
 backend/src/__pycache__
 backend/public
 token.txt
+database_old.sqlite

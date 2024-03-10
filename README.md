@@ -210,3 +210,63 @@ Usage:
   shouldNotValidateImage={true}
 />
 ```
+
+### Helper functions
+
+* **addItemToSortedList**, **addItemsToSortedList** - These two functions are for placing an item in it's sorted position. It returns a new list containing the newly added item. Note: the input list must already be sorted when you pass it into the `addItemToSortedList` function
+Usage:
+
+```typescript
+const myList = [{id: 3}, {id: 5}, {id: 6}, {id: 7}, {id: 8}];
+
+const addItem = addItemToSortedList(
+  // The sorted list to add to
+  myList,
+
+  // The item to add
+  { id: 9 },
+
+  // The id selector (must return a number that represents an ID that all the items in the list have in common)
+  (listItem) => listItem.id
+);
+
+// ---------------------------------------
+
+const addItems = addItemsToSortedList(
+  // The sorted list to add to
+
+  // The items to add
+  [
+    { id: 9 },
+    { id: 0 },
+    { id: 2 },
+  ],
+
+  // The id selector (must return a number that represents an ID that all the items in the list have in common)
+  (listItem) => listItem.id
+)
+```
+
+* **lowerCase**, **upperCase**, **capitalize** - These functions were created to perform 100% type-safe case changing. They utilize Javascript's default methods (with the capitalize as a custom implementation). However, the difference is that they use Typescript generics to get types that are string literals.
+Implementation:
+
+```typescript
+export function lowerCase<T extends string, U extends Lowercase<T>>(str: T): U {
+  return str.toLowerCase() as U;
+}
+
+export function upperCase<T extends string, U extends Uppercase<T>>(str: T): U {
+  return str.toUpperCase() as U;
+}
+
+export function capitalize<T extends string, U extends Capitalize<T>>(str: T): U {
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase() as U;
+}
+```
+
+  Usage:
+```typescript
+const lower = lowerCase("HELLO"); // type "hello"
+const upper = upperCase("hello"); // type "HELLO"
+const cap = capitalize("hello"); // type "Hello"
+```

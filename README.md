@@ -151,3 +151,23 @@ Usage:
   className="animals-dropdown"
 />
 ```
+
+* **OverlayModal** - The modal component that the `useModal` hook uses.
+Usage:
+
+```tsx
+<OverlayModal 
+  visible={true}
+  title="Delete item"
+  content="Are you sure you want to delete this item?"
+  renderedButtons={
+    <>
+      <button>Confirm</button>
+      <button>Cancel</button>
+    </>
+  }
+  onClose={() => {
+    console.log("Close modal");
+  }}
+/>
+```

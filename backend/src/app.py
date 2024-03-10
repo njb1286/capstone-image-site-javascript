@@ -14,7 +14,7 @@ app = Flask(__name__, static_folder="../public")
 
 # basedir = os.path.abspath(os.path.dirname(__file__))
 # app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + os.path.join(basedir, "database.sqlite")
-app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://puqidwpkrqwfvk:7097dc2cba858d2ab725b6277ee5658f5af6ff0ef16b5f36fe29e0054423e2a7@ec2-52-54-200-216.compute-1.amazonaws.com:5432/d4kmenbp2q44oi"
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URI")
 
 app.config["JWT_SECRET_KEY"] = os.environ.get("TOKEN_KEY")
 global_password = os.environ.get("SITE_PASSWORD")

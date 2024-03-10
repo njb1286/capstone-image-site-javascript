@@ -79,11 +79,11 @@ const [element, setVisible] = useModal(
 ```
 
 * **useLazyImage** - This hook is used for creating an image that only downloads when the user can see it. Before the image is fully downloaded, the user gets to see a nice blurry preview that is a tiny scaled version of the image with some fancy styling.
-This hook is constrained to this application, because it uses specific backend parameters that are exclusive to this one
+It uses an `IntersectionObserver` to observe when the client can see this item. An `IntersectionObserver` is a default library class in Javascript
 Usage:
 
 ```typescript
-const [imageElement, reobserve] = useLazyImage(
+const [imageElement, reobserve /* A function to reobserve the element if needed with the IntersectionObserver */] = useLazyImage(
   // Id
   0,
 
@@ -106,4 +106,21 @@ Usage:
 
 ```typescript
 const { isError, imageItem } = useGetImageItem(13);
+```
+
+### Components
+
+* **Card** - An image item card that displays the title and image. This component uses the `useLazyImage` hook for the image
+Usage:
+
+```tsx
+<Card 
+  id={13}
+  title="A dog"
+  description="Description of an image of a dog"
+  date="5/13/24"
+  category="Animals"
+  /* A state that when changed, re-observes the image with the useLazyImage hook's reobserve function */
+  stateToListenTo={globalState.imageItems}
+/>
 ```

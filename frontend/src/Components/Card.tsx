@@ -6,6 +6,10 @@ import { useEffect } from "react";
 import { ImageItem } from "../store/images-store";
 
 interface CardProps<T> extends ImageItem {
+  /**
+   * The state to listen to for changes. If the state
+   * changes, the image will be re-observed
+   */
   stateToListenTo: T;
 }
 

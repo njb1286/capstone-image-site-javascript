@@ -77,3 +77,26 @@ const [element, setVisible] = useModal(
   }
 )
 ```
+
+* **useLazyImage** - This hook is used for creating an image that only downloads when the user can see it. Before the image is fully downloaded, the user gets to see a nice blurry preview that is a tiny scaled version of the image with some fancy styling.
+This hook is constrained to this application, because it uses specific backend parameters that are exclusive to this one
+Usage:
+
+```typescript
+const [imageElement, reobserve] = useLazyImage(
+  // Id
+  0,
+
+  // Title
+  "An image of a dog",
+
+  // Options
+  {
+    wrapperClassName: "image-wrapper",
+    imageClassName: "image",
+    loadingImageClassName: "loading-image",
+    size: "medium",
+    defaultImageShouldLoad: false,
+  }
+)
+```

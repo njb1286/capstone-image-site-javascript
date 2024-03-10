@@ -24,6 +24,11 @@ export const addItemToSortedList = <T>(array: T[], item: T, selector: (item: T) 
     return arrayCopy;
   };
 
+  if (selector(item) <= selector(array[0])) {
+    arrayCopy.unshift(item);
+    return arrayCopy;
+  }
+
   for (let i = 0; i < array.length; i++) {
     const newItemId = selector(item);
     const currentItemId = selector(array[i]);

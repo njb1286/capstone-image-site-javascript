@@ -171,3 +171,35 @@ Usage:
   }}
 />
 ```
+
+* **UploadForm** - The full form of this app (e.g. title, image, description, category)
+Usage:
+
+```tsx
+<UploadForm 
+  /* Note: all of the props here are optional */
+  onSubmit={async (formData) => {
+    const response = await fetch("*url*", {
+      method: "POST",
+      body: formData
+    })
+    if (response.status > 299) return true; // Return true if an error occurred
+
+    console.log("Title", formData.get("title"));
+  }}
+
+  onCancel={() => {
+    console.log("Canceled");
+  }}
+
+  defaultTitle="Default title field value"
+  defaultDescription="Default description field value"
+  defaultCategory="All"
+
+  /* If it should validate all the input fields initially */
+  validateFieldsOnMount={true}
+
+  /* If it should validate the image field */
+  shouldNotValidateImage={true}
+/>
+```

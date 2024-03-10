@@ -5,11 +5,11 @@ import { useLazyImage } from "../hooks/useLazyImage";
 import { useEffect } from "react";
 import { ImageItem } from "../store/images-store";
 
-type CardProps<T> = {
+interface CardProps<T> extends ImageItem {
   stateToListenTo: T;
-} & ImageItem;
+}
 
-function Card<T>(props: CardProps<T>) {
+function Card<T>(props: Readonly<CardProps<T>>) {
   const { title, id } = props;
 
   const [lazyImageComponent, reobserve] = useLazyImage(id, title, { size: "medium" });

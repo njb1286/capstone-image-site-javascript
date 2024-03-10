@@ -124,3 +124,30 @@ Usage:
   stateToListenTo={globalState.imageItems}
 />
 ```
+
+* **DropDown** - A fancy dropdown component supported by React Bootstrap. This component only allows the value types provided to be passed in. For example, if the dropdown has the selectable items:
+  * Dog
+  * Cat
+  * Horse
+  * Mouse
+
+  Then with the onSelect function, the argument type is a union of the items:
+  `"Dog" | "Cat" | "Horse" | "Mouse"`
+  
+  Which means that the type can be any of these strings, but it cannot be anything else.
+
+  Usage:
+
+```tsx
+<DropDown 
+  categories={["Dog", "Cat", "Horse", "Mouse"]}
+  defaultValue="Dog"
+  onSelect={(value) => {
+    console.log("The value is", value);
+  }}
+
+  /* Optional props */
+  title="Animal"
+  className="animals-dropdown"
+/>
+```

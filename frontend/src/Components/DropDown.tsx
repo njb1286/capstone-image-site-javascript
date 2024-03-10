@@ -3,15 +3,15 @@ import { Dropdown } from "react-bootstrap"
 import classes from "./DropDown.module.scss"
 import { useState } from "react";
 
-type DropDownProps<T extends readonly string[], U extends T[number]> = {
+type DropDownProps<T extends readonly string[]> = {
   categories: T;
-  defaultValue: U;
+  defaultValue: T[number];
   onSelect?: (category: T[number]) => void;
   title?: string;
   className?: string;
 }
 
-function DropDown<T extends readonly string[], U extends T[number]>({ categories, defaultValue, onSelect, title, className }: Readonly<DropDownProps<T, U>>) {
+function DropDown<T extends readonly string[]>({ categories, defaultValue, onSelect, title, className }: Readonly<DropDownProps<T>>) {
   const [category, setCategory] = useState<T[number]>(defaultValue);
 
   const selectCategory = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {

@@ -100,3 +100,10 @@ const [imageElement, reobserve] = useLazyImage(
   }
 )
 ```
+
+* **useGetImageItem** - This hook uses a provided id to retrieve an image item. If that id exists in the global state, it returns that. If not, then it sends a fetch request, adds the returned item to the global state (if it exists in the database), and then returns that item.
+Usage:
+
+```typescript
+const { isError, imageItem } = useGetImageItem(13);
+```

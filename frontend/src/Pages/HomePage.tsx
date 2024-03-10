@@ -22,7 +22,7 @@ const NewHomePage = () => {
     if (loadedItems || mounted.current) return;
 
     mounted.current = true;
-    dispatch(getAllImageItems());
+    dispatch(getAllImageItems(items.map(item => item.id).join(",")));
   }, []);
 
   const filteredItems = useMemo(() => {

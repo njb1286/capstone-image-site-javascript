@@ -14,6 +14,7 @@ import { getToken } from "../helpers/token";
 export function useGetImageItem(id: number) {
   const imageItems = useSelector((state: ImageState) => state.imageItems);
   const selectedItem = imageItems.find(item => item.id === id);
+  const loadedItems = imageItems.map(item => item.id).join(",");
   
   const [isError, setIsError] = useState(false);
   const [imageItem, setImageItem] = useState<ImageItem | null>(selectedItem ?? null);
@@ -25,13 +26,14 @@ export function useGetImageItem(id: number) {
    */
   const hasRun = useRef(false);
 
-  const dispatch = useDispatch<Dispatch<ImageActions>>();
+  const dispatch = useDispatch<Dispatch<ImageActions>>();  
 
   async function fetchRequest() {
     const response = await fetch(`${backendUrl}/get?id=${id}`, {
       method: "GET",
       headers: {
         "Authorization": getToken(),
+        loadedItems,
       }
     });
 

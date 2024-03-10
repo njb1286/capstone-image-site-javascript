@@ -20,7 +20,8 @@ export type UploadFormProps = {
 const UploadForm = (props: UploadFormProps) => {
   const showInitialValidity = props.validateFieldsOnMount ?? false;
 
-  const [category, setCategory] = useState<Category>(props.defaultCategory ?? "Other");
+  const [category, setCategory] = useState<Category>(props.defaultCategory ?? "Other");  
+  
   const [image, setImage] = useState<File | null>(null);
   const [isError, setIsError] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -131,7 +132,7 @@ const UploadForm = (props: UploadFormProps) => {
       {titleComponent}
       {imageComponent}
       {descriptionComponent}
-      <DropDown onSelect={categorySelectHandler} categories={categories} defaultValue="Other" />
+      <DropDown onSelect={categorySelectHandler} categories={categories} defaultValue={category} />
     </div>
 
     <Spinner className={`${classes.spinner} ${submitting ? classes.visible : ""}`} variant="primary" animation="border" />

@@ -27,7 +27,7 @@ const UpdatePage = () => {
 
   const submitHandler = async (formData: FormData) => {
     const response = await fetch(`${backendUrl}/update?id=${id}`, {
-      method: "POST",
+      method: "PUT",
       body: formData,
       headers: {
         "Authorization": getToken(),
@@ -57,7 +57,7 @@ const UpdatePage = () => {
 
   const cancelHandler = () => {
     navigate(redirectRoute);
-  }
+  }  
 
   return (
     <UploadForm 

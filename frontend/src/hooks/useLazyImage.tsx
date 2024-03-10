@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { backendUrl } from "../store/backend-url";
 import classes from "./LazyImage.module.scss";
 import { Spinner } from "react-bootstrap";
+import { loadedImages } from "../helpers/loadedImages";
 
 type LazyImageOptions = {
   wrapperClassName?: string;
@@ -10,9 +11,6 @@ type LazyImageOptions = {
   size?: "small" | "medium" | "large";
   defaultImageShouldLoad?: boolean;
 }
-
-// This keeps the images loaded in memory so they don't have to be re-fetched when this component un-renders
-const loadedImages = new Set<HTMLImageElement>();
 
 const loadImage = (src: string, onLoad?: () => void) => {
   const image = new Image();

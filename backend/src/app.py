@@ -12,9 +12,9 @@ from io import BytesIO
 
 app = Flask(__name__, static_folder="../public")
 
-# basedir = os.path.abspath(os.path.dirname(__file__))
-# app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + os.path.join(basedir, "app.db")
-app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://tenektmchbtzwt:d2aa25c0f3583e35e56319a2f000ce8e65a19ccab3f5d4022686bd07af56d01b@ec2-52-54-200-216.compute-1.amazonaws.com:5432/d1urdfvdv2r472"
+basedir = os.path.abspath(os.path.dirname(__file__))
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + os.path.join(basedir, "database.sqlite")
+# app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://puqidwpkrqwfvk:7097dc2cba858d2ab725b6277ee5658f5af6ff0ef16b5f36fe29e0054423e2a7@ec2-52-54-200-216.compute-1.amazonaws.com:5432/d4kmenbp2q44oi"
 
 app.config["JWT_SECRET_KEY"] = os.environ.get("TOKEN_KEY")
 global_password = os.environ.get("SITE_PASSWORD")
@@ -46,7 +46,7 @@ class Types:
   DATETIME: str = db.DateTime
   BOOLEAN: bool = db.Boolean
   FLOAT: float = db.Float
-  BLOB: bytes = db.LargeBinary
+  BLOB: bytes = db.LargeBinary 
 
 class ImagesRow(db.Model):
   id = db.Column(Types.INTEGER, primary_key=True)
@@ -190,8 +190,18 @@ def post():
 def get():
   id_param = request.args.get("id")
 
+  # A string that is a comma delimited list of IDs
+  loaded_items = request.headers.get("loadedItems")
+  split_loaded_items: list[int] = []
+
+  if loaded_items:
+    split_loaded_items = list(map(int, loaded_items.split(",")))
+
   if id_param:
     item: ImagesRow | None = ImagesRow.query.get(id_param)
+
+    if item.id in split_loaded_items:
+      return jsonify({ "message": "Item already loaded" }), 400
 
     if item == None:
       return jsonify({ "message": messages["not_found"] }), 404
@@ -199,7 +209,9 @@ def get():
     return image_schema.jsonify(item), 200
 
   items = ImagesRow.query.all()
-  return images_schema.jsonify(items), 200
+
+  filtered_items = list(filter(lambda item: item.id not in split_loaded_items, items))
+  return images_schema.jsonify(filtered_items), 200
 
 @app.put("/api/update")
 @jwt_required()

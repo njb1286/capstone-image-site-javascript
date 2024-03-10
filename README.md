@@ -1,49 +1,79 @@
-To turn on the app, follow these steps:
+# Capstone project 2024
 
-1. Open a terminal.
-2. Navigate to the root directory of the frontend project.
-3. Run the following command to start the frontend:
-  ```bash
-  npm run dev
-  ```
+### Languages / Technologies
 
-  Or to build the frontend, you can run:
+* > **Typescript** - this app uses Typescript on the frontend. Typescript is basically Javascript, but as statically typed. This creates a type-safe environment with compile-time type checking, whereas with normal Javascript, you don't get the compile-time type checking, and you only run into type errors on the runtime, which can be extremely difficult to debug
 
-  ```bash
-  npm run build
-  ```
+* > **Python** - Not my first language of choice, but it has some pretty nice features in it. For example, decorators. Python is a dynamically typed language that uses indentation for code blocks
 
-  This will build the app in the backend directory, and then all you have to do is run the backend, and the whole app runs.
+* > **React** - React is a component based Javascript UI library that mainly handles rendering on the frontend instead of the backend. React has a concept called hooks, which allow for some advanced custom functionality. One of the most fundamental hooks is the **useState** hook, which stores state that when changed causes the component to re-render
 
-4. Open another terminal.
-5. Navigate to the root directory of the backend project.
-6. Run the following command to start the backend:
-  ```bash
-  npm start
-  ```
+* > **Redux** - Redux is a library that allows for global state to be stored. Redux isn't exclusive to React, but in my project, I use React Redux, which **is** a library specifically for React
 
-  Or to start the Python backend, navigate to the backend/src directory, and run:
-  ```bash
-  python3 index.py
-  ```
+* > **Flask** - used for API development in Python
 
-  Please note that if you use the Python server, you will have to set the environment variable "SITE_PASSWORD" in order to set the password to login
+* > **Marshmallow** - a library used for creating database schemas that allow for dynamic database manipulation
 
-  Linux:
-  ```bash
-  export SITE_PASSWORD=*Your password of choice*
-  python3 index.py
-  ```
+* > **SQL** - The database language for storing the site data
 
-  Windows:
-  ```cmd
-  set SITE_PASSWORD=*Your password of choice*
-  python3 index.py
-  ```
+* > **Bootstrap** - A style library that makes styling components super easy. I use React Bootstrap, which is a React exclusive library that allows a little more than just styling, but also functionality
 
-  If you want to run the Python server as production, make sure you have waitress installed, then you can run the command:
-  ```bash
-  waitress-serve index:app
-  ```
+### Hooks
 
-Once both the frontend and backend are running, you should be able to access the app in your browser.
+* **useFormField** - probably the most advanced custom hook in this app. This hook creates a form field that does validity checking based on the provided validity function
+This hook is type safe, which means there are no "any" types where the compiler doesn't know. This is done using generics, which allow for type parameters to be passed in that could be anything according to the constraint. This allows the hook to reference previous values the user put in, and extract a type from that.
+
+```typescript
+const [component, isValid, setInputValid] = useFormField(
+  // Title
+  "Input field title",
+
+  // The input element's "value" prop
+  "value",
+
+  // Field validation
+  (value /* String, because of the "value" selector above */) => {
+    if (value.length === 0) return "This field is required!";
+
+    if (value.length > 128) return "Maximum of 128 characters!";
+  },
+
+  // Default value
+  "Default title",
+
+  // Options
+  {
+    // Required option
+    elementType: "input",
+
+    // Optional options
+    showInitialValidity: true,
+    className: "my-element",
+    props: {},
+    onChange: (value) => {
+      console.log("The value is", value);
+    }
+  }
+)
+```
+
+* **useModal** - This hook takes React Bootstrap's modal component, and provides simplicity to the usage. In the code, a model element gets placed beside the root element in the HTML.
+Usage:
+
+```tsx
+const [element, setVisible] = useModal(
+  // Title
+  "Modal title",
+
+  // Content
+  "The modal content",
+
+  // Render callback
+  (closeHandler /* The close handler provided by the modal hook that closes the modal */) => {
+    return (
+      <button type="submit">Submit</button>
+      <button type="button" onClick={closeHandler}>Close</button>
+    )
+  }
+)
+```

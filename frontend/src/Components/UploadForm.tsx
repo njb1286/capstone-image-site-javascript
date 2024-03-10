@@ -32,6 +32,10 @@ const UploadForm = (props: UploadFormProps) => {
       if (!currentValue) {
         return "Title is required";
       }
+
+      if (currentValue.length >= 128) {
+        return "Title must be less than 129 characters";
+      }
     },
     props.defaultTitle ?? "",
     {

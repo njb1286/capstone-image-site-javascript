@@ -41,6 +41,7 @@ const NewHomePage = () => {
           {filteredItems.map((item, index) => {
             return <Card {...item} stateToListenTo={items} key={`card_${index}`} />
           })}
+
         </div>
         <LoadingPage fullScreen={false} className={`${classes["loading-images"]} ${!loadedItems ? classes.visible : ""}`} />
       </div>

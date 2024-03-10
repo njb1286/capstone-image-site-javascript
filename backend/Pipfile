@@ -10,11 +10,12 @@ werkzeug = "*"
 flask-sqlalchemy = "*"
 flask-marshmallow = "*"
 marshmallow-sqlalchemy = "*"
-jwt = "*"
+gunicorn = "*"
+psycopg2 = "*"
 flask-jwt-extended = "*"
-pyjwt = "*"
+pyjwt = "==2.1.0"
 
 [dev-packages]
 
 [requires]
-python_version = "3.10"
+python_version = "3.10.12"

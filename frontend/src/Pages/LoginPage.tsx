@@ -5,7 +5,6 @@ import classes from "./LoginPage.module.scss";
 import { Container, Form, Button, Spinner } from 'react-bootstrap';
 import { backendUrl } from '../store/backend-url';
 import { getToken, setToken } from '../helpers/token';
-import { useDispatch } from 'react-redux';
 
 type LoginPageProps = {
   onSubmit?: (isValid: boolean) => void;

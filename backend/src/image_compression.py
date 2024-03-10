@@ -1,7 +1,7 @@
 from PIL import Image
 import io
 
-def compress_image(image_bytes, width=None, quality=90):
+def compress_image(image_bytes: bytes, width=None, quality=90):
     img = Image.open(io.BytesIO(image_bytes))
 
     if width:

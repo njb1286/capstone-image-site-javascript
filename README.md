@@ -1,5 +1,12 @@
 # Capstone project 2024
 
+### Description
+For my capstone project, I have created an image uploader website that stores all the uploaded data in an SQL database. Conceptually, the idea is simple, but I focused on efficiency. 
+
+I tried to make it not download all the items at the same time by implementing "infinite scrolling", so it would download the items as needed. However, my problem was knowing which category had already been downloaded with the category filter. So, I decided to scrap the idea, because this isn't a production application. However, that doesn't mean nothing is done efficiently. I still have lazy component loading, which means the code for a component is only downloaded when the component is used.
+
+I implemented a password for the site. It's very simple, but it gets the job done. I also added a generate single use password. It all works by storing a token in the localStorage, and giving it to the Python backend when necessary.
+
 ### Languages / Technologies
 
 * > **Typescript** - this app uses Typescript on the frontend. Typescript is basically Javascript, but as statically typed. This creates a type-safe environment with compile-time type checking, whereas with normal Javascript, you don't get the compile-time type checking, and you only run into type errors on the runtime, which can be extremely difficult to debug

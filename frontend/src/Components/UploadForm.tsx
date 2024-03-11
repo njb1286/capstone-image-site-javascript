@@ -56,6 +56,13 @@ const UploadForm = (props: UploadFormProps) => {
       if (!currentValue || currentValue.length === 0) {
         return "Image is required"
       }
+
+      const validImages = ["png", "jpeg", "jpg"];
+      const fileEnd = currentValue[0].name.split(".").pop()!.toLowerCase();
+
+      if (!validImages.includes(fileEnd)) {
+        return "Image must be a .png, .jpeg, or .jpg file"
+      }
     },
     null,
     {
